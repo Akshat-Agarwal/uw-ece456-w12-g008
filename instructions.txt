@@ -1,0 +1,20 @@
+Download "Eclipse IDE for Java EE Developers" and extract. Can't be any other versions.
+
+Open Eclipse.
+
+Might need to install newest JDK (1.7) if it doesn't run.
+
+In Eclipse:
+	Help > Install New Software... > add the following:
+		"http://download.eclipse.org/windowbuilder/WB/release/R201109201200/3.7/"
+	Check "Swing Designer" and "Windows Builder Engine (Required)", and install them.
+	
+	Restart after installing plugin.
+	
+	File > Import > Import Existing Project > choose svn\eclipse folder and import the project "ece456"
+	
+	Run MainApplicationWindow, see if it runs.
+
+Test if WindowBuilder installed properly:
+	Open src/org.ece456.proj.gui.main/MainApplicationWindow.java
+	At the bottom of the editor screen, click on "Design" tab
