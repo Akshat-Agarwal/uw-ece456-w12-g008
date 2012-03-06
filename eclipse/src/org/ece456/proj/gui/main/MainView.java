@@ -93,7 +93,7 @@ public class MainView {
         center_panel.add(comboBox, "4, 2, fill, default");
 
         JLabel label_user_name = new JLabel("User Name");
-        center_panel.add(label_user_name, "2, 4, center, default");
+        center_panel.add(label_user_name, "2, 4, right, default");
 
         text_user_name = new JTextField();
         center_panel.add(text_user_name, "4, 4, fill, default");
