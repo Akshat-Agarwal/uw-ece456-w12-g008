@@ -1,4 +1,4 @@
-package org.ece456.proj;
+package org.ece456.proj.orm.objects;
 
 public enum UserRole {
 
