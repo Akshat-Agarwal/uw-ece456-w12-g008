@@ -13,8 +13,10 @@ In Eclipse:
 	
 	File > Import > Import Existing Project > choose svn\eclipse folder and import the project "ece456"
 	
-	Run MainApplicationWindow, see if it runs.
+	Menu: Project > Clean > Clean All
+	
+	Run client project, see if it runs.
 
 Test if WindowBuilder installed properly:
-	Open src/org.ece456.proj.gui.main/MainApplicationWindow.java
+	Open client/src/org.ece456.proj.gui.main/MainApplicationWindow.java
 	At the bottom of the editor screen, click on "Design" tab

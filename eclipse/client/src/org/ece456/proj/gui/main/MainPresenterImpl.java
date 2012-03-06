@@ -2,11 +2,10 @@ package org.ece456.proj.gui.main;
 
 import javax.swing.JDialog;
 
-import org.ece456.proj.UserRole;
 import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
 import org.ece456.proj.gui.patient.PatientView;
-import org.ece456.proj.orm.query.QueryManager;
+import org.ece456.proj.orm.objects.UserRole;
 
 public class MainPresenterImpl implements MainPresenter {
     public MainPresenterImpl() {
@@ -34,8 +33,7 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     private void showPatientView(String username) {
-        QueryManager query = QueryManager.connect(UserRole.PATIENT, username, 0L);
-        PatientPresenter presenter = new PatientPresenterImpl(query, username);
+        PatientPresenter presenter = new PatientPresenterImpl(username);
         JDialog view = new PatientView(presenter);
         view.setVisible(true);
     }
