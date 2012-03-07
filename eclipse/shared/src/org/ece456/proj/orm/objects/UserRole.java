@@ -6,9 +6,10 @@ public enum UserRole {
     DOCTOR("Doctor"),
     STAFF("Staff Member"),
     ACCOUNTANT("Accountant"),
-    LEGAL("Legal");
+    LEGAL("Legal"),
+    ADMIN("System Administrator");
 
-    private String displayString;
+    private final String displayString;
 
     private UserRole(String displayString) {
         this.displayString = displayString;

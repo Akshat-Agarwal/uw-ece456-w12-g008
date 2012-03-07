@@ -6,34 +6,34 @@ import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
 import org.ece456.proj.gui.patient.PatientView;
 import org.ece456.proj.orm.objects.UserRole;
+import org.ece456.proj.shared.Connection;
 
 public class MainPresenterImpl implements MainPresenter {
-    public MainPresenterImpl() {
-
-    }
 
     @Override
-    public void login(UserRole role, String username, char[] password) {
-        String password_copy = String.valueOf(password);
+    public String login(String host, UserRole role, String username, char[] password) {
+        RmiClient client = new RmiClient();
 
-        // clear password
-        for (int i = 0; i < password.length; i++) {
-            password[i] = 0;
+        Connection connection = client.connect(host, role, username, String.valueOf(password));
+
+        if (connection == null) {
+            // failed to connect
+            return "Failed to connect to server; check host, username and password";
         }
-
-        System.out.printf("role: %s  username: %s  password: %s\n", role, username, password_copy);
 
         switch (role) {
             case PATIENT:
-                showPatientView(username);
+                showPatientView(connection);
                 break;
             default:
-                throw new EnumConstantNotPresentException(UserRole.class, String.valueOf(role));
+                return "That view is not supported yet";
         }
+
+        return "";
     }
 
-    private void showPatientView(String username) {
-        PatientPresenter presenter = new PatientPresenterImpl(username);
+    private void showPatientView(Connection connection) {
+        PatientPresenter presenter = new PatientPresenterImpl(connection);
         JDialog view = new PatientView(presenter);
         view.setVisible(true);
     }

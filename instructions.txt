@@ -11,12 +11,16 @@ In Eclipse:
 	
 	Restart after installing plugin.
 	
-	File > Import > Import Existing Project > choose svn\eclipse folder and import the project "ece456"
+	File > Import > Import Existing Project > choose svn\eclipse folder and import three projects (client shared server)
 	
 	Menu: Project > Clean > Clean All
 	
-	Run client project, see if it runs.
+	Run client project (ClientMain.java), see if it runs.
 
 Test if WindowBuilder installed properly:
-	Open client/src/org.ece456.proj.gui.main/MainApplicationWindow.java
+	Find client/src/org.ece456.proj.gui.main/MainView.java
+	
+	Right click > open with > WindowBuilder Editor
+	
 	At the bottom of the editor screen, click on "Design" tab
+	

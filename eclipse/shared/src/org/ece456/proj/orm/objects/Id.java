@@ -2,6 +2,8 @@ package org.ece456.proj.orm.objects;
 
 import java.io.Serializable;
 
+import com.google.common.base.Objects;
+
 public class Id<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,31 +22,21 @@ public class Id<T> implements Serializable {
         this.id = id;
     }
 
-    public int getId() {
+    public int asInt() {
         return id;
     }
 
-    // Generated code below
-
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id;
-        return result;
+        return Objects.hashCode(id);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
+        if (!(obj instanceof Id)) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Id<?> other = (Id<?>) obj;
-        if (id != other.id)
-            return false;
-        return true;
+        }
+        Id<?> that = (Id<?>) obj;
+        return Objects.equal(id, that.id);
     }
 }
