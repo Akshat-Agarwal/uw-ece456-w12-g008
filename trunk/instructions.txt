@@ -15,7 +15,7 @@ In Eclipse:
 	
 	Menu: Project > Clean > Clean All
 	
-	Run client project (ClientMain.java), see if it runs.
+	Right click on server > Run As > Java application. Do the same for client.
 
 Test if WindowBuilder installed properly:
 	Find client/src/org.ece456.proj.gui.main/MainView.java
