@@ -1,7 +1,6 @@
 package org.ece456.proj.gui.main;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -14,11 +13,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 
 import org.ece456.proj.orm.objects.UserRole;
 
@@ -35,32 +34,13 @@ public class MainView {
     private JComboBox<UserRole> comboBox;
 
     private final MainPresenter presenter;
-
-    /**
-     * Launch the application.
-     */
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-                    MainView window = new MainView();
-                    window.frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+    private JTextField text_host;
 
     /**
      * Create the application.
      */
-    public MainView() {
-        this.presenter = new MainPresenterImpl();
-
+    public MainView(MainPresenter presenter) {
+        this.presenter = presenter;
         initialize();
     }
 
@@ -83,24 +63,33 @@ public class MainView {
                 FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
                 FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
                 FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                FormFactory.RELATED_GAP_ROWSPEC, }));
+                FormFactory.RELATED_GAP_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
+                FormFactory.DEFAULT_ROWSPEC, }));
+
+        JLabel lblHost = new JLabel("Host");
+        center_panel.add(lblHost, "2, 2, right, default");
+
+        text_host = new JTextField();
+        text_host.setText("localhost");
+        center_panel.add(text_host, "4, 2, fill, default");
+        text_host.setColumns(10);
 
         JLabel label_user_role = new JLabel("User Role");
-        center_panel.add(label_user_role, "2, 2, right, default");
+        center_panel.add(label_user_role, "2, 4, right, default");
 
         comboBox = new JComboBox<UserRole>();
         comboBox.setModel(new DefaultComboBoxModel(UserRole.values()));
-        center_panel.add(comboBox, "4, 2, fill, default");
+        center_panel.add(comboBox, "4, 4, fill, default");
 
         JLabel label_user_name = new JLabel("User Name");
-        center_panel.add(label_user_name, "2, 4, right, default");
+        center_panel.add(label_user_name, "2, 6, right, default");
 
         text_user_name = new JTextField();
-        center_panel.add(text_user_name, "4, 4, fill, default");
+        center_panel.add(text_user_name, "4, 6, fill, default");
         text_user_name.setColumns(10);
 
         JLabel lblPassword = new JLabel("Password");
-        center_panel.add(lblPassword, "2, 6, right, default");
+        center_panel.add(lblPassword, "2, 9, right, default");
 
         password_field = new JPasswordField();
         password_field.addKeyListener(new KeyAdapter() {
@@ -111,7 +100,7 @@ public class MainView {
                 }
             }
         });
-        center_panel.add(password_field, "4, 6, fill, default");
+        center_panel.add(password_field, "4, 9, fill, default");
 
         JPanel top_panel = new JPanel();
         frame.getContentPane().add(top_panel, BorderLayout.NORTH);
@@ -136,7 +125,15 @@ public class MainView {
     }
 
     private void login() {
-        presenter.login((UserRole) comboBox.getSelectedItem(), text_user_name.getText(),
-                password_field.getPassword());
+        String result = presenter.login(text_host.getText(), (UserRole) comboBox.getSelectedItem(),
+                text_user_name.getText(), password_field.getPassword());
+        if (result.length() > 0) {
+            JOptionPane.showMessageDialog(new JFrame(), result, "There was a problem...",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void setVisible(boolean b) {
+        frame.setVisible(b);
     }
 }

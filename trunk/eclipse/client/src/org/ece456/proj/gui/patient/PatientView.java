@@ -94,7 +94,7 @@ public class PatientView extends JDialog {
                     btnEdit.setText("Edit");
 
                     updatePatientData();
-                    presenter.updatePatientContact(patient.patient_id, patient.contact);
+                    presenter.updatePatientContact(patient.getPatientId(), patient.getContact());
                 } else {
                     setEditable(true);
                     btnEdit.setText("Save");
@@ -116,15 +116,18 @@ public class PatientView extends JDialog {
     }
 
     private void fillPatientData(Patient patient) {
-        text_id.setText(String.valueOf(patient.patient_id.getId()));
-        text_name.setText(patient.contact.name);
-        text_address.setText(patient.contact.address);
-        text_phone.setText(patient.contact.phone_num);
+        text_id.setText(String.valueOf(patient.getPatientId().asInt()));
+
+        text_name.setText(patient.getContact().getName());
+        text_address.setText(patient.getContact().getAddress());
+        text_phone.setText(patient.getContact().getPhoneNum());
     }
 
     private void updatePatientData() {
-        patient.contact.name = text_name.getText();
-        patient.contact.address = text_address.getText();
-        patient.contact.phone_num = text_phone.getText();
+        // ID is not updated, of course
+
+        patient.getContact().setName(text_name.getText());
+        patient.getContact().setAddress(text_address.getText());
+        patient.getContact().setPhoneNum(text_phone.getText());
     }
 }
