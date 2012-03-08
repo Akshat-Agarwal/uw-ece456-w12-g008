@@ -19,19 +19,28 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     }
 
     @Override
-    public Session login(UserRole role, String username, String password) throws RemoteException {
+    public Session login(UserRole role, Id<?> id, String password) throws RemoteException {
 
         // TODO: check if (role, username, passwordHash) tuple is valid in the DB!
 
-        System.out.printf("Login attempt from %s %s %s\n", role.toString(), username, password);
+        System.out.printf("Login attempt from %s %d %s\n", role.toString(), id.asInt(), password);
 
-        return SessionManager.INSTANCE.getNewSession(role, username);
+        return SessionManager.INSTANCE.getNewSession(role, id);
     }
 
     @Override
     public Patient getPatientById(Session session, Id<Patient> id) {
         if (!isSessionValid(session)) {
             return null;
+        }
+
+        // A patient can only view his own records
+        if (session.getRole() == UserRole.PATIENT) {
+            // TODO uncomment this later when we have actual user database
+
+            /*
+             * if (!id.equals(session.getId())) { return null; }
+             */
         }
 
         // TODO actually connect to DB and return results

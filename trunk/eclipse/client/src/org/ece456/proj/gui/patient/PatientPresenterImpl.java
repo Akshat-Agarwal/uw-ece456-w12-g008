@@ -20,11 +20,6 @@ public class PatientPresenterImpl implements PatientPresenter {
     }
 
     @Override
-    public String getUsername() {
-        return connection.getSession().getUsername();
-    }
-
-    @Override
     public void show(Patient patient) {
         if (view == null) {
             view = new PatientView(this);

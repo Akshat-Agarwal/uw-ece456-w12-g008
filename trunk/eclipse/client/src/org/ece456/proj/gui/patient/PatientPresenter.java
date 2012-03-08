@@ -6,8 +6,6 @@ import org.ece456.proj.orm.objects.PatientContact;
 
 public interface PatientPresenter {
 
-    String getUsername();
-
     void updatePatientContact(Id<Patient> id, PatientContact contact);
 
     void show(Patient patient);

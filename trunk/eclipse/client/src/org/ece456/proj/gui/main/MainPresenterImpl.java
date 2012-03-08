@@ -12,10 +12,10 @@ import org.ece456.proj.shared.Connection;
 public class MainPresenterImpl implements MainPresenter {
 
     @Override
-    public String login(String host, UserRole role, String username, char[] password) {
+    public String login(String host, UserRole role, int id, char[] password) {
         RmiClient client = new RmiClient();
 
-        Connection connection = client.connect(host, role, username, String.valueOf(password));
+        Connection connection = client.connect(host, role, id, String.valueOf(password));
 
         if (connection == null) {
             // failed to connect
