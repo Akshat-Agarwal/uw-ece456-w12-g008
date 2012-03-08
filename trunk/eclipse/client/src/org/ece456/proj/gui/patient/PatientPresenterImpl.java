@@ -1,5 +1,8 @@
 package org.ece456.proj.gui.patient;
 
+import java.util.List;
+
+import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
@@ -15,6 +18,7 @@ import org.ece456.proj.shared.Connection;
  */
 public class PatientPresenterImpl implements PatientPresenter {
 
+    @SuppressWarnings("unused")
     private final Connection connection;
     private PatientView view;
 
@@ -28,11 +32,12 @@ public class PatientPresenterImpl implements PatientPresenter {
     }
 
     @Override
-    public void show(Patient patient) {
+    public void show(Patient patient, List<Appointment> appointments) {
         if (view == null) {
             view = new PatientView(this);
         }
         view.fillPatientData(patient);
+        view.fillAppointmentData(appointments);
         view.setVisible(true);
     }
 

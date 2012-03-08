@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -12,7 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-import org.ece456.proj.gui.appointment.AppointmentListPanel;
+import org.ece456.proj.gui.appointment.AppointmentTable;
+import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Patient;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -29,7 +31,7 @@ public class PatientView extends JDialog {
     private final JTextField text_phone;
 
     private final PatientMedicalPanel panel_medical;
-    private final AppointmentListPanel panel_appointments;
+    private final AppointmentTable panel_appointments;
 
     private boolean editting = false;
 
@@ -38,16 +40,15 @@ public class PatientView extends JDialog {
      * 
      * @param presenter
      */
-    @SuppressWarnings("serial")
     public PatientView(final PatientPresenter presenter) {
         setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setTitle("Patient View");
-        setBounds(100, 100, 450, 300);
+        setBounds(100, 100, 600, 400);
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        getContentPane().add(tabbedPane, BorderLayout.NORTH);
+        getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
         JPanel tab_contact = new JPanel();
         tabbedPane.addTab("Contact Data", null, tab_contact, null);
@@ -129,9 +130,9 @@ public class PatientView extends JDialog {
         tabbedPane.addTab("Appointments & Visits", null, tab_appointments, null);
         tab_appointments.setLayout(new BorderLayout(0, 0));
 
-        panel_appointments = new AppointmentListPanel();
+        panel_appointments = new AppointmentTable();
         panel_appointments.setBackground(SystemColor.window);
-        tab_appointments.add(panel_appointments, BorderLayout.NORTH);
+        tab_appointments.add(panel_appointments, BorderLayout.CENTER);
     }
 
     private void setEditable(boolean editable) {
@@ -150,5 +151,9 @@ public class PatientView extends JDialog {
 
         // Medical
         panel_medical.fillPatientData(patient.getMedical());
+    }
+
+    public void fillAppointmentData(List<Appointment> appointments) {
+        panel_appointments.update(appointments);
     }
 }
