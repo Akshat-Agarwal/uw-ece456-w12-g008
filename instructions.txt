@@ -24,3 +24,4 @@ Test if WindowBuilder installed properly:
 	
 	At the bottom of the editor screen, click on "Design" tab
 	
+as
