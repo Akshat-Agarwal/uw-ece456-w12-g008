@@ -1,6 +1,7 @@
 package org.ece456.proj.gui.patient;
 
 import java.awt.BorderLayout;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -48,6 +49,7 @@ public class PatientView extends JDialog {
      * @param presenter
      */
     public PatientView(final PatientPresenter presenter) {
+        setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setTitle("Patient View");
         setBounds(100, 100, 450, 300);
@@ -61,6 +63,7 @@ public class PatientView extends JDialog {
         tab_contact.setLayout(new BorderLayout(0, 0));
 
         JPanel panel_contact = new JPanel();
+        panel_contact.setBackground(SystemColor.window);
         tab_contact.add(panel_contact, BorderLayout.CENTER);
         panel_contact.setLayout(new FormLayout(new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC,
                 FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
@@ -103,6 +106,7 @@ public class PatientView extends JDialog {
         text_phone.setColumns(10);
 
         JPanel panel_contact_buttons = new JPanel();
+        panel_contact_buttons.setBackground(SystemColor.window);
         tab_contact.add(panel_contact_buttons, BorderLayout.SOUTH);
 
         final JButton btnEdit = new JButton("Edit");
@@ -122,10 +126,12 @@ public class PatientView extends JDialog {
         panel_contact_buttons.add(btnEdit);
 
         JPanel tab_medical = new JPanel();
+        tab_medical.setBackground(SystemColor.window);
         tabbedPane.addTab("Medical Data", null, tab_medical, null);
         tab_medical.setLayout(new BorderLayout(0, 0));
 
         JPanel panel_medical = new JPanel();
+        panel_medical.setBackground(SystemColor.window);
         tab_medical.add(panel_medical, BorderLayout.NORTH);
         panel_medical.setLayout(new FormLayout(new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC,
                 FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
@@ -197,6 +203,10 @@ public class PatientView extends JDialog {
         scrollPane.setViewportView(list_consultants);
         list_consultants.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list_consultants.setVisibleRowCount(3);
+
+        JPanel tab_appointments = new JPanel();
+        tab_appointments.setBackground(SystemColor.window);
+        tabbedPane.addTab("Appointments & Visits", null, tab_appointments, null);
     }
 
     private void setEditable(boolean editable) {
