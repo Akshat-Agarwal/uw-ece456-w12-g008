@@ -5,21 +5,15 @@ import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
 
+import org.ece456.proj.gui.appointment.AppointmentListPanel;
 import org.ece456.proj.orm.objects.Patient;
-import org.ece456.proj.orm.objects.Sex;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -34,20 +28,17 @@ public class PatientView extends JDialog {
     private final JTextField text_address;
     private final JTextField text_phone;
 
+    private final PatientMedicalPanel panel_medical;
+    private final AppointmentListPanel panel_appointments;
+
     private boolean editting = false;
-    private final JTextField text_sin;
-    private final JTextField text_healthcard;
-    private final JTextField text_numvisits;
-    private final JTextField text_doctor;
-    private final JTextField text_currenthealth;
-    private final JComboBox combo_sex;
-    private final JList list_consultants;
 
     /**
      * Create the dialog.
      * 
      * @param presenter
      */
+    @SuppressWarnings("serial")
     public PatientView(final PatientPresenter presenter) {
         setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -130,83 +121,17 @@ public class PatientView extends JDialog {
         tabbedPane.addTab("Medical Data", null, tab_medical, null);
         tab_medical.setLayout(new BorderLayout(0, 0));
 
-        JPanel panel_medical = new JPanel();
-        panel_medical.setBackground(SystemColor.window);
+        panel_medical = new PatientMedicalPanel();
         tab_medical.add(panel_medical, BorderLayout.NORTH);
-        panel_medical.setLayout(new FormLayout(new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC,
-                FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
-                ColumnSpec.decode("default:grow"), FormFactory.RELATED_GAP_COLSPEC, },
-                new RowSpec[] { FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                        FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"), }));
-
-        JLabel label_sin = new JLabel("SIN");
-        panel_medical.add(label_sin, "2, 2, right, default");
-
-        text_sin = new JTextField();
-        text_sin.setEditable(false);
-        panel_medical.add(text_sin, "4, 2, fill, default");
-        text_sin.setColumns(10);
-
-        JLabel lblHeatlhCard = new JLabel("Health Card #");
-        panel_medical.add(lblHeatlhCard, "2, 4, right, default");
-
-        text_healthcard = new JTextField();
-        text_healthcard.setEditable(false);
-        panel_medical.add(text_healthcard, "4, 4, fill, default");
-        text_healthcard.setColumns(10);
-
-        JLabel lblVisits = new JLabel("# Visits");
-        panel_medical.add(lblVisits, "2, 6, right, default");
-
-        text_numvisits = new JTextField();
-        text_numvisits.setEditable(false);
-        panel_medical.add(text_numvisits, "4, 6, fill, default");
-        text_numvisits.setColumns(10);
-
-        JLabel lblSex = new JLabel("Sex");
-        panel_medical.add(lblSex, "2, 8, right, default");
-
-        combo_sex = new JComboBox();
-        combo_sex.setEnabled(false);
-        combo_sex.setModel(new DefaultComboBoxModel(Sex.values()));
-        panel_medical.add(combo_sex, "4, 8, fill, default");
-
-        JLabel lblAssignedDoctor = new JLabel("Assigned Doctor");
-        panel_medical.add(lblAssignedDoctor, "2, 10, right, default");
-
-        text_doctor = new JTextField();
-        text_doctor.setEditable(false);
-        panel_medical.add(text_doctor, "4, 10, fill, default");
-        text_doctor.setColumns(10);
-
-        JLabel lblNewLabel_1 = new JLabel("Current Health");
-        panel_medical.add(lblNewLabel_1, "2, 12, right, default");
-
-        text_currenthealth = new JTextField();
-        text_currenthealth.setEditable(false);
-        panel_medical.add(text_currenthealth, "4, 12, fill, top");
-        text_currenthealth.setColumns(10);
-
-        JLabel lblNewLabel_2 = new JLabel("Consultants");
-        panel_medical.add(lblNewLabel_2, "2, 14, right, default");
-
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        panel_medical.add(scrollPane, "4, 14, fill, fill");
-
-        list_consultants = new JList();
-        scrollPane.setViewportView(list_consultants);
-        list_consultants.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list_consultants.setVisibleRowCount(3);
 
         JPanel tab_appointments = new JPanel();
         tab_appointments.setBackground(SystemColor.window);
         tabbedPane.addTab("Appointments & Visits", null, tab_appointments, null);
+        tab_appointments.setLayout(new BorderLayout(0, 0));
+
+        panel_appointments = new AppointmentListPanel();
+        panel_appointments.setBackground(SystemColor.window);
+        tab_appointments.add(panel_appointments, BorderLayout.NORTH);
     }
 
     private void setEditable(boolean editable) {
@@ -224,12 +149,6 @@ public class PatientView extends JDialog {
         text_phone.setText(patient.getContact().getPhoneNum());
 
         // Medical
-        text_sin.setText(String.valueOf(patient.getMedical().getSin()));
-        text_healthcard.setText(patient.getMedical().getHealthCardNumber());
-        text_numvisits.setText(String.valueOf(patient.getMedical().getNumVisits()));
-        combo_sex.setSelectedItem(patient.getMedical().getSex());
-        text_doctor.setText(String.valueOf(patient.getMedical().getDefaultDoctor().asInt()));
-        text_currenthealth.setText(patient.getMedical().getCurrentHealth());
-        list_consultants.setListData(patient.getMedical().getConsultants().toArray());
+        panel_medical.fillPatientData(patient.getMedical());
     }
 }
