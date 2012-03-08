@@ -47,7 +47,6 @@ public class MainView {
     /**
      * Initialize the contents of the frame.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void initialize() {
         frame = new JFrame();
         frame.setTitle("ECE 456 Project: G008");

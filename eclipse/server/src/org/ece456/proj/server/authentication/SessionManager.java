@@ -32,6 +32,6 @@ public enum SessionManager {
     }
 
     public boolean isValidSession(Session session) {
-        return sessions.getIfPresent(session.getSessionId()) != null;
+        return session.isValid() && sessions.getIfPresent(session.getSessionId()) != null;
     }
 }

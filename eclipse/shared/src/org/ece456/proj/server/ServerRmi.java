@@ -12,5 +12,5 @@ public interface ServerRmi extends Remote {
 
     Session login(UserRole role, String username, long passwordHash) throws RemoteException;
 
-    Patient getPatientById(Id<Patient> id) throws RemoteException;
+    Patient getPatientById(Session session, Id<Patient> id) throws RemoteException;
 }
