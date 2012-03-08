@@ -31,7 +31,7 @@ public class MainView {
     private JFrame frame;
     private JTextField text_user_name;
     private JPasswordField password_field;
-    private JComboBox<UserRole> comboBox;
+    private JComboBox comboBox;
 
     private final MainPresenter presenter;
     private JTextField text_host;
@@ -77,7 +77,7 @@ public class MainView {
         JLabel label_user_role = new JLabel("User Role");
         center_panel.add(label_user_role, "2, 4, right, default");
 
-        comboBox = new JComboBox<UserRole>();
+        comboBox = new JComboBox();
         comboBox.setModel(new DefaultComboBoxModel(UserRole.values()));
         center_panel.add(comboBox, "4, 4, fill, default");
 
