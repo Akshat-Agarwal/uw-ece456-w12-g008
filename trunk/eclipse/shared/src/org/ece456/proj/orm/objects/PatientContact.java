@@ -8,7 +8,7 @@ public class PatientContact implements Serializable {
     private String name;
     private String address;
     private String phoneNumber;
-    private long passwordHash;
+    private String password;
 
     public PatientContact() {
         clear();
@@ -18,7 +18,7 @@ public class PatientContact implements Serializable {
         name = "";
         address = "";
         phoneNumber = "";
-        passwordHash = 0L;
+        password = "";
     }
 
     // getters and setters below
@@ -47,11 +47,11 @@ public class PatientContact implements Serializable {
         this.phoneNumber = phoneNum;
     }
 
-    public long getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(long passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
