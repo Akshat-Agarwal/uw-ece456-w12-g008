@@ -29,7 +29,7 @@ import com.jgoodies.forms.layout.RowSpec;
 public class MainView {
 
     private JFrame frame;
-    private JTextField text_user_name;
+    private JTextField text_id;
     private JPasswordField password_field;
     private JComboBox comboBox;
 
@@ -80,12 +80,12 @@ public class MainView {
         comboBox.setModel(new DefaultComboBoxModel(UserRole.values()));
         center_panel.add(comboBox, "4, 4, fill, default");
 
-        JLabel label_user_name = new JLabel("User Name");
+        JLabel label_user_name = new JLabel("User ID");
         center_panel.add(label_user_name, "2, 6, right, default");
 
-        text_user_name = new JTextField();
-        center_panel.add(text_user_name, "4, 6, fill, default");
-        text_user_name.setColumns(10);
+        text_id = new JTextField();
+        center_panel.add(text_id, "4, 6, fill, default");
+        text_id.setColumns(10);
 
         JLabel lblPassword = new JLabel("Password");
         center_panel.add(lblPassword, "2, 9, right, default");
@@ -125,7 +125,7 @@ public class MainView {
 
     private void login() {
         String result = presenter.login(text_host.getText(), (UserRole) comboBox.getSelectedItem(),
-                text_user_name.getText(), password_field.getPassword());
+                Integer.valueOf(text_id.getText()), password_field.getPassword());
         if (result.length() > 0) {
             JOptionPane.showMessageDialog(new JFrame(), result, "There was a problem...",
                     JOptionPane.ERROR_MESSAGE);

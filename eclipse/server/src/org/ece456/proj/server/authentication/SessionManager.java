@@ -2,6 +2,7 @@ package org.ece456.proj.server.authentication;
 
 import java.util.concurrent.TimeUnit;
 
+import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Session;
 
@@ -18,9 +19,9 @@ public enum SessionManager {
     private final Cache<Long, Session> sessions = CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.HOURS).build();
 
-    public Session getNewSession(UserRole role, String username) {
+    public Session getNewSession(UserRole role, Id<?> id) {
         long sessionId = generateSessionId();
-        Session session = new Session(role, username, sessionId);
+        Session session = new Session(role, id, sessionId);
 
         sessions.put(sessionId, session);
 
