@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -22,7 +23,7 @@ import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class PatientView extends JDialog {
+public class PatientView extends JFrame {
 
     private static final long serialVersionUID = 1L;
     private final JTextField text_id;
@@ -41,7 +42,6 @@ public class PatientView extends JDialog {
      * @param presenter
      */
     public PatientView(final PatientPresenter presenter) {
-        setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setTitle("Patient View");
         setBounds(100, 100, 600, 400);
