@@ -2,7 +2,10 @@ package org.ece456.proj.server.main;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Date;
+import java.util.List;
 
+import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
@@ -13,6 +16,7 @@ import org.ece456.proj.server.authentication.SessionManager;
 import org.ece456.proj.shared.Session;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
@@ -67,6 +71,27 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                                 Id.<Doctor> of(4), Id.<Doctor> of(5), Id.<Doctor> of(6),
                                 Id.<Doctor> of(7)));
         return p;
+    }
+
+    @Override
+    public List<Appointment> getAppointmentsForPatient(Session session, Id<Patient> id)
+            throws RemoteException {
+        List<Appointment> results = Lists.newArrayList();
+
+        for (int i = 0; i < 100; i++) {
+            Appointment a = new Appointment();
+            a.setComment("PATIENT SHOULD NOT SEE COMMENT " + i);
+            a.setDiagnoses("Diag" + i);
+            a.setDoctor_id(Id.<Doctor> of(i));
+            a.setLast_modified(new Date());
+            a.setLength(i % 30 + 20);
+            a.setPatient_id(Id.<Patient> of(i + 1000));
+            a.setPrescriptions("presc " + i);
+            a.setProcedures("procs" + i);
+            a.setStart_time(new Date());
+            results.add(a);
+        }
+        return results;
     }
 
     private boolean isSessionValid(Session session) {
