@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -29,12 +30,12 @@ import com.jgoodies.forms.layout.RowSpec;
 public class MainView {
 
     private JFrame frame;
-    private JTextField text_id;
     private JPasswordField password_field;
     private JComboBox comboBox;
 
     private final MainPresenter presenter;
     private JTextField text_host;
+    private JFormattedTextField text_id;
 
     /**
      * Create the application.
@@ -83,9 +84,8 @@ public class MainView {
         JLabel label_user_name = new JLabel("User ID");
         center_panel.add(label_user_name, "2, 6, right, default");
 
-        text_id = new JTextField();
+        text_id = new JFormattedTextField();
         center_panel.add(text_id, "4, 6, fill, default");
-        text_id.setColumns(10);
 
         JLabel lblPassword = new JLabel("Password");
         center_panel.add(lblPassword, "2, 9, right, default");
@@ -124,8 +124,21 @@ public class MainView {
     }
 
     private void login() {
+        // Check if ID is valid
+        int id = 0;
+        try {
+            id = Integer.parseInt(text_id.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(new JFrame(), "Invalid ID - must be a positive integer",
+                    "There was a problem...", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Attempt to log in
         String result = presenter.login(text_host.getText(), (UserRole) comboBox.getSelectedItem(),
-                Integer.valueOf(text_id.getText()), password_field.getPassword());
+                id, password_field.getPassword());
+
+        // If there was an error, display it
         if (result.length() > 0) {
             JOptionPane.showMessageDialog(new JFrame(), result, "There was a problem...",
                     JOptionPane.ERROR_MESSAGE);

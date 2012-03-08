@@ -85,4 +85,9 @@ public class PatientMedical implements Serializable {
     public List<Id<Doctor>> getConsultants() {
         return consultants;
     }
+
+    public void setConsultants(List<Id<Doctor>> consultants) {
+        this.consultants.clear();
+        this.consultants.addAll(consultants);
+    }
 }
