@@ -8,7 +8,7 @@ public class Staff implements Serializable {
 
     private Id<Staff> staffId;
     private String name;
-    private long passwordHash;
+    private String password;
 
     public Id<Staff> getStaffId() {
         return staffId;
@@ -26,11 +26,11 @@ public class Staff implements Serializable {
         this.name = name;
     }
 
-    public long getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(long passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

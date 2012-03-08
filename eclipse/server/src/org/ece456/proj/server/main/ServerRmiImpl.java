@@ -19,11 +19,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     }
 
     @Override
-    public Session login(UserRole role, String username, long passwordHash) throws RemoteException {
+    public Session login(UserRole role, String username, String password) throws RemoteException {
 
         // TODO: check if (role, username, passwordHash) tuple is valid in the DB!
 
-        System.out.printf("Login attempt from %s %s %d\n", role.toString(), username, passwordHash);
+        System.out.printf("Login attempt from %s %s %s\n", role.toString(), username, password);
 
         return SessionManager.INSTANCE.getNewSession(role, username);
     }
