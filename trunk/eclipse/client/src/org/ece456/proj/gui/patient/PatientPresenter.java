@@ -8,8 +8,10 @@ public interface PatientPresenter {
 
     String getUsername();
 
-    Patient getPatient(Id<Patient> id);
-
     void updatePatientContact(Id<Patient> id, PatientContact contact);
+
+    void show(Patient patient);
+
+    void hide();
 
 }
