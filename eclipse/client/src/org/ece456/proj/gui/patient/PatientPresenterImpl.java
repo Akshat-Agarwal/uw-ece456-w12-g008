@@ -1,7 +1,5 @@
 package org.ece456.proj.gui.patient;
 
-import java.rmi.RemoteException;
-
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
@@ -10,19 +8,10 @@ import org.ece456.proj.shared.Connection;
 public class PatientPresenterImpl implements PatientPresenter {
 
     private final Connection connection;
+    private PatientView view;
 
     public PatientPresenterImpl(Connection connection) {
         this.connection = connection;
-    }
-
-    @Override
-    public Patient getPatient(Id<Patient> id) {
-        try {
-            return connection.getServer().getPatientById(connection.getSession(), id);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override
@@ -33,5 +22,19 @@ public class PatientPresenterImpl implements PatientPresenter {
     @Override
     public String getUsername() {
         return connection.getSession().getUsername();
+    }
+
+    @Override
+    public void show(Patient patient) {
+        if (view == null) {
+            view = new PatientView(this);
+        }
+        view.fillPatientData(patient);
+        view.setVisible(true);
+    }
+
+    @Override
+    public void hide() {
+        view.setVisible(false);
     }
 }

@@ -1,10 +1,11 @@
 package org.ece456.proj.gui.main;
 
-import javax.swing.JDialog;
+import java.rmi.RemoteException;
 
 import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
-import org.ece456.proj.gui.patient.PatientView;
+import org.ece456.proj.orm.objects.Id;
+import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Connection;
 
@@ -34,7 +35,14 @@ public class MainPresenterImpl implements MainPresenter {
 
     private void showPatientView(Connection connection) {
         PatientPresenter presenter = new PatientPresenterImpl(connection);
-        JDialog view = new PatientView(presenter);
-        view.setVisible(true);
+        try {
+            Patient p = connection.getServer().getPatientById(connection.getSession(),
+                    Id.<Patient> of(0));
+            presenter.show(p);
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
     }
 }

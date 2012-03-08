@@ -10,7 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -25,7 +24,6 @@ public class PatientView extends JDialog {
     private final JTextField text_name;
     private final JTextField text_address;
     private final JTextField text_phone;
-    private final Patient patient;
 
     private boolean editting = false;
 
@@ -92,9 +90,6 @@ public class PatientView extends JDialog {
                 if (editting) {
                     setEditable(false);
                     btnEdit.setText("Edit");
-
-                    updatePatientData();
-                    presenter.updatePatientContact(patient.getPatientId(), patient.getContact());
                 } else {
                     setEditable(true);
                     btnEdit.setText("Save");
@@ -103,10 +98,6 @@ public class PatientView extends JDialog {
             }
         });
         panel_buttons.add(btnEdit);
-
-        // Get the patient
-        patient = presenter.getPatient(Id.<Patient> of(0));
-        fillPatientData(patient);
     }
 
     private void setEditable(boolean editable) {
@@ -115,19 +106,11 @@ public class PatientView extends JDialog {
         text_phone.setEditable(editable);
     }
 
-    private void fillPatientData(Patient patient) {
+    public void fillPatientData(Patient patient) {
         text_id.setText(String.valueOf(patient.getPatientId().asInt()));
 
         text_name.setText(patient.getContact().getName());
         text_address.setText(patient.getContact().getAddress());
         text_phone.setText(patient.getContact().getPhoneNum());
-    }
-
-    private void updatePatientData() {
-        // ID is not updated, of course
-
-        patient.getContact().setName(text_name.getText());
-        patient.getContact().setAddress(text_address.getText());
-        patient.getContact().setPhoneNum(text_phone.getText());
     }
 }
