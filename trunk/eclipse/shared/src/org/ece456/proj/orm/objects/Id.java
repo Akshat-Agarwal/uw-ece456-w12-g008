@@ -39,4 +39,9 @@ public class Id<T> implements Serializable {
         Id<?> that = (Id<?>) obj;
         return Objects.equal(id, that.id);
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(id);
+    }
 }

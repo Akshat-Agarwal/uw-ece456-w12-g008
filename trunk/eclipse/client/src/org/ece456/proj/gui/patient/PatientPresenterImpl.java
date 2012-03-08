@@ -5,6 +5,14 @@ import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
 import org.ece456.proj.shared.Connection;
 
+/**
+ * Patients:
+ * <ul>
+ * <li>view my past appointments, prescriptions, diagnoses, etc.</li>
+ * <li>the records should be confidential (need password of some kind)</li>
+ * <li>update my address, phone number, etc.</li>
+ * </ul>
+ */
 public class PatientPresenterImpl implements PatientPresenter {
 
     private final Connection connection;
