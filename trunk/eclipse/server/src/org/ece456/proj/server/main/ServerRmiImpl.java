@@ -29,7 +29,10 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     }
 
     @Override
-    public Patient getPatientById(Id<Patient> id) {
+    public Patient getPatientById(Session session, Id<Patient> id) {
+        if (!isSessionValid(session)) {
+            return null;
+        }
 
         // TODO actually connect to DB and return results
 
@@ -39,5 +42,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         p.getContact().setAddress("742 Evergreen Terrace");
         p.getContact().setPhoneNum("555-1234");
         return p;
+    }
+
+    private boolean isSessionValid(Session session) {
+        return SessionManager.INSTANCE.isValidSession(session);
     }
 }

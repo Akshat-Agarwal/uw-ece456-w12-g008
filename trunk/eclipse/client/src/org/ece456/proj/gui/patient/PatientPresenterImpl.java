@@ -18,7 +18,7 @@ public class PatientPresenterImpl implements PatientPresenter {
     @Override
     public Patient getPatient(Id<Patient> id) {
         try {
-            return connection.getServer().getPatientById(id);
+            return connection.getServer().getPatientById(connection.getSession(), id);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
