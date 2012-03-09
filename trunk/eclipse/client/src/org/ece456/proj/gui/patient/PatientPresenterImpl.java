@@ -36,8 +36,7 @@ public class PatientPresenterImpl implements PatientPresenter {
         if (view == null) {
             view = new PatientView(this);
         }
-        view.fillPatientData(patient);
-        view.fillAppointmentData(appointments);
+        view.fillPatientData(patient, appointments);
         view.setVisible(true);
     }
 
