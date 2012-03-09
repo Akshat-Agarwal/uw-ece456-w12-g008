@@ -98,33 +98,50 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         // A patient can only view his own records
         if (session.getRole() == UserRole.PATIENT) {
-            // TODO uncomment this later when we have actual user database
 
-            /*
-             * if (!id.equals(session.getId())) { return null; }
-             */
-        }
+            try {
+                Statement sql = dbCon.createStatement();
+                ResultSet result = null;
+                String sqlStatement = "SELECT * FROM patient_medical NATURAL JOIN patient_contact WHERE patient_id ="
+                        + id.asInt();
 
-        // TODO actually connect to DB and return results
+                System.out.println(sqlStatement);
+                result = sql.executeQuery(sqlStatement);
 
-        Patient p = new Patient();
-        p.setPatientId(Id.<Patient> of(1234));
-        p.getContact().setName("Homer Simpson");
-        p.getContact().setAddress("742 Evergreen Terrace");
-        p.getContact().setPhoneNum("555-1234");
+                result.next();
 
-        p.getMedical().setCurrentHealth("Obese");
-        p.getMedical().setDefaultDoctor(Id.<Doctor> of(1234));
-        p.getMedical().setHealthCardNumber("Ontario-12345");
-        p.getMedical().setSin(123456789);
-        p.getMedical().setSex(Sex.FEMALE);
-        p.getMedical().setNumVisits(100);
-        p.getMedical()
-                .setConsultants(
+                Patient p = new Patient();
+                p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
+                p.getContact().setName(result.getString("name"));
+                p.getContact().setAddress(result.getString("address"));
+                p.getContact().setPhoneNum(result.getString("phone_num"));
+
+                p.getMedical().setCurrentHealth(result.getString("current_health"));
+                p.getMedical().setDefaultDoctor(Id.<Doctor> of(result.getInt("default_doctor_id")));
+                p.getMedical().setHealthCardNumber(result.getString("health_card_num"));
+                p.getMedical().setSin(result.getInt("sin"));
+                if (result.getString("sex").equals("male")) {
+                    p.getMedical().setSex(Sex.MALE);
+                } else {
+                    p.getMedical().setSex(Sex.FEMALE);
+                }
+
+                p.getMedical().setNumVisits(result.getInt("num_visits"));
+                p.getMedical().setConsultants(
                         ImmutableList.of(Id.<Doctor> of(1), Id.<Doctor> of(2), Id.<Doctor> of(3),
                                 Id.<Doctor> of(4), Id.<Doctor> of(5), Id.<Doctor> of(6),
                                 Id.<Doctor> of(7)));
-        return p;
+                return p;
+
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        // TODO actually connect to DB and return results
+        return null;
+
     }
 
     @Override

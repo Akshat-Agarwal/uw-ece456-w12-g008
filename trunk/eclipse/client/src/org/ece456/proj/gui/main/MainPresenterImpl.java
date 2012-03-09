@@ -26,7 +26,7 @@ public class MainPresenterImpl implements MainPresenter {
 
         switch (role) {
             case PATIENT:
-                showPatientView(connection);
+                showPatientView(connection, id);
                 break;
             default:
                 return "That view is not supported yet";
@@ -35,11 +35,11 @@ public class MainPresenterImpl implements MainPresenter {
         return "";
     }
 
-    private void showPatientView(Connection connection) {
+    private void showPatientView(Connection connection, int id) {
         PatientPresenter presenter = new PatientPresenterImpl(connection);
         try {
             Patient p = connection.getServer().getPatientById(connection.getSession(),
-                    Id.<Patient> of(123));
+                    Id.<Patient> of(id));
             List<Appointment> apps = connection.getServer().getAppointmentsForPatient(
                     connection.getSession(), Id.<Patient> of(123));
             presenter.show(p, apps);
