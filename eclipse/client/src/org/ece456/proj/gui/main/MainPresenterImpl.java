@@ -19,7 +19,7 @@ public class MainPresenterImpl implements MainPresenter {
 
         Connection connection = client.connect(host, role, id, String.valueOf(password));
 
-        if (connection == null) {
+        if (connection == null || !connection.getSession().isValid()) {
             // failed to connect
             return "Failed to connect to server; check host, username and password";
         }
