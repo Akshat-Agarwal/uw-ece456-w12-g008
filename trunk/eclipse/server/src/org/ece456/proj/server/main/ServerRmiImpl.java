@@ -85,9 +85,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
             return SessionManager.INSTANCE.getNewSession(role, id);
         } else {
-            return null;
+            return Session.INVALID_SESSION;
         }
-
     }
 
     @Override
