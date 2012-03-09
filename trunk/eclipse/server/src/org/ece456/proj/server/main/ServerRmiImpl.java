@@ -2,6 +2,10 @@ package org.ece456.proj.server.main;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 
@@ -21,19 +25,69 @@ import com.google.common.collect.Lists;
 public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
     private static final long serialVersionUID = 1L;
+    private final Connection dbCon;
 
-    protected ServerRmiImpl() throws RemoteException {
+    protected ServerRmiImpl(Connection dbCon) throws RemoteException {
         super();
+        this.dbCon = dbCon;
     }
 
     @Override
     public Session login(UserRole role, Id<?> id, String password) throws RemoteException {
 
         // TODO: check if (role, username, passwordHash) tuple is valid in the DB!
+        boolean valid = false;
 
-        System.out.printf("Login attempt from %s %d %s\n", role.toString(), id.asInt(), password);
+        try {
+            Statement sql = dbCon.createStatement();
+            ResultSet result = null;
 
-        return SessionManager.INSTANCE.getNewSession(role, id);
+            switch (role) {
+                case PATIENT:
+                    result = sql
+                            .executeQuery("SELECT patient_id as id, password FROM patient_medical NATURAL JOIN patient_contact");
+                    break;
+                case DOCTOR:
+                    result = sql.executeQuery("SELECT doctor_id as id, password FROM doctor");
+                    break;
+                case STAFF:
+                    result = sql.executeQuery("SELECT staff_id as id, password FROM staff");
+                    break;
+                case LEGAL:
+                    result = sql.executeQuery("SELECT laywer_id as id, password FROM legal");
+                    break;
+                case ADMIN:
+                    result = sql.executeQuery("SELECT admin_id as id, password FROM admin");
+                    break;
+                case ACCOUNTANT:
+                    result = sql
+                            .executeQuery("SELECT accountant_id as id, password FROM accountant");
+                    break;
+            }
+
+            while (result.next()) {
+                int resultId = result.getInt("id");
+                String resultPassword = result.getString("password");
+
+                if (resultId == id.asInt() && resultPassword.equals(password)) {
+                    valid = true;
+                    break;
+                }
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (valid) {
+            System.out.printf("Login attempt from %s %d %s\n", role.toString(), id.asInt(),
+                    password);
+
+            return SessionManager.INSTANCE.getNewSession(role, id);
+        } else {
+            return null;
+        }
+
     }
 
     @Override
