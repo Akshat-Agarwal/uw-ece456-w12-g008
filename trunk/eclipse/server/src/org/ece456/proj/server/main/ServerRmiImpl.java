@@ -35,7 +35,6 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     @Override
     public Session login(UserRole role, Id<?> id, String password) throws RemoteException {
 
-        // TODO: check if (role, username, passwordHash) tuple is valid in the DB!
         boolean valid = false;
 
         try {
@@ -75,7 +74,6 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 }
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -97,50 +95,53 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         // A patient can only view his own records
         if (session.getRole() == UserRole.PATIENT) {
-
-            try {
-                Statement sql = dbCon.createStatement();
-                ResultSet result = null;
-                String sqlStatement = "SELECT * FROM patient_medical NATURAL JOIN patient_contact WHERE patient_id ="
-                        + id.asInt();
-
-                System.out.println(sqlStatement);
-                result = sql.executeQuery(sqlStatement);
-
-                result.next();
-
-                Patient p = new Patient();
-                p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
-                p.getContact().setName(result.getString("name"));
-                p.getContact().setAddress(result.getString("address"));
-                p.getContact().setPhoneNum(result.getString("phone_num"));
-
-                p.getMedical().setCurrentHealth(result.getString("current_health"));
-                p.getMedical().setDefaultDoctor(Id.<Doctor> of(result.getInt("default_doctor_id")));
-                p.getMedical().setHealthCardNumber(result.getString("health_card_num"));
-                p.getMedical().setSin(result.getInt("sin"));
-                if (result.getString("sex").equals("male")) {
-                    p.getMedical().setSex(Sex.MALE);
-                } else {
-                    p.getMedical().setSex(Sex.FEMALE);
-                }
-
-                p.getMedical().setNumVisits(result.getInt("num_visits"));
-                p.getMedical().setConsultants(
-                        ImmutableList.of(Id.<Doctor> of(1), Id.<Doctor> of(2), Id.<Doctor> of(3),
-                                Id.<Doctor> of(4), Id.<Doctor> of(5), Id.<Doctor> of(6),
-                                Id.<Doctor> of(7)));
-                return p;
-
-            } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            if (!id.equals(session.getId())) {
+                // Trying to access someone else's patient records - deny access
+                return null;
             }
         }
+        // Insert other constraints here
 
-        // TODO actually connect to DB and return results
+        try {
+            Statement sql = dbCon.createStatement();
+            ResultSet result = null;
+            String sqlStatement = "SELECT * FROM patient_medical NATURAL JOIN patient_contact"
+                    + " WHERE patient_id =" + id.asInt();
+
+            System.out.println(sqlStatement);
+            result = sql.executeQuery(sqlStatement);
+
+            result.next();
+
+            Patient p = new Patient();
+            p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
+            p.getContact().setName(result.getString("name"));
+            p.getContact().setAddress(result.getString("address"));
+            p.getContact().setPhoneNum(result.getString("phone_num"));
+
+            p.getMedical().setCurrentHealth(result.getString("current_health"));
+            p.getMedical().setDefaultDoctor(Id.<Doctor> of(result.getInt("default_doctor_id")));
+            p.getMedical().setHealthCardNumber(result.getString("health_card_num"));
+            p.getMedical().setSin(result.getInt("sin"));
+            if (result.getString("sex").equals("male")) {
+                p.getMedical().setSex(Sex.MALE);
+            } else {
+                p.getMedical().setSex(Sex.FEMALE);
+            }
+
+            p.getMedical().setNumVisits(result.getInt("num_visits"));
+            p.getMedical().setConsultants(
+                    ImmutableList.of(Id.<Doctor> of(1), Id.<Doctor> of(2), Id.<Doctor> of(3),
+                            Id.<Doctor> of(4), Id.<Doctor> of(5), Id.<Doctor> of(6),
+                            Id.<Doctor> of(7)));
+            return p;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // failed
         return null;
-
     }
 
     @Override
