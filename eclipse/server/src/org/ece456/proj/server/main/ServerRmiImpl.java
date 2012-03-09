@@ -41,28 +41,33 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             Statement sql = dbCon.createStatement();
             ResultSet result = null;
 
+            String query = "SELECT ";
+
             switch (role) {
                 case PATIENT:
-                    result = sql
-                            .executeQuery("SELECT patient_id as id, password FROM patient_medical NATURAL JOIN patient_contact");
+                    query += "patient_id as id, password FROM patient_medical NATURAL JOIN patient_contact WHERE patient_id =";
                     break;
                 case DOCTOR:
-                    result = sql.executeQuery("SELECT doctor_id as id, password FROM doctor");
+                    query += "doctor_id as id, password FROM doctor WHERE doctor_id =";
                     break;
                 case STAFF:
-                    result = sql.executeQuery("SELECT staff_id as id, password FROM staff");
+                    query += "staff_id as id, password FROM staff WHERE staff_id =";
                     break;
                 case LEGAL:
-                    result = sql.executeQuery("SELECT laywer_id as id, password FROM legal");
+                    query += "lawyer_id as id, password FROM legal WHERE lawyer_id =";
                     break;
                 case ADMIN:
-                    result = sql.executeQuery("SELECT admin_id as id, password FROM admin");
+                    query += "admin_id as id, password FROM admin WHERE admin_id =";
                     break;
                 case ACCOUNTANT:
-                    result = sql
-                            .executeQuery("SELECT accountant_id as id, password FROM accountant");
+                    query += "accountant_id as id, password FROM accountant WHERE accountant_id =";
                     break;
+                default:
+                    throw new EnumConstantNotPresentException(UserRole.class, String.valueOf(role));
             }
+            query += " " + id.asInt();
+
+            result = sql.executeQuery(query);
 
             while (result.next()) {
                 int resultId = result.getInt("id");
@@ -106,7 +111,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             Statement sql = dbCon.createStatement();
             ResultSet result = null;
             String sqlStatement = "SELECT * FROM patient_medical NATURAL JOIN patient_contact"
-                    + " WHERE patient_id =" + id.asInt();
+                    + " WHERE patient_id = " + id.asInt();
 
             System.out.println(sqlStatement);
             result = sql.executeQuery(sqlStatement);
