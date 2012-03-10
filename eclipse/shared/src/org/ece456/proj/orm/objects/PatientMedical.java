@@ -1,8 +1,9 @@
 package org.ece456.proj.orm.objects;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 public class PatientMedical implements Serializable {
 
@@ -14,10 +15,10 @@ public class PatientMedical implements Serializable {
     private Sex sex;
     private Doctor defaultDoctor;
     private String currentHealth;
-    private final List<Id<Doctor>> consultants;
+    private final List<Doctor> consultants;
 
     public PatientMedical() {
-        consultants = new ArrayList<Id<Doctor>>();
+        consultants = Lists.newArrayList();
 
         clear();
     }
@@ -82,11 +83,11 @@ public class PatientMedical implements Serializable {
         this.currentHealth = currentHealth;
     }
 
-    public List<Id<Doctor>> getConsultants() {
+    public List<Doctor> getConsultants() {
         return consultants;
     }
 
-    public void setConsultants(List<Id<Doctor>> consultants) {
+    public void setConsultants(List<Doctor> consultants) {
         this.consultants.clear();
         this.consultants.addAll(consultants);
     }

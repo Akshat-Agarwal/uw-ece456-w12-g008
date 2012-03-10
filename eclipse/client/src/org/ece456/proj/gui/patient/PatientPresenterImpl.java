@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import org.ece456.proj.orm.objects.Appointment;
+import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
@@ -43,6 +44,12 @@ public class PatientPresenterImpl implements PatientPresenter {
             // Query for appointments for the patient
             List<Appointment> apps = connection.getServer().getAppointmentsForPatient(
                     connection.getSession(), p.getPatientId());
+
+            // Query for consultants for the patient
+            List<Doctor> consultants = connection.getServer().getConsultantsForPatient(
+                    connection.getSession(), p.getPatientId());
+
+            p.getMedical().setConsultants(consultants);
 
             view.fillPatientData(p, apps);
         } catch (RemoteException e) {

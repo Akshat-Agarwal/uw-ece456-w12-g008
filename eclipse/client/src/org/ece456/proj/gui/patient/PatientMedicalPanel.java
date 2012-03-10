@@ -1,6 +1,7 @@
 package org.ece456.proj.gui.patient;
 
 import java.awt.SystemColor;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -12,9 +13,12 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
+import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.PatientMedical;
 import org.ece456.proj.orm.objects.Sex;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
@@ -113,7 +117,16 @@ public class PatientMedicalPanel extends JPanel {
         combo_sex.setSelectedItem(patient.getSex());
         text_doctor.setText(patient.getDefaultDoctor().getName());
         text_currenthealth.setText(patient.getCurrentHealth());
-        list_consultants.setListData(patient.getConsultants().toArray());
+
+        List<String> doctorNames = Lists.transform(patient.getConsultants(),
+                new Function<Doctor, String>() {
+                    @Override
+                    public String apply(Doctor input) {
+                        return input.getName();
+                    }
+                });
+
+        list_consultants.setListData(doctorNames.toArray());
     }
 
 }
