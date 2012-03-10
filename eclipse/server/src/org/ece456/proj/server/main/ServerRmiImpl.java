@@ -3,6 +3,7 @@ package org.ece456.proj.server.main;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,6 +15,7 @@ import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
+import org.ece456.proj.orm.objects.PatientContact;
 import org.ece456.proj.orm.objects.Sex;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.server.ServerRmi;
@@ -40,36 +42,37 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         boolean valid = false;
 
         try {
-            Statement sql = dbCon.createStatement();
             ResultSet result = null;
 
             String query = "SELECT ";
 
             switch (role) {
                 case PATIENT:
-                    query += "patient_id as id, password FROM patient_medical NATURAL JOIN patient_contact WHERE patient_id =";
+                    query += "patient_id as id, password FROM patient_medical NATURAL JOIN patient_contact WHERE patient_id = ?;";
                     break;
                 case DOCTOR:
-                    query += "doctor_id as id, password FROM doctor WHERE doctor_id =";
+                    query += "doctor_id as id, password FROM doctor WHERE doctor_id = ?;";
                     break;
                 case STAFF:
-                    query += "staff_id as id, password FROM staff WHERE staff_id =";
+                    query += "staff_id as id, password FROM staff WHERE staff_id = ?;";
                     break;
                 case LEGAL:
-                    query += "lawyer_id as id, password FROM legal WHERE lawyer_id =";
+                    query += "lawyer_id as id, password FROM legal WHERE lawyer_id = ?;";
                     break;
                 case ADMIN:
-                    query += "admin_id as id, password FROM admin WHERE admin_id =";
+                    query += "admin_id as id, password FROM admin WHERE admin_id = ?;";
                     break;
                 case ACCOUNTANT:
-                    query += "accountant_id as id, password FROM accountant WHERE accountant_id =";
+                    query += "accountant_id as id, password FROM accountant WHERE accountant_id = ?;";
                     break;
                 default:
                     throw new EnumConstantNotPresentException(UserRole.class, String.valueOf(role));
             }
-            query += " " + id.asInt();
 
-            result = sql.executeQuery(query);
+            PreparedStatement sql = dbCon.prepareStatement(query);
+            sql.setInt(1, id.asInt());
+
+            result = sql.executeQuery();
 
             while (result.next()) {
                 int resultId = result.getInt("id");
@@ -110,18 +113,18 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         // TODO Insert other constraints here
 
         try {
-            Statement sql = dbCon.createStatement();
-            ResultSet result = null;
-            String sqlStatement = "SELECT patient_id, patient_contact.name, "
+            String query = "SELECT patient_id, patient_contact.name, "
                     + " patient_contact.address, patient_contact.phone_num,"
                     + " patient_medical.current_health, patient_medical.num_visits,"
                     + " patient_medical.health_card_num, patient_medical.sin, patient_medical.sex,"
                     + " doctor.name" + " FROM patient_medical" + " NATURAL JOIN patient_contact"
                     + " INNER JOIN doctor ON patient_medical.default_doctor_id = doctor.doctor_id"
-                    + " WHERE patient_id = " + id.asInt();
+                    + " WHERE patient_id = ?;";
 
-            System.out.println(sqlStatement);
-            result = sql.executeQuery(sqlStatement);
+            PreparedStatement sql = dbCon.prepareStatement(query);
+            sql.setInt(1, id.asInt());
+
+            ResultSet result = sql.executeQuery();
 
             result.next();
 
@@ -232,5 +235,36 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         return Collections.emptyList();
+    }
+
+    @Override
+    public Patient updatePatientContact(Session session, Id<Patient> id, PatientContact c) {
+        if (!isSessionValid(session)) {
+            return null;
+        }
+
+        if (session.getRole() == UserRole.PATIENT) {
+            if (!session.getId().equals(id)) {
+                // Patient can only modify their own contact data
+                return null;
+            }
+        }
+
+        try {
+            PreparedStatement sql = dbCon.prepareStatement("UPDATE patient_contact"
+                    + " SET address = ?, phone_num = ?" + " WHERE patient_id = ?");
+            sql.setString(1, c.getAddress());
+            sql.setString(2, c.getPhoneNum());
+            sql.setInt(3, id.asInt());
+
+            sql.execute();
+
+            System.out.println(sql);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }
