@@ -68,6 +68,21 @@ public class PatientContactPanel extends JPanel {
         text_name.setText(contact.getName());
         text_address.setText(contact.getAddress());
         text_phone.setText(contact.getPhoneNum());
+    }
 
+    /**
+     * A patient can modify his own address and phone.
+     */
+    public void setEditableByPatient(boolean editable) {
+        text_address.setEditable(editable);
+        text_phone.setEditable(editable);
+    }
+
+    public PatientContact getData() {
+        PatientContact c = new PatientContact();
+        c.setName(text_name.getName());
+        c.setAddress(text_address.getText());
+        c.setPhoneNum(text_phone.getText());
+        return c;
     }
 }
