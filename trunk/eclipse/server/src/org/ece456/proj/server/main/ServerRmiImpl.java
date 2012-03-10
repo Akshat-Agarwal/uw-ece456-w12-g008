@@ -293,4 +293,37 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         return null;
     }
+
+    @Override
+    public List<Doctor> getConsultantsForPatient(Session session, Id<Patient> id)
+            throws RemoteException {
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+
+        try {
+            String query = "SELECT name FROM patient_consultants NATURAL JOIN doctor"
+                    + " WHERE patient_id = ?";
+
+            PreparedStatement sql = dbCon.prepareStatement(query);
+            sql.setInt(1, id.asInt());
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+
+            List<Doctor> consultants = Lists.newArrayList();
+            while (result.next()) {
+                Doctor d = new Doctor();
+                d.setName(result.getString("doctor.name"));
+                consultants.add(d);
+            }
+
+            return consultants;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
+    }
 }
