@@ -1,11 +1,7 @@
 package org.ece456.proj.gui.main;
 
-import java.rmi.RemoteException;
-import java.util.List;
-
 import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
-import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.UserRole;
@@ -37,16 +33,6 @@ public class MainPresenterImpl implements MainPresenter {
 
     private void showPatientView(Connection connection, int id) {
         PatientPresenter presenter = new PatientPresenterImpl(connection);
-        try {
-            Patient p = connection.getServer().getPatientById(connection.getSession(),
-                    Id.<Patient> of(id));
-            List<Appointment> apps = connection.getServer().getAppointmentsForPatient(
-                    connection.getSession(), Id.<Patient> of(123));
-            presenter.show(p, apps);
-
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
+        presenter.show(Id.<Patient> of(id));
     }
 }
