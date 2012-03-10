@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.ece456.proj.server.ServerRmi;
 import org.ece456.proj.server.authentication.SessionManager;
 import org.ece456.proj.shared.Session;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -105,12 +107,17 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 return null;
             }
         }
-        // Insert other constraints here
+        // TODO Insert other constraints here
 
         try {
             Statement sql = dbCon.createStatement();
             ResultSet result = null;
-            String sqlStatement = "SELECT * FROM patient_medical NATURAL JOIN patient_contact"
+            String sqlStatement = "SELECT patient_id, patient_contact.name, "
+                    + " patient_contact.address, patient_contact.phone_num,"
+                    + " patient_medical.current_health, patient_medical.num_visits,"
+                    + " patient_medical.health_card_num, patient_medical.sin, patient_medical.sex,"
+                    + " doctor.name" + " FROM patient_medical" + " NATURAL JOIN patient_contact"
+                    + " INNER JOIN doctor ON patient_medical.default_doctor_id = doctor.doctor_id"
                     + " WHERE patient_id = " + id.asInt();
 
             System.out.println(sqlStatement);
@@ -120,12 +127,17 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
             Patient p = new Patient();
             p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
-            p.getContact().setName(result.getString("name"));
+            p.getContact().setName(result.getString("patient_contact.name"));
             p.getContact().setAddress(result.getString("address"));
             p.getContact().setPhoneNum(result.getString("phone_num"));
 
             p.getMedical().setCurrentHealth(result.getString("current_health"));
-            p.getMedical().setDefaultDoctor(Id.<Doctor> of(result.getInt("default_doctor_id")));
+
+            // Default doctor
+            Doctor doctor = new Doctor();
+            doctor.setName(result.getString("doctor.name"));
+            p.getMedical().setDefaultDoctor(doctor);
+
             p.getMedical().setHealthCardNumber(result.getString("health_card_num"));
             p.getMedical().setSin(result.getInt("sin"));
             if (result.getString("sex").equals("male")) {
@@ -135,10 +147,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             }
 
             p.getMedical().setNumVisits(result.getInt("num_visits"));
-            p.getMedical().setConsultants(
-                    ImmutableList.of(Id.<Doctor> of(1), Id.<Doctor> of(2), Id.<Doctor> of(3),
-                            Id.<Doctor> of(4), Id.<Doctor> of(5), Id.<Doctor> of(6),
-                            Id.<Doctor> of(7)));
+
+            //
+            // TODO Consultants!!
+            //
+
             return p;
 
         } catch (SQLException e) {
@@ -172,5 +185,52 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
     private boolean isSessionValid(Session session) {
         return SessionManager.INSTANCE.isValidSession(session);
+    }
+
+    @Override
+    public Doctor getDoctorById(Session session, Id<Doctor> id) throws RemoteException {
+        List<Doctor> doctors = getDoctorsById(session, ImmutableList.of(id));
+
+        if (doctors.size() == 1) {
+            return doctors.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public List<Doctor> getDoctorsById(Session session, Iterable<Id<Doctor>> ids)
+            throws RemoteException {
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+
+        try {
+            Statement sql = dbCon.createStatement();
+            ResultSet result = null;
+
+            String sqlStatement = "SELECT * FROM doctor WHERE doctor_id in (";
+            sqlStatement += Joiner.on(", ").join(ids.iterator());
+            sqlStatement += ");";
+
+            System.out.println(sqlStatement);
+            result = sql.executeQuery(sqlStatement);
+
+            List<Doctor> doctors = Lists.newArrayList();
+            while (result.next()) {
+                Doctor d = new Doctor();
+                d.setDoctor_id(Id.<Doctor> of(result.getInt("doctor_id")));
+                d.setName(result.getString("name"));
+
+                doctors.add(d);
+            }
+
+            return doctors;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
     }
 }

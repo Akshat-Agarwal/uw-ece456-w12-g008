@@ -42,6 +42,7 @@ public class Id<T> implements Serializable {
 
     @Override
     public String toString() {
+        // This is used for SQL join statements; must return id.
         return String.valueOf(id);
     }
 }
