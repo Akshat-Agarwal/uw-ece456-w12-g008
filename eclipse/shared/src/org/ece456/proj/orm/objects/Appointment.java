@@ -7,22 +7,22 @@ public class Appointment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Id<Patient> patient_id;
+    private Patient patient;
     private Date start_time;
     private Date last_modified;
-    private Id<Doctor> doctor_id;
+    private Doctor doctor;
     private int length;
     private String procedures;
     private String prescriptions;
     private String diagnoses;
     private String comment;
 
-    public Id<Patient> getPatient_id() {
-        return patient_id;
+    public Patient getPatient() {
+        return patient;
     }
 
-    public void setPatient_id(Id<Patient> patient_id) {
-        this.patient_id = patient_id;
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 
     public Date getStart_time() {
@@ -41,12 +41,12 @@ public class Appointment implements Serializable {
         this.last_modified = last_modified;
     }
 
-    public Id<Doctor> getDoctor_id() {
-        return doctor_id;
+    public Doctor getDoctor() {
+        return doctor;
     }
 
-    public void setDoctor_id(Id<Doctor> doctor_id) {
-        this.doctor_id = doctor_id;
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
     }
 
     public int getLength() {

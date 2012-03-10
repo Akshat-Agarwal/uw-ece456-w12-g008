@@ -19,7 +19,7 @@ public class AppointmentTable extends SimpleTable<Appointment> {
 
     @Override
     protected SimpleTableModel<Appointment> initModel() {
-        return SimpleTableModel.create(ImmutableList.of(START_TIME, DURATION, DOCTOR_ID, DIAGNOSES,
+        return SimpleTableModel.create(ImmutableList.of(START_TIME, DURATION, DOCTOR, DIAGNOSES,
                 PRESCRIPTIONS, PROCEDURES));
     }
 
@@ -40,11 +40,11 @@ public class AppointmentTable extends SimpleTable<Appointment> {
                 }
             }, 60);
 
-    public static ColumnModel<Appointment> DOCTOR_ID = ColumnFactory.INSTANCE.create("Doctor",
+    public static ColumnModel<Appointment> DOCTOR = ColumnFactory.INSTANCE.create("Doctor",
             new CellRenderer<Appointment>() {
                 @Override
                 public String render(Appointment obj) {
-                    return obj.getDoctor_id().toString();
+                    return obj.getDoctor().getName();
                 }
             }, 150);
 

@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.ece456.proj.orm.objects.Appointment;
@@ -170,22 +169,48 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     @Override
     public List<Appointment> getAppointmentsForPatient(Session session, Id<Patient> id)
             throws RemoteException {
-        List<Appointment> results = Lists.newArrayList();
-
-        for (int i = 0; i < 100; i++) {
-            Appointment a = new Appointment();
-            a.setComment("PATIENT SHOULD NOT SEE COMMENT " + i);
-            a.setDiagnoses("Diag" + i);
-            a.setDoctor_id(Id.<Doctor> of(i));
-            a.setLast_modified(new Date());
-            a.setLength(i % 30 + 20);
-            a.setPatient_id(Id.<Patient> of(i + 1000));
-            a.setPrescriptions("presc " + i);
-            a.setProcedures("procs" + i);
-            a.setStart_time(new Date());
-            results.add(a);
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
         }
-        return results;
+
+        try {
+            String query = "SELECT * FROM appointment NATURAL JOIN doctor WHERE patient_id = ? "
+                    + " ORDER BY start_time DESC;";
+
+            PreparedStatement sql = dbCon.prepareStatement(query);
+            sql.setInt(1, id.asInt());
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+
+            List<Appointment> apps = Lists.newArrayList();
+            while (result.next()) {
+                Appointment a = new Appointment();
+
+                a.setStart_time(result.getDate("start_time"));
+                a.setLast_modified(result.getDate("last_modified"));
+
+                Doctor d = new Doctor();
+                d.setName(result.getString("doctor.name"));
+                a.setDoctor(d);
+
+                a.setLength(result.getInt("length"));
+                a.setProcedures(result.getString("procedures"));
+                a.setPrescriptions(result.getString("prescriptions"));
+                a.setDiagnoses(result.getString("diagnoses"));
+
+                // patients cannot view appointment.comment !
+
+                apps.add(a);
+            }
+
+            return apps;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
     }
 
     private boolean isSessionValid(Session session) {
@@ -259,9 +284,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             sql.setString(2, c.getPhoneNum());
             sql.setInt(3, id.asInt());
 
-            sql.execute();
-
             System.out.println(sql);
+            sql.execute();
 
         } catch (SQLException e) {
             e.printStackTrace();

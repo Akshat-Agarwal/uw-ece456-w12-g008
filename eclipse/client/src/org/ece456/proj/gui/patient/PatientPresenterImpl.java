@@ -36,9 +36,14 @@ public class PatientPresenterImpl implements PatientPresenter {
         }
 
         try {
+
+            // Query for patient contact+medical data
             Patient p = connection.getServer().getPatientById(connection.getSession(), id);
+
+            // Query for appointments for the patient
             List<Appointment> apps = connection.getServer().getAppointmentsForPatient(
-                    connection.getSession(), Id.<Patient> of(123));
+                    connection.getSession(), p.getPatientId());
+
             view.fillPatientData(p, apps);
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -60,7 +65,6 @@ public class PatientPresenterImpl implements PatientPresenter {
             connection.getServer()
                     .updatePatientContact(connection.getSession(), id, patientContact);
         } catch (RemoteException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
