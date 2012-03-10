@@ -14,4 +14,6 @@ public interface PatientPresenter {
 
     void refresh();
 
+    void showPasswordChange();
+
 }

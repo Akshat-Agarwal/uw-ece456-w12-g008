@@ -3,11 +3,14 @@ package org.ece456.proj.gui.patient;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import org.ece456.proj.gui.account.PasswordChangePresenter;
+import org.ece456.proj.gui.account.PasswordChangePresenterImpl;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
+import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Connection;
 
 /**
@@ -22,7 +25,7 @@ public class PatientPresenterImpl implements PatientPresenter {
 
     private final Connection connection;
     private PatientView view;
-    private Id<Patient> currentPatientId;
+    private Patient patient;
 
     public PatientPresenterImpl(Connection connection) {
         this.connection = connection;
@@ -30,8 +33,6 @@ public class PatientPresenterImpl implements PatientPresenter {
 
     @Override
     public void show(Id<Patient> id) {
-        currentPatientId = id;
-
         if (view == null) {
             view = new PatientView(this);
         }
@@ -40,6 +41,8 @@ public class PatientPresenterImpl implements PatientPresenter {
 
             // Query for patient contact+medical data
             Patient p = connection.getServer().getPatientById(connection.getSession(), id);
+
+            this.patient = p;
 
             // Query for appointments for the patient
             List<Appointment> apps = connection.getServer().getAppointmentsForPatient(
@@ -67,10 +70,8 @@ public class PatientPresenterImpl implements PatientPresenter {
     @Override
     public void savePersonalData(PatientContact patientContact) {
         try {
-            @SuppressWarnings("unchecked")
-            Id<Patient> id = (Id<Patient>) connection.getSession().getId();
-            connection.getServer()
-                    .updatePatientContact(connection.getSession(), id, patientContact);
+            connection.getServer().updatePatientContact(connection.getSession(),
+                    patient.getPatientId(), patientContact);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -78,6 +79,12 @@ public class PatientPresenterImpl implements PatientPresenter {
 
     @Override
     public void refresh() {
-        show(currentPatientId);
+        show(patient.getPatientId());
+    }
+
+    @Override
+    public void showPasswordChange() {
+        PasswordChangePresenter p = new PasswordChangePresenterImpl(connection);
+        p.show(UserRole.PATIENT, patient.getPatientId(), patient.getContact().getPassword());
     }
 }
