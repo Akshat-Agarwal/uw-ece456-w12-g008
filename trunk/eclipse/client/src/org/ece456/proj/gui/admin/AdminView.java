@@ -26,6 +26,7 @@ public class AdminView extends JFrame implements ActionListener {
     private final AdminPresenter presenter;
     private final JTextField text_name;
     private final JTextField text_id;
+    private final JMenuItem mntmPatient;
 
     public AdminView(AdminPresenter presenter) {
         this.presenter = presenter;
@@ -48,7 +49,8 @@ public class AdminView extends JFrame implements ActionListener {
         mnSearch.setMnemonic('s');
         menuBar.add(mnSearch);
 
-        JMenuItem mntmPatient = new JMenuItem("Patient...");
+        mntmPatient = new JMenuItem("Patient...");
+        mntmPatient.addActionListener(this);
         mnSearch.add(mntmPatient);
 
         JPanel panel = new JPanel();
@@ -84,6 +86,8 @@ public class AdminView extends JFrame implements ActionListener {
         Object s = e.getSource();
         if (s == mntmChangePassword) {
             presenter.showPasswordChange();
+        } else if (s == mntmPatient) {
+            presenter.showPatientSearch();
         }
     }
 

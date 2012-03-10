@@ -9,4 +9,6 @@ public interface AdminPresenter {
 
     void show(Id<Admin> id);
 
+    void showPatientSearch();
+
 }
