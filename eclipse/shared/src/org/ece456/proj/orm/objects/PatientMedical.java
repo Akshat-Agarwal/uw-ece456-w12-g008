@@ -12,7 +12,7 @@ public class PatientMedical implements Serializable {
     private String healthCardNumber;
     private int numVisits;
     private Sex sex;
-    private Id<Doctor> defaultDoctor;
+    private Doctor defaultDoctor;
     private String currentHealth;
     private final List<Id<Doctor>> consultants;
 
@@ -27,7 +27,7 @@ public class PatientMedical implements Serializable {
         healthCardNumber = "";
         numVisits = 0;
         sex = Sex.MALE;
-        defaultDoctor = Id.invalidId();
+        defaultDoctor = null;
         currentHealth = "";
         consultants.clear();
     }
@@ -66,11 +66,11 @@ public class PatientMedical implements Serializable {
         this.sex = sex;
     }
 
-    public Id<Doctor> getDefaultDoctor() {
+    public Doctor getDefaultDoctor() {
         return defaultDoctor;
     }
 
-    public void setDefaultDoctor(Id<Doctor> defaultDoctor) {
+    public void setDefaultDoctor(Doctor defaultDoctor) {
         this.defaultDoctor = defaultDoctor;
     }
 

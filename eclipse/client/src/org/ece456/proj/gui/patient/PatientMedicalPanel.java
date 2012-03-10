@@ -111,7 +111,7 @@ public class PatientMedicalPanel extends JPanel {
         text_healthcard.setText(patient.getHealthCardNumber());
         text_numvisits.setText(String.valueOf(patient.getNumVisits()));
         combo_sex.setSelectedItem(patient.getSex());
-        text_doctor.setText(String.valueOf(patient.getDefaultDoctor().asInt()));
+        text_doctor.setText(patient.getDefaultDoctor().getName());
         text_currenthealth.setText(patient.getCurrentHealth());
         list_consultants.setListData(patient.getConsultants().toArray());
     }
