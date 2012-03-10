@@ -59,12 +59,12 @@ public class MainView {
         frame.getContentPane().add(center_panel, BorderLayout.CENTER);
         center_panel.setLayout(new FormLayout(new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC,
                 FormFactory.DEFAULT_COLSPEC, FormFactory.LABEL_COMPONENT_GAP_COLSPEC,
-                ColumnSpec.decode("4dlu:grow"), FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
-                FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-                FormFactory.RELATED_GAP_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
-                FormFactory.DEFAULT_ROWSPEC, }));
+                ColumnSpec.decode("max(125dlu;min):grow"), FormFactory.RELATED_GAP_COLSPEC, },
+                new RowSpec[] { FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+                        FormFactory.RELATED_GAP_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
+                        FormFactory.DEFAULT_ROWSPEC, }));
 
         JLabel lblHost = new JLabel("Host");
         center_panel.add(lblHost, "2, 2, right, default");
@@ -121,6 +121,8 @@ public class MainView {
             }
         });
         bottom_panel.add(btnLogin);
+
+        frame.pack();
     }
 
     private void login() {

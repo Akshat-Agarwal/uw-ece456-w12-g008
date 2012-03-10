@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
@@ -127,7 +128,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             result.next();
 
             Patient p = new Patient();
-            p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
+            p.setPatientId(id);
             p.getContact().setName(result.getString("patient_contact.name"));
             p.getContact().setAddress(result.getString("address"));
             p.getContact().setPhoneNum(result.getString("phone_num"));
@@ -149,10 +150,6 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             }
 
             p.getMedical().setNumVisits(result.getInt("num_visits"));
-
-            //
-            // TODO Consultants!!
-            //
 
             return p;
 
@@ -380,5 +377,41 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Admin getAdminById(Session session, Id<Admin> id) throws RemoteException {
+        if (!isSessionValid(session)) {
+            return null;
+        }
+
+        // Only admins are allowed to do this operation
+        if (session.getRole() != UserRole.ADMIN) {
+            return null;
+        }
+
+        try {
+            String query = "SELECT * FROM admin WHERE admin_id = ?;";
+
+            PreparedStatement sql = dbCon.prepareStatement(query);
+            sql.setInt(1, id.asInt());
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+
+            result.next();
+
+            Admin a = new Admin();
+            a.setAdmin_id(id);
+            a.setName(result.getString("name"));
+            a.setPassword(result.getString("password"));
+            return a;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // failed
+        return null;
     }
 }

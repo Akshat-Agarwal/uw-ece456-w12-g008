@@ -4,6 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
@@ -32,4 +33,6 @@ public interface ServerRmi extends Remote {
 
     void updatePassword(Session session, UserRole role, Id<?> id, String oldPassword,
             String newPassword) throws RemoteException;
+
+    Admin getAdminById(Session session, Id<Admin> id) throws RemoteException;
 }
