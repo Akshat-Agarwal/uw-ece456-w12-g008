@@ -72,6 +72,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             PreparedStatement sql = dbCon.prepareStatement(query);
             sql.setInt(1, id.asInt());
 
+            System.out.println(sql);
             result = sql.executeQuery();
 
             while (result.next()) {
@@ -124,6 +125,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             PreparedStatement sql = dbCon.prepareStatement(query);
             sql.setInt(1, id.asInt());
 
+            System.out.println(sql);
             ResultSet result = sql.executeQuery();
 
             result.next();

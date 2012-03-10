@@ -1,8 +1,10 @@
 package org.ece456.proj.gui.patient;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 import org.ece456.proj.orm.objects.Appointment;
+import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
 import org.ece456.proj.shared.Connection;
@@ -17,20 +19,31 @@ import org.ece456.proj.shared.Connection;
  */
 public class PatientPresenterImpl implements PatientPresenter {
 
-    @SuppressWarnings("unused")
     private final Connection connection;
     private PatientView view;
+    private Id<Patient> currentPatientId;
 
     public PatientPresenterImpl(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public void show(Patient patient, List<Appointment> appointments) {
+    public void show(Id<Patient> id) {
+        currentPatientId = id;
+
         if (view == null) {
             view = new PatientView(this);
         }
-        view.fillPatientData(patient, appointments);
+
+        try {
+            Patient p = connection.getServer().getPatientById(connection.getSession(), id);
+            List<Appointment> apps = connection.getServer().getAppointmentsForPatient(
+                    connection.getSession(), Id.<Patient> of(123));
+            view.fillPatientData(p, apps);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
         view.setVisible(true);
     }
 
@@ -41,5 +54,19 @@ public class PatientPresenterImpl implements PatientPresenter {
 
     @Override
     public void savePersonalData(PatientContact patientContact) {
+        try {
+            @SuppressWarnings("unchecked")
+            Id<Patient> id = (Id<Patient>) connection.getSession().getId();
+            connection.getServer()
+                    .updatePatientContact(connection.getSession(), id, patientContact);
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void refresh() {
+        show(currentPatientId);
     }
 }

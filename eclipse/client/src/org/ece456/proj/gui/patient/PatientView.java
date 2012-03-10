@@ -34,6 +34,8 @@ public class PatientView extends JFrame implements ActionListener {
 
     private final PatientPresenter presenter;
 
+    private final JMenuItem mntmRefresh;
+
     public PatientView(final PatientPresenter presenter) {
         this.presenter = presenter;
 
@@ -78,6 +80,15 @@ public class PatientView extends JFrame implements ActionListener {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
+        JMenu mnView = new JMenu("View");
+        mnView.setMnemonic('v');
+        menuBar.add(mnView);
+
+        mntmRefresh = new JMenuItem("Refresh");
+        mntmRefresh.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+        mntmRefresh.addActionListener(this);
+        mnView.add(mntmRefresh);
+
         JMenu mnEdit = new JMenu("Edit");
         mnEdit.setMnemonic('e');
         menuBar.add(mnEdit);
@@ -89,6 +100,7 @@ public class PatientView extends JFrame implements ActionListener {
         mnEdit.add(mntmEditContactInfo);
 
         mntmSaveContactInfo = new JMenuItem("Save");
+        mntmSaveContactInfo.setEnabled(false);
         mntmSaveContactInfo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
                 InputEvent.CTRL_MASK));
         mntmSaveContactInfo.addActionListener(this);
@@ -117,6 +129,8 @@ public class PatientView extends JFrame implements ActionListener {
             mntmSaveContactInfo.setEnabled(false);
             panel_contact.setEditableByPatient(false);
             presenter.savePersonalData(panel_contact.getData());
+        } else if (e.getSource() == mntmRefresh) {
+            presenter.refresh();
         }
     }
 }
