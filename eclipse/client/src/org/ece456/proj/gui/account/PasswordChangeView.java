@@ -39,9 +39,9 @@ public class PasswordChangeView extends JFrame implements ActionListener {
     private final PasswordChangePresenter presenter;
 
     public PasswordChangeView(PasswordChangePresenterImpl presenter) {
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.presenter = presenter;
 
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setTitle("Change password");
         getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -49,7 +49,7 @@ public class PasswordChangeView extends JFrame implements ActionListener {
         getContentPane().add(panel, BorderLayout.CENTER);
         panel.setLayout(new FormLayout(new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC,
                 FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
-                ColumnSpec.decode("default:grow"), FormFactory.RELATED_GAP_COLSPEC, },
+                ColumnSpec.decode("max(150dlu;min):grow"), FormFactory.RELATED_GAP_COLSPEC, },
                 new RowSpec[] { FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
                         FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
                         FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
