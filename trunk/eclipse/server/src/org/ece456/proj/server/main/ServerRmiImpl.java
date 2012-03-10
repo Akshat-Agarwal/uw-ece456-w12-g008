@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.ece456.proj.orm.objects.Appointment;
@@ -113,11 +114,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         // TODO Insert other constraints here
 
         try {
-            String query = "SELECT patient_id, patient_contact.name, "
-                    + " patient_contact.address, patient_contact.phone_num,"
-                    + " patient_medical.current_health, patient_medical.num_visits,"
-                    + " patient_medical.health_card_num, patient_medical.sin, patient_medical.sex,"
-                    + " doctor.name" + " FROM patient_medical" + " NATURAL JOIN patient_contact"
+            String query = "SELECT * FROM patient_medical" + " NATURAL JOIN patient_contact"
                     + " INNER JOIN doctor ON patient_medical.default_doctor_id = doctor.doctor_id"
                     + " WHERE patient_id = ?;";
 
@@ -134,6 +131,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             p.getContact().setName(result.getString("patient_contact.name"));
             p.getContact().setAddress(result.getString("address"));
             p.getContact().setPhoneNum(result.getString("phone_num"));
+            p.getContact().setPassword(result.getString("password"));
 
             p.getMedical().setCurrentHealth(result.getString("current_health"));
 
@@ -325,5 +323,62 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         return Collections.emptyList();
+    }
+
+    @Override
+    public void updatePassword(Session session, UserRole role, Id<?> id, String oldPassword,
+            String newPassword) throws RemoteException {
+
+        if (!isSessionValid(session)) {
+            return;
+        }
+
+        // Permission checks
+        EnumSet<UserRole> canChangeOhterPasswords = EnumSet.of(UserRole.ADMIN, UserRole.STAFF);
+        boolean hasPermission = canChangeOhterPasswords.contains(session.getRole());
+        boolean changingOwnAccount = id.equals(session.getId());
+        if (!hasPermission && !changingOwnAccount) {
+            // Only certain users can change other account's passwords.
+            return;
+        }
+
+        try {
+            String query = "UPDATE ";
+
+            switch (role) {
+                case ACCOUNTANT:
+                    query += "financial SET password = ? WHERE finance_id";
+                    break;
+                case ADMIN:
+                    query += "admin SET password = ? WHERE admin_id";
+                    break;
+                case DOCTOR:
+                    query += "doctor SET password = ? WHERE doctor_id";
+                    break;
+                case LEGAL:
+                    query += "legal SET password = ? WHERE lawyer_id";
+                    break;
+                case PATIENT:
+                    query += "patient_contact SET password = ? WHERE patient_id";
+                    break;
+                case STAFF:
+                    query += "staff SET password = ? WHERE staff_id";
+                    break;
+                default:
+                    throw new EnumConstantNotPresentException(UserRole.class, String.valueOf(role));
+            }
+            query += " = ? AND password = ?;";
+
+            PreparedStatement sql = dbCon.prepareStatement(query);
+            sql.setString(1, newPassword);
+            sql.setInt(2, id.asInt());
+            sql.setString(3, oldPassword);
+
+            System.out.println(sql);
+            sql.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

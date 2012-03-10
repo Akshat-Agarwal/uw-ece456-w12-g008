@@ -36,6 +36,8 @@ public class PatientView extends JFrame implements ActionListener {
 
     private final JMenuItem mntmRefresh;
 
+    private final JMenuItem mntmChangePassword;
+
     public PatientView(final PatientPresenter presenter) {
         this.presenter = presenter;
 
@@ -80,6 +82,13 @@ public class PatientView extends JFrame implements ActionListener {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
+        JMenu mnAccount = new JMenu("Account");
+        menuBar.add(mnAccount);
+
+        mntmChangePassword = new JMenuItem("Change password...");
+        mntmChangePassword.addActionListener(this);
+        mnAccount.add(mntmChangePassword);
+
         JMenu mnView = new JMenu("View");
         mnView.setMnemonic('v');
         menuBar.add(mnView);
@@ -120,17 +129,21 @@ public class PatientView extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == mntmEditContactInfo) {
+        Object s = e.getSource();
+
+        if (s == mntmEditContactInfo) {
             mntmEditContactInfo.setEnabled(false);
             mntmSaveContactInfo.setEnabled(true);
             panel_contact.setEditableByPatient(true);
-        } else if (e.getSource() == mntmSaveContactInfo) {
+        } else if (s == mntmSaveContactInfo) {
             mntmEditContactInfo.setEnabled(true);
             mntmSaveContactInfo.setEnabled(false);
             panel_contact.setEditableByPatient(false);
             presenter.savePersonalData(panel_contact.getData());
-        } else if (e.getSource() == mntmRefresh) {
+        } else if (s == mntmRefresh) {
             presenter.refresh();
+        } else if (s == mntmChangePassword) {
+            presenter.showPasswordChange();
         }
     }
 }

@@ -29,4 +29,7 @@ public interface ServerRmi extends Remote {
             throws RemoteException;
 
     List<Doctor> getConsultantsForPatient(Session session, Id<Patient> id) throws RemoteException;
+
+    void updatePassword(Session session, UserRole role, Id<?> id, String oldPassword,
+            String newPassword) throws RemoteException;
 }
