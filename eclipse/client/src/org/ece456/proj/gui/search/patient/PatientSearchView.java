@@ -1,4 +1,4 @@
-package org.ece456.proj.gui.patient.search;
+package org.ece456.proj.gui.search.patient;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

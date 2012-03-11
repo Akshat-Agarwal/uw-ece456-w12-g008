@@ -1,4 +1,4 @@
-package org.ece456.proj.gui.patient.search;
+package org.ece456.proj.gui.search.patient;
 
 import org.ece456.proj.gui.shared.table.ColumnFactory;
 import org.ece456.proj.gui.shared.table.ColumnFactory.CellRenderer;
