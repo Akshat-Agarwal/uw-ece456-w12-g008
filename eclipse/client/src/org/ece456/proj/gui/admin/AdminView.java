@@ -27,6 +27,7 @@ public class AdminView extends JFrame implements ActionListener {
     private final JTextField text_name;
     private final JTextField text_id;
     private final JMenuItem mntmPatient;
+    private final JMenuItem mntmDoctor;
 
     public AdminView(AdminPresenter presenter) {
         this.presenter = presenter;
@@ -52,6 +53,10 @@ public class AdminView extends JFrame implements ActionListener {
         mntmPatient = new JMenuItem("Patient...");
         mntmPatient.addActionListener(this);
         mnSearch.add(mntmPatient);
+
+        mntmDoctor = new JMenuItem("Doctor...");
+        mntmDoctor.addActionListener(this);
+        mnSearch.add(mntmDoctor);
 
         JPanel panel = new JPanel();
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -89,6 +94,8 @@ public class AdminView extends JFrame implements ActionListener {
             presenter.showPasswordChange();
         } else if (s == mntmPatient) {
             presenter.showPatientSearch();
+        } else if (s == mntmDoctor) {
+            presenter.showDoctorSearch();
         }
     }
 

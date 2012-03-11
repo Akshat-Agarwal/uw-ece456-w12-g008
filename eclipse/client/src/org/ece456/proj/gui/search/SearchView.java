@@ -2,6 +2,7 @@ package org.ece456.proj.gui.search;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -92,27 +93,28 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
         panel_results.setLayout(new BorderLayout(0, 0));
 
         resultTable = SimpleTable.create(columns);
+        resultTable.setPreferredSize(new Dimension(500, 400));
         panel_results.add(resultTable);
 
         verticalBox.add(panel_results);
 
-        JPanel panel_1 = new JPanel();
-        getContentPane().add(panel_1, BorderLayout.SOUTH);
-        panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+        JPanel panel_buttons = new JPanel();
+        getContentPane().add(panel_buttons, BorderLayout.SOUTH);
+        panel_buttons.setLayout(new BoxLayout(panel_buttons, BoxLayout.X_AXIS));
 
         Component horizontalGlue = Box.createHorizontalGlue();
-        panel_1.add(horizontalGlue);
+        panel_buttons.add(horizontalGlue);
 
         btnSubmit = new JButton("Open");
         btnSubmit.addActionListener(this);
-        panel_1.add(btnSubmit);
+        panel_buttons.add(btnSubmit);
 
         Component horizontalStrut = Box.createHorizontalStrut(4);
-        panel_1.add(horizontalStrut);
+        panel_buttons.add(horizontalStrut);
 
         btnCancel = new JButton("Cancel");
         btnCancel.addActionListener(this);
-        panel_1.add(btnCancel);
+        panel_buttons.add(btnCancel);
 
         pack();
         setLocation(100, 100);

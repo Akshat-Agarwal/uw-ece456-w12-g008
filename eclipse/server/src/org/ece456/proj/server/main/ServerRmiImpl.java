@@ -14,6 +14,7 @@ import java.util.List;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
+import org.ece456.proj.orm.objects.DoctorSearchOption;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
@@ -25,7 +26,9 @@ import org.ece456.proj.server.authentication.SessionManager;
 import org.ece456.proj.shared.Session;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
@@ -240,12 +243,26 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             return Collections.emptyList();
         }
 
+        // Invalid ID check - don't bother running the query
+
+        Iterable<Id<Doctor>> validIds = Iterables.filter(ids, new Predicate<Id<Doctor>>() {
+            @Override
+            public boolean apply(Id<Doctor> input) {
+                return !Id.invalidId().equals(input);
+            }
+        });
+
         try {
             Statement sql = dbCon.createStatement();
             ResultSet result = null;
 
             String sqlStatement = "SELECT * FROM doctor WHERE doctor_id in (";
-            sqlStatement += Joiner.on(", ").join(ids.iterator());
+
+            String idsJoined = Joiner.on(", ").join(validIds.iterator());
+            if (idsJoined.isEmpty()) {
+                return Collections.emptyList();
+            }
+            sqlStatement += idsJoined;
             sqlStatement += ");";
 
             System.out.println(sqlStatement);
@@ -487,6 +504,51 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             }
 
             return patients;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Doctor> searchDoctors(Session session, DoctorSearchOption option, String text)
+            throws RemoteException {
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+
+        // Only certain roles can search for doctors
+        EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF);
+        boolean hasPermission = canSearchPatients.contains(session.getRole());
+        if (!hasPermission) {
+            return Collections.emptyList();
+        }
+
+        // ID
+        if (option == DoctorSearchOption.ID) {
+            return getDoctorsById(session, ImmutableList.of(Id.<Doctor> of(text)));
+        }
+
+        // Name
+        try {
+            String query = "SELECT doctor_id, name FROM doctor WHERE name LIKE ?";
+            PreparedStatement sql = dbCon.prepareStatement(query);
+            sql.setString(1, "%" + text + "%");
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+            List<Doctor> Doctors = Lists.newArrayList();
+
+            while (result.next()) {
+                Doctor p = new Doctor();
+                p.setDoctor_id(Id.<Doctor> of(result.getInt("doctor_id")));
+                p.setName(result.getString("name"));
+                Doctors.add(p);
+            }
+
+            return Doctors;
 
         } catch (SQLException e) {
             e.printStackTrace();

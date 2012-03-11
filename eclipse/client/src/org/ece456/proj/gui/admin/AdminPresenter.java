@@ -11,4 +11,6 @@ public interface AdminPresenter {
 
     void showPatientSearch();
 
+    void showDoctorSearch();
+
 }

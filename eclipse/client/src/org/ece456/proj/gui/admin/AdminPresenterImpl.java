@@ -6,10 +6,13 @@ import org.ece456.proj.gui.account.PasswordChangePresenter;
 import org.ece456.proj.gui.account.PasswordChangePresenterImpl;
 import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
+import org.ece456.proj.gui.search.doctor.DoctorSearchPresenter;
+import org.ece456.proj.gui.search.doctor.DoctorSearchPresenterImpl;
 import org.ece456.proj.gui.search.patient.PatientSearchPresenter;
 import org.ece456.proj.gui.search.patient.PatientSearchPresenterImpl;
 import org.ece456.proj.gui.shared.table.SelectionListener;
 import org.ece456.proj.orm.objects.Admin;
+import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.UserRole;
@@ -60,6 +63,25 @@ public class AdminPresenterImpl implements AdminPresenter {
                         // Show patient view
                         PatientPresenter presenter = new PatientPresenterImpl(connection);
                         presenter.show(selected.getPatientId());
+                        return AfterAction.DO_NOTHING;
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // do nothing
+                    }
+                });
+        p.show();
+    }
+
+    @Override
+    public void showDoctorSearch() {
+        DoctorSearchPresenter p = new DoctorSearchPresenterImpl(connection,
+                new SelectionListener<Doctor>() {
+                    @Override
+                    public AfterAction onSelection(Doctor selected) {
+                        // TODO Show Doctor view
+                        System.out.println(selected.getName());
                         return AfterAction.DO_NOTHING;
                     }
 
