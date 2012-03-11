@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 
 public abstract class SimpleTable<T> extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -18,6 +19,8 @@ public abstract class SimpleTable<T> extends JPanel {
 
     private final SimpleTableModel<T> model;
 
+    private List<T> data;
+
     public SimpleTable() {
         setBackground(SystemColor.window);
         setLayout(new BorderLayout());
@@ -26,8 +29,7 @@ public abstract class SimpleTable<T> extends JPanel {
 
         model = initModel();
         table = new JTable(model);
-
-        // table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         for (int i = 0; i < model.getColumnCount(); i++) {
             int w = model.getColumn(i).getPreferredWidth();
@@ -39,7 +41,17 @@ public abstract class SimpleTable<T> extends JPanel {
     }
 
     public void update(List<T> data) {
+        this.data = data;
         model.setData(data);
+    }
+
+    public T getSelected() {
+        int i = table.getSelectedRow();
+        if (i == -1) {
+            return null;
+        } else {
+            return data.get(i);
+        }
     }
 
     protected abstract SimpleTableModel<T> initModel();

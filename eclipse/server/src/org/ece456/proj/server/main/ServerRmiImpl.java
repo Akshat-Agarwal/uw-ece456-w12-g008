@@ -17,6 +17,7 @@ import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
+import org.ece456.proj.orm.objects.PatientSearchOption;
 import org.ece456.proj.orm.objects.Sex;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.server.ServerRmi;
@@ -112,6 +113,12 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 return null;
             }
         }
+
+        // Invalid ID check - don't bother running the query
+        if (Id.invalidId().equals(id)) {
+            return null;
+        }
+
         // TODO Insert other constraints here
 
         try {
@@ -125,7 +132,10 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             System.out.println(sql);
             ResultSet result = sql.executeQuery();
 
-            result.next();
+            // Forward one result. If it returns false, the result set is empty.
+            if (!result.next()) {
+                return null;
+            }
 
             Patient p = new Patient();
             p.setPatientId(id);
@@ -413,5 +423,75 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         // failed
         return null;
+    }
+
+    @Override
+    public List<Patient> searchPatients(Session session, PatientSearchOption option, String text)
+            throws RemoteException {
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+
+        // Only certain roles can search for patients
+        EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF);
+        boolean hasPermission = canSearchPatients.contains(session.getRole());
+        if (!hasPermission) {
+            return Collections.emptyList();
+        }
+
+        // Simple case
+        if (option == PatientSearchOption.ID) {
+            Patient p = getPatientById(session, Id.<Patient> of(text));
+            if (p == null) {
+                return Collections.emptyList();
+            } else {
+                return ImmutableList.of(p);
+            }
+        }
+
+        try {
+            String query = "SELECT * FROM patient_medical NATURAL JOIN patient_contact ";
+            PreparedStatement sql;
+
+            switch (option) {
+                case HEALTH_CARD:
+                    query += "WHERE health_card_num LIKE ?";
+                    sql = dbCon.prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
+                    break;
+                case NAME:
+                    query += "WHERE name LIKE ?";
+                    sql = dbCon.prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
+                    break;
+                case SIN:
+                    query += "WHERE sin = ?";
+                    sql = dbCon.prepareStatement(query);
+                    sql.setInt(1, Integer.valueOf(text));
+                    break;
+                default:
+                    throw new EnumConstantNotPresentException(PatientSearchOption.class,
+                            String.valueOf(option));
+            }
+
+            ResultSet result = sql.executeQuery();
+            List<Patient> patients = Lists.newArrayList();
+
+            while (result.next()) {
+                Patient p = new Patient();
+                p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
+                p.getContact().setName(result.getString("name"));
+                p.getMedical().setSin(result.getInt("sin"));
+                p.getMedical().setHealthCardNumber(result.getString("health_card_num"));
+                patients.add(p);
+            }
+
+            return patients;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
     }
 }

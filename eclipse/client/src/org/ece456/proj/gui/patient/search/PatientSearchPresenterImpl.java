@@ -1,22 +1,35 @@
 package org.ece456.proj.gui.patient.search;
 
+import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.List;
 
+import org.ece456.proj.gui.shared.table.SelectionListener;
+import org.ece456.proj.gui.shared.table.SelectionListener.AfterAction;
 import org.ece456.proj.orm.objects.Patient;
+import org.ece456.proj.orm.objects.PatientSearchOption;
 import org.ece456.proj.shared.Connection;
 
 public class PatientSearchPresenterImpl implements PatientSearchPresenter {
 
     private final Connection connection;
+    private final SelectionListener<Patient> listener;
+
     private PatientSearchView view;
 
-    public PatientSearchPresenterImpl(Connection connection) {
+    public PatientSearchPresenterImpl(Connection connection, SelectionListener<Patient> listener) {
         this.connection = connection;
+        this.listener = listener;
     }
 
     @Override
     public List<Patient> search(PatientSearchOption field, String text) {
-        return null;
+        try {
+            return connection.getServer().searchPatients(connection.getSession(), field, text);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -26,5 +39,19 @@ public class PatientSearchPresenterImpl implements PatientSearchPresenter {
         }
 
         view.setVisible(true);
+    }
+
+    @Override
+    public void onSelection(Patient selected) {
+        AfterAction a = listener.onSelection(selected);
+        if (a == AfterAction.CLOSE_DIALOG) {
+            view.dispose();
+        }
+    }
+
+    @Override
+    public void onCancel() {
+        listener.onCancel();
+        view.dispose();
     }
 }
