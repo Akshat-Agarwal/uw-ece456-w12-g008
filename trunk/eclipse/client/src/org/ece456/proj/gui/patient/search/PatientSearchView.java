@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 import javax.swing.Box;
@@ -17,6 +19,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import org.ece456.proj.orm.objects.Patient;
+import org.ece456.proj.orm.objects.PatientSearchOption;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -34,6 +37,10 @@ public class PatientSearchView extends JFrame implements ActionListener {
     private final PatientSearchPresenter presenter;
 
     private final JComboBox comboBox;
+
+    private final JButton btnCancel;
+
+    private final JButton btnSelectPatient;
 
     public PatientSearchView(PatientSearchPresenter presenter) {
         this.presenter = presenter;
@@ -65,6 +72,14 @@ public class PatientSearchView extends JFrame implements ActionListener {
         text_search = new JTextField();
         panel_search.add(text_search, "4, 2, fill, default");
         text_search.setColumns(10);
+        text_search.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (KeyEvent.VK_ENTER == e.getKeyCode()) {
+                    search();
+                }
+            }
+        });
 
         btnSearch = new JButton("Search");
         btnSearch.addActionListener(this);
@@ -88,26 +103,44 @@ public class PatientSearchView extends JFrame implements ActionListener {
         Component horizontalGlue = Box.createHorizontalGlue();
         panel_1.add(horizontalGlue);
 
-        JButton btnSelectPatient = new JButton("Select Patient");
+        btnSelectPatient = new JButton("Select Patient");
+        btnSelectPatient.addActionListener(this);
         panel_1.add(btnSelectPatient);
 
         Component horizontalStrut = Box.createHorizontalStrut(4);
         panel_1.add(horizontalStrut);
 
-        JButton btnCancel = new JButton("Cancel");
+        btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener(this);
         panel_1.add(btnCancel);
+
+        pack();
+        setLocation(100, 100);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == btnSearch) {
-            btnSearch.setEnabled(false);
+        Object s = e.getSource();
 
-            PatientSearchOption field = (PatientSearchOption) comboBox.getSelectedItem();
-            List<Patient> searchResults = presenter.search(field, text_search.getText());
-            resultTable.update(searchResults);
-
-            btnSearch.setEnabled(true);
+        if (s == btnSearch) {
+            search();
+        } else if (s == btnCancel) {
+            presenter.onCancel();
+        } else if (s == btnSelectPatient) {
+            Patient selected = resultTable.getSelected();
+            if (selected != null) {
+                presenter.onSelection(selected);
+            }
         }
+    }
+
+    private void search() {
+        btnSearch.setEnabled(false);
+
+        PatientSearchOption field = (PatientSearchOption) comboBox.getSelectedItem();
+        List<Patient> searchResults = presenter.search(field, text_search.getText());
+        resultTable.update(searchResults);
+
+        btnSearch.setEnabled(true);
     }
 }

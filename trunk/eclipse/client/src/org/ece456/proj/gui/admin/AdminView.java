@@ -77,7 +77,8 @@ public class AdminView extends JFrame implements ActionListener {
         panel.add(text_name, "4, 4, fill, default");
         text_name.setColumns(10);
 
-        pack();
+        // pack();
+        setSize(400, 300);
         setLocation(100, 100);
     }
 

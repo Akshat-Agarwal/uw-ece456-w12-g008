@@ -10,6 +10,15 @@ public class Id<T> implements Serializable {
 
     private final int id;
 
+    public static <T> Id<T> of(String id) {
+        try {
+            int i = Integer.valueOf(id);
+            return of(i);
+        } catch (NumberFormatException e) {
+            return invalidId();
+        }
+    }
+
     public static <T> Id<T> of(int id) {
         return new Id<T>(id);
     }

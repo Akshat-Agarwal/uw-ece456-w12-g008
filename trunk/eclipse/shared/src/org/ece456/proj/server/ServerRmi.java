@@ -10,6 +10,7 @@ import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
+import org.ece456.proj.orm.objects.PatientSearchOption;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Session;
 
@@ -35,4 +36,7 @@ public interface ServerRmi extends Remote {
             String newPassword) throws RemoteException;
 
     Admin getAdminById(Session session, Id<Admin> id) throws RemoteException;
+
+    List<Patient> searchPatients(Session session, PatientSearchOption option, String text)
+            throws RemoteException;
 }

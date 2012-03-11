@@ -4,10 +4,14 @@ import java.rmi.RemoteException;
 
 import org.ece456.proj.gui.account.PasswordChangePresenter;
 import org.ece456.proj.gui.account.PasswordChangePresenterImpl;
+import org.ece456.proj.gui.patient.PatientPresenter;
+import org.ece456.proj.gui.patient.PatientPresenterImpl;
 import org.ece456.proj.gui.patient.search.PatientSearchPresenter;
 import org.ece456.proj.gui.patient.search.PatientSearchPresenterImpl;
+import org.ece456.proj.gui.shared.table.SelectionListener;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Id;
+import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Connection;
 
@@ -49,7 +53,21 @@ public class AdminPresenterImpl implements AdminPresenter {
 
     @Override
     public void showPatientSearch() {
-        PatientSearchPresenter p = new PatientSearchPresenterImpl(connection);
+        PatientSearchPresenter p = new PatientSearchPresenterImpl(connection,
+                new SelectionListener<Patient>() {
+                    @Override
+                    public AfterAction onSelection(Patient selected) {
+                        // Show patient view
+                        PatientPresenter presenter = new PatientPresenterImpl(connection);
+                        presenter.show(selected.getPatientId());
+                        return AfterAction.DO_NOTHING;
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // do nothing
+                    }
+                });
         p.show();
     }
 }
