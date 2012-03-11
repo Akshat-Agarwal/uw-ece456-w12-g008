@@ -6,7 +6,7 @@ public interface SearchPresenter<T> {
 
     void show();
 
-    List<T> search(Object object, String text);
+    List<T> search(Object field, String text);
 
     void onSelection(T selected);
 

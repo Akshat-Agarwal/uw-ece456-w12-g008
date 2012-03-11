@@ -12,6 +12,8 @@ import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
 import org.ece456.proj.orm.objects.PatientSearchOption;
+import org.ece456.proj.orm.objects.Staff;
+import org.ece456.proj.orm.objects.StaffSearchOption;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Session;
 
@@ -42,5 +44,8 @@ public interface ServerRmi extends Remote {
             throws RemoteException;
 
     List<Doctor> searchDoctors(Session session, DoctorSearchOption option, String text)
+            throws RemoteException;
+
+    List<Staff> searchStaff(Session session, StaffSearchOption field, String text)
             throws RemoteException;
 }

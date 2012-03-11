@@ -1,7 +1,6 @@
 package org.ece456.proj.gui.search.patient;
 
-import java.util.List;
-
+import org.ece456.proj.gui.search.SearchPresenter;
 import org.ece456.proj.gui.search.SearchView;
 import org.ece456.proj.gui.shared.table.ColumnFactory;
 import org.ece456.proj.gui.shared.table.ColumnFactory.CellRenderer;
@@ -14,27 +13,9 @@ import com.google.common.collect.ImmutableList;
 public class PatientSearchView extends SearchView<Patient> {
     private static final long serialVersionUID = 1L;
 
-    private final PatientSearchPresenter presenter;
-
-    public PatientSearchView(PatientSearchPresenter presenter) {
+    public PatientSearchView(SearchPresenter<Patient> presenter) {
         super("Search for a patient", PatientSearchOption.values(), ImmutableList.of(ID, NAME,
-                HEALTH_CARD, SIN));
-        this.presenter = presenter;
-    }
-
-    @Override
-    protected void onCancel() {
-        presenter.onCancel();
-    }
-
-    @Override
-    protected void onSelection(Patient selected) {
-        presenter.onSelection(selected);
-    }
-
-    @Override
-    protected List<Patient> search(Object field, String text) {
-        return presenter.search((PatientSearchOption) field, text);
+                HEALTH_CARD, SIN), presenter);
     }
 
     // Columns below

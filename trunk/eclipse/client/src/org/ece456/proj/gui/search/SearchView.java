@@ -38,13 +38,11 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
     private final JButton btnCancel;
     private final JButton btnSubmit;
 
-    protected abstract void onCancel();
+    private final SearchPresenter<T> presenter;
 
-    protected abstract void onSelection(T selected);
-
-    protected abstract List<T> search(Object field, String text);
-
-    public SearchView(String title, Object[] searchOptions, List<ColumnModel<T>> columns) {
+    public SearchView(String title, Object[] searchOptions, List<ColumnModel<T>> columns,
+            SearchPresenter<T> presenter) {
+        this.presenter = presenter;
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setTitle(title);
@@ -127,11 +125,11 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
         if (s == btnSearch) {
             search();
         } else if (s == btnCancel) {
-            onCancel();
+            presenter.onCancel();
         } else if (s == btnSubmit) {
             T selected = resultTable.getSelected();
             if (selected != null) {
-                onSelection(selected);
+                presenter.onSelection(selected);
             }
         }
     }
@@ -139,7 +137,7 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
     private void search() {
         btnSearch.setEnabled(false);
 
-        List<T> searchResults = search(comboBox.getSelectedItem(), text_search.getText());
+        List<T> searchResults = presenter.search(comboBox.getSelectedItem(), text_search.getText());
         resultTable.update(searchResults);
 
         btnSearch.setEnabled(true);
