@@ -4,13 +4,14 @@ import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.List;
 
+import org.ece456.proj.gui.search.SearchPresenter;
 import org.ece456.proj.gui.shared.table.SelectionListener;
 import org.ece456.proj.gui.shared.table.SelectionListener.AfterAction;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.DoctorSearchOption;
 import org.ece456.proj.shared.Connection;
 
-public class DoctorSearchPresenterImpl implements DoctorSearchPresenter {
+public class DoctorSearchPresenterImpl implements SearchPresenter<Doctor> {
 
     private final Connection connection;
     private final SelectionListener<Doctor> listener;
@@ -23,9 +24,10 @@ public class DoctorSearchPresenterImpl implements DoctorSearchPresenter {
     }
 
     @Override
-    public List<Doctor> search(DoctorSearchOption field, String text) {
+    public List<Doctor> search(Object field, String text) {
         try {
-            return connection.getServer().searchDoctors(connection.getSession(), field, text);
+            return connection.getServer().searchDoctors(connection.getSession(),
+                    (DoctorSearchOption) field, text);
         } catch (RemoteException e) {
             e.printStackTrace();
             return Collections.emptyList();
