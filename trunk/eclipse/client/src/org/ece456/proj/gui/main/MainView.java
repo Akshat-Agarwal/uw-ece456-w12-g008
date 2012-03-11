@@ -1,6 +1,7 @@
 package org.ece456.proj.gui.main;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -122,6 +123,7 @@ public class MainView {
         });
         bottom_panel.add(btnLogin);
 
+        frame.getContentPane().setPreferredSize(new Dimension(400, 250));
         frame.pack();
     }
 

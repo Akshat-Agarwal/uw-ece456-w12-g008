@@ -114,8 +114,10 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
         btnCancel.addActionListener(this);
         panel_buttons.add(btnCancel);
 
+        resultTable.setPreferredSize(new Dimension(400, 200));
         pack();
         setLocation(100, 100);
+
     }
 
     @Override
