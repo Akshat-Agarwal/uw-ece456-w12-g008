@@ -1,4 +1,4 @@
-package org.ece456.proj.gui.search.patient;
+package org.ece456.proj.gui.search.doctor;
 
 import java.rmi.RemoteException;
 import java.util.Collections;
@@ -7,27 +7,27 @@ import java.util.List;
 import org.ece456.proj.gui.search.SearchPresenter;
 import org.ece456.proj.gui.shared.table.SelectionListener;
 import org.ece456.proj.gui.shared.table.SelectionListener.AfterAction;
-import org.ece456.proj.orm.objects.Patient;
-import org.ece456.proj.orm.objects.PatientSearchOption;
+import org.ece456.proj.orm.objects.Doctor;
+import org.ece456.proj.orm.objects.DoctorSearchOption;
 import org.ece456.proj.shared.Connection;
 
-public class PatientSearchPresenterImpl implements SearchPresenter<Patient> {
+public class DoctorSearchPresenter implements SearchPresenter<Doctor> {
 
     private final Connection connection;
-    private final SelectionListener<Patient> listener;
+    private final SelectionListener<Doctor> listener;
 
-    private PatientSearchView view;
+    private DoctorSearchView view;
 
-    public PatientSearchPresenterImpl(Connection connection, SelectionListener<Patient> listener) {
+    public DoctorSearchPresenter(Connection connection, SelectionListener<Doctor> listener) {
         this.connection = connection;
         this.listener = listener;
     }
 
     @Override
-    public List<Patient> search(Object field, String text) {
+    public List<Doctor> search(Object field, String text) {
         try {
-            return connection.getServer().searchPatients(connection.getSession(),
-                    (PatientSearchOption) field, text);
+            return connection.getServer().searchDoctors(connection.getSession(),
+                    (DoctorSearchOption) field, text);
         } catch (RemoteException e) {
             e.printStackTrace();
             return Collections.emptyList();
@@ -37,14 +37,14 @@ public class PatientSearchPresenterImpl implements SearchPresenter<Patient> {
     @Override
     public void show() {
         if (view == null) {
-            view = new PatientSearchView(this);
+            view = new DoctorSearchView(this);
         }
 
         view.setVisible(true);
     }
 
     @Override
-    public void onSelection(Patient selected) {
+    public void onSelection(Doctor selected) {
         AfterAction a = listener.onSelection(selected);
         if (a == AfterAction.CLOSE_DIALOG) {
             view.dispose();
