@@ -9,11 +9,13 @@ import org.ece456.proj.gui.patient.PatientPresenterImpl;
 import org.ece456.proj.gui.search.SearchPresenter;
 import org.ece456.proj.gui.search.doctor.DoctorSearchPresenter;
 import org.ece456.proj.gui.search.patient.PatientSearchPresenter;
+import org.ece456.proj.gui.search.staff.StaffSearchPresenter;
 import org.ece456.proj.gui.shared.table.SelectionListener;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
+import org.ece456.proj.orm.objects.Staff;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Connection;
 
@@ -90,5 +92,24 @@ public class AdminPresenterImpl implements AdminPresenter {
                     }
                 });
         p.show();
+    }
+
+    @Override
+    public void showStaffSearch() {
+        SearchPresenter<Staff> s = new StaffSearchPresenter(connection,
+                new SelectionListener<Staff>() {
+                    @Override
+                    public AfterAction onSelection(Staff selected) {
+                        // TODO Show Staff view
+                        System.out.println(selected.getName());
+                        return AfterAction.DO_NOTHING;
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // do nothing
+                    }
+                });
+        s.show();
     }
 }

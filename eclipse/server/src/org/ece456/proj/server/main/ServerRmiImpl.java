@@ -447,7 +447,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     @Override
     public List<Patient> searchPatients(Session session, PatientSearchOption option, String text)
             throws RemoteException {
-        if (!isSessionValid(session)) {
+        if (!isSessionValid(session) || text.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -517,7 +517,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     @Override
     public List<Doctor> searchDoctors(Session session, DoctorSearchOption option, String text)
             throws RemoteException {
-        if (!isSessionValid(session)) {
+        if (!isSessionValid(session) || text.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -562,7 +562,54 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     @Override
     public List<Staff> searchStaff(Session session, StaffSearchOption field, String text)
             throws RemoteException {
-        // TODO Auto-generated method stub
-        return null;
+        if (!isSessionValid(session) || text.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Only certain roles can search for staff
+        EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF);
+        boolean hasPermission = canSearchPatients.contains(session.getRole());
+        if (!hasPermission) {
+            return Collections.emptyList();
+        }
+
+        try {
+            String query = "SELECT staff_id, name FROM staff WHERE ";
+            PreparedStatement sql;
+            switch (field) {
+                case ID:
+                    query += "staff_id = ?;";
+                    sql = dbCon.prepareStatement(query);
+                    sql.setInt(1, Id.of(text).asInt());
+                    break;
+                case NAME:
+                    query += "name LIKE ?;";
+                    sql = dbCon.prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
+
+                    break;
+                default:
+                    throw new EnumConstantNotPresentException(StaffSearchOption.class,
+                            String.valueOf(field));
+            }
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+            List<Staff> staffs = Lists.newArrayList();
+
+            while (result.next()) {
+                Staff s = new Staff();
+                s.setStaffId(Id.<Staff> of(result.getInt("staff_id")));
+                s.setName(result.getString("name"));
+                staffs.add(s);
+            }
+
+            return staffs;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
     }
 }
