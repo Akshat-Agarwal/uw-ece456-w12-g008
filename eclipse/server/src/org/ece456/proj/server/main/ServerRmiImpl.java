@@ -20,6 +20,8 @@ import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
 import org.ece456.proj.orm.objects.PatientSearchOption;
 import org.ece456.proj.orm.objects.Sex;
+import org.ece456.proj.orm.objects.Staff;
+import org.ece456.proj.orm.objects.StaffSearchOption;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.server.ServerRmi;
 import org.ece456.proj.server.authentication.SessionManager;
@@ -555,5 +557,12 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         return Collections.emptyList();
+    }
+
+    @Override
+    public List<Staff> searchStaff(Session session, StaffSearchOption field, String text)
+            throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

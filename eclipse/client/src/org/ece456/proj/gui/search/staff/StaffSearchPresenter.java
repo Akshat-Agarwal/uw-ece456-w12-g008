@@ -11,13 +11,13 @@ import org.ece456.proj.orm.objects.Staff;
 import org.ece456.proj.orm.objects.StaffSearchOption;
 import org.ece456.proj.shared.Connection;
 
-public class StaffSearchPresenterImpl implements SearchPresenter<Staff> {
+public class StaffSearchPresenter implements SearchPresenter<Staff> {
 
     private StaffSearchView view;
     private final Connection connection;
     private final SelectionListener<Staff> listener;
 
-    public StaffSearchPresenterImpl(Connection connection, SelectionListener<Staff> listener) {
+    public StaffSearchPresenter(Connection connection, SelectionListener<Staff> listener) {
         this.connection = connection;
         this.listener = listener;
     }
