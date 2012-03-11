@@ -10,6 +10,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
+import org.ece456.proj.gui.shared.table.ColumnFactory.ColumnModel;
+
 public abstract class SimpleTable<T> extends JPanel {
     private static final long serialVersionUID = 1L;
 
@@ -21,7 +23,18 @@ public abstract class SimpleTable<T> extends JPanel {
 
     private List<T> data;
 
-    public SimpleTable() {
+    public static <E> SimpleTable<E> create(final List<ColumnModel<E>> columns) {
+        return new SimpleTable<E>() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected SimpleTableModel<E> initModel() {
+                return SimpleTableModel.create(columns);
+            }
+        };
+    }
+
+    protected SimpleTable() {
         setBackground(SystemColor.window);
         setLayout(new BorderLayout());
 
