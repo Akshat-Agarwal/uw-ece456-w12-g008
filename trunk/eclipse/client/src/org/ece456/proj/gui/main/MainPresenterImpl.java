@@ -1,9 +1,12 @@
 package org.ece456.proj.gui.main;
 
+import org.ece456.proj.gui.accountant.AccountantPresenter;
+import org.ece456.proj.gui.accountant.AccountantPresenterImpl;
 import org.ece456.proj.gui.admin.AdminPresenter;
 import org.ece456.proj.gui.admin.AdminPresenterImpl;
 import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
+import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
@@ -30,11 +33,19 @@ public class MainPresenterImpl implements MainPresenter {
             case ADMIN:
                 showAdminView(connection, id);
                 break;
+            case ACCOUNTANT:
+                showAccountant(connection, id);
+                break;
             default:
                 return "That view is not supported yet";
         }
 
         return "";
+    }
+
+    private void showAccountant(Connection connection, int id) {
+        AccountantPresenter presenter = new AccountantPresenterImpl(connection);
+        presenter.show(Id.<Accountant> of(id));
     }
 
     private void showPatientView(Connection connection, int id) {

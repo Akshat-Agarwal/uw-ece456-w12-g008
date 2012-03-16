@@ -2,8 +2,10 @@ package org.ece456.proj.server;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.List;
 
+import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
@@ -48,4 +50,9 @@ public interface ServerRmi extends Remote {
 
     List<Staff> searchStaff(Session session, StaffSearchOption field, String text)
             throws RemoteException;
+
+    Accountant getAccountantById(Session session, Id<Accountant> id) throws RemoteException;
+
+    List<Appointment> getAppointmentsForDoctor(Session session, Id<Doctor> doctorId, Date start,
+            Date end) throws RemoteException;
 }

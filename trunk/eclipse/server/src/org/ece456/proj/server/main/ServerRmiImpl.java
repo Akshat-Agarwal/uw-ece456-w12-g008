@@ -8,9 +8,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
@@ -30,6 +32,7 @@ import org.ece456.proj.shared.Session;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -70,7 +73,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                     query += "admin_id as id, password FROM admin WHERE admin_id = ?;";
                     break;
                 case ACCOUNTANT:
-                    query += "accountant_id as id, password FROM accountant WHERE accountant_id = ?;";
+                    query += "finance_id as id, password FROM financial WHERE finance_id = ?;";
                     break;
                 default:
                     throw new EnumConstantNotPresentException(UserRole.class, String.valueOf(role));
@@ -452,7 +455,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         // Only certain roles can search for patients
-        EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF);
+        EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF,
+                UserRole.ACCOUNTANT);
         boolean hasPermission = canSearchPatients.contains(session.getRole());
         if (!hasPermission) {
             return Collections.emptyList();
@@ -522,7 +526,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         // Only certain roles can search for doctors
-        EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF);
+        EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF,
+                UserRole.ACCOUNTANT);
         boolean hasPermission = canSearchPatients.contains(session.getRole());
         if (!hasPermission) {
             return Collections.emptyList();
@@ -605,6 +610,129 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             }
 
             return staffs;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Accountant getAccountantById(Session session, Id<Accountant> id) throws RemoteException {
+        if (!isSessionValid(session)) {
+            return null;
+        }
+
+        // only DB admins or accountant can look up accountants
+        if (!ImmutableSet.of(UserRole.ADMIN, UserRole.ACCOUNTANT).contains(session.getRole())) {
+            return null;
+        }
+
+        // if accountant, can only lookup his own account
+        if (session.getRole() == UserRole.ACCOUNTANT && !id.equals(session.getId())) {
+            return null;
+        }
+
+        try {
+            String query = "SELECT * FROM financial WHERE finance_id = ?;";
+
+            PreparedStatement sql = dbCon.prepareStatement(query);
+            sql.setInt(1, id.asInt());
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+
+            result.next();
+
+            Accountant a = new Accountant();
+            a.setFinanceId(id);
+            a.setName(result.getString("name"));
+            a.setPassword(result.getString("password"));
+            return a;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // failed
+        return null;
+    }
+
+    @Override
+    public List<Appointment> getAppointmentsForDoctor(Session session, Id<Doctor> doctorId,
+            Date start, Date end) {
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+
+        // only certain roles can look up doctor's appointments
+        if (!ImmutableSet.of(UserRole.DOCTOR, UserRole.ADMIN, UserRole.ACCOUNTANT).contains(
+                session.getRole())) {
+            return null;
+        }
+
+        try {
+            PreparedStatement sql = null;
+            String query = "SELECT * FROM appointment WHERE doctor_id = ? ";
+            String sort = " ORDER BY start_time";
+
+            if (start != null && end != null) {
+                // [start, end) range; note that start is inclusive, end is exclusive
+                query += "AND start_time BETWEEN ? AND ?";
+                query += sort;
+
+                sql = dbCon.prepareStatement(query);
+                sql.setInt(1, doctorId.asInt());
+                sql.setDate(2, new java.sql.Date(start.getTime()));
+                sql.setDate(3, new java.sql.Date(end.getTime()));
+            } else if (start != null) {
+                // Start is specified, end isn't
+                // Start is inclusive
+                query += "AND start_time >= ?";
+                query += sort;
+
+                sql = dbCon.prepareStatement(query);
+                sql.setInt(1, doctorId.asInt());
+                sql.setDate(2, new java.sql.Date(start.getTime()));
+            } else if (end != null) {
+                // Start is not specified, end is specified.
+                // end is exclusive.
+                query += "AND start_time < ?";
+                query += sort;
+
+                sql = dbCon.prepareStatement(query);
+                sql.setInt(1, doctorId.asInt());
+                sql.setDate(2, new java.sql.Date(end.getTime()));
+            } else {
+                // Neither specified.
+                query += sort;
+                sql = dbCon.prepareStatement(query);
+                sql.setInt(1, doctorId.asInt());
+            }
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+
+            List<Appointment> apps = Lists.newArrayList();
+            while (result.next()) {
+                Appointment a = new Appointment();
+
+                a.setStart_time(result.getDate("start_time"));
+
+                // TODO only display the one that is last modified!!
+                a.setLast_modified(result.getDate("last_modified"));
+
+                a.setLength(result.getInt("length"));
+                a.setProcedures(result.getString("procedures"));
+                a.setPrescriptions(result.getString("prescriptions"));
+                a.setDiagnoses(result.getString("diagnoses"));
+
+                // don't show appointment.comment here, unless needed
+                apps.add(a);
+            }
+
+            return apps;
 
         } catch (SQLException e) {
             e.printStackTrace();
