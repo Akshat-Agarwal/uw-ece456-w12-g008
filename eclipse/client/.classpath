@@ -9,5 +9,10 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/shared/lib/guava-11.0.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/microba-0.4.4.3.jar" sourcepath="lib/microba-0.4.4.3-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/client/lib/microba-0.4.4.3-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

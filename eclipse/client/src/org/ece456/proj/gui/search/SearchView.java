@@ -16,7 +16,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import org.ece456.proj.gui.shared.table.ColumnFactory.ColumnModel;
@@ -48,15 +47,11 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
         setTitle(title);
         getContentPane().setLayout(new BorderLayout(0, 0));
 
-        JPanel panel = new JPanel();
-        getContentPane().add(panel, BorderLayout.CENTER);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-
-        Box verticalBox = Box.createVerticalBox();
-        panel.add(verticalBox);
+        resultTable = SimpleTable.create(columns);
+        resultTable.setPreferredSize(new Dimension(500, 400));
 
         JPanel panel_search = new JPanel();
-        verticalBox.add(panel_search);
+        getContentPane().add(panel_search, BorderLayout.NORTH);
         panel_search.setLayout(new FormLayout(new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC,
                 FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
                 ColumnSpec.decode("default:grow"), FormFactory.RELATED_GAP_COLSPEC,
@@ -84,17 +79,10 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
         btnSearch.addActionListener(this);
         panel_search.add(btnSearch, "6, 2");
 
-        JSeparator separator = new JSeparator();
-        verticalBox.add(separator);
-
         JPanel panel_results = new JPanel();
+        getContentPane().add(panel_results, BorderLayout.CENTER);
         panel_results.setLayout(new BorderLayout(0, 0));
-
-        resultTable = SimpleTable.create(columns);
-        resultTable.setPreferredSize(new Dimension(500, 400));
         panel_results.add(resultTable);
-
-        verticalBox.add(panel_results);
 
         JPanel panel_buttons = new JPanel();
         getContentPane().add(panel_buttons, BorderLayout.SOUTH);
