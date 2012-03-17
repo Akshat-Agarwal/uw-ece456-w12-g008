@@ -153,6 +153,10 @@ public class AdminView extends JFrame implements ActionListener {
     }
 
     public void fillAdminData(Admin admin) {
+        // Title
+        setTitle(String.format("Admin Console: %s (%d)", admin.getName(), admin.getAdmin_id()
+                .asInt()));
+
         text_id.setText(admin.getAdmin_id().toString());
         text_name.setText(admin.getName());
     }

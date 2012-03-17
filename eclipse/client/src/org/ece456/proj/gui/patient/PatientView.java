@@ -117,6 +117,10 @@ public class PatientView extends JFrame implements ActionListener {
     }
 
     public void fillPatientData(Patient patient, List<Appointment> appointments) {
+        // Title
+        setTitle(String.format("Patient View: %s (%d)", patient.getContact().getName(), patient
+                .getPatientId().asInt()));
+
         // Contact
         panel_contact.fillPatientData(patient.getPatientId(), patient.getContact());
 

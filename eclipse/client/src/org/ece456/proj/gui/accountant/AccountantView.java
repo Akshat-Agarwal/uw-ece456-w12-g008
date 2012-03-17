@@ -137,6 +137,10 @@ public class AccountantView extends JFrame implements ActionListener {
     }
 
     public void fillAccountantData(Accountant accountant) {
+        // Title
+        setTitle(String.format("Accountant Console: %s (%d)", accountant.getName(), accountant
+                .getFinanceId().asInt()));
+
         text_id.setText(accountant.getFinanceId().toString());
         text_name.setText(accountant.getName());
     }
