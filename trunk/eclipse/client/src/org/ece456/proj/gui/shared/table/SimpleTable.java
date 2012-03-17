@@ -5,6 +5,7 @@ import java.awt.SystemColor;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -23,6 +24,8 @@ public abstract class SimpleTable<T> extends JPanel {
 
     private List<T> data;
 
+    private final JLabel labelResults;
+
     public static <E> SimpleTable<E> create(final List<ColumnModel<E>> columns) {
         return new SimpleTable<E>() {
             private static final long serialVersionUID = 1L;
@@ -39,9 +42,11 @@ public abstract class SimpleTable<T> extends JPanel {
         setLayout(new BorderLayout());
 
         JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportBorder(null);
 
         model = initModel();
         table = new JTable(model);
+        table.setBorder(null);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         for (int i = 0; i < model.getColumnCount(); i++) {
@@ -51,11 +56,20 @@ public abstract class SimpleTable<T> extends JPanel {
 
         scrollPane.setViewportView(table);
         add(scrollPane, BorderLayout.CENTER);
+
+        JPanel panel = new JPanel();
+        add(panel, BorderLayout.SOUTH);
+        panel.setLayout(new BorderLayout(0, 0));
+
+        labelResults = new JLabel("0 results ");
+        panel.add(labelResults, BorderLayout.EAST);
+
     }
 
     public void update(List<T> data) {
         this.data = data;
         model.setData(data);
+        labelResults.setText(String.format("%d results ", data.size()));
     }
 
     public T getSelected() {
