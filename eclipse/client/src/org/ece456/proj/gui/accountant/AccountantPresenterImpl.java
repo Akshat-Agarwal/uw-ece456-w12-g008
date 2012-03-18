@@ -57,7 +57,10 @@ public class AccountantPresenterImpl implements AccountantPresenter {
                 new SelectionListener<Patient>() {
                     @Override
                     public AfterAction onSelection(Patient selected) {
-                        // Do something with the patient
+                        // Do something with the Doctor
+                        PatientFinancialPresenter p = new PatientFinancialPresenterImpl(connection,
+                                selected.getPatientId());
+                        p.show(selected);
                         return AfterAction.DO_NOTHING;
                     }
 
