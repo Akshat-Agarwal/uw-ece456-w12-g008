@@ -12,6 +12,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -34,6 +35,7 @@ public abstract class SearchView<T> extends JFrame implements ActionListener, Li
     private final JComboBox comboBox;
 
     private final SearchPresenter<T> presenter;
+    private final JButton btnListAll;
 
     public SearchView(String title, Object[] searchOptions, List<ColumnModel<T>> columns,
             SearchPresenter<T> presenter) {
@@ -51,6 +53,7 @@ public abstract class SearchView<T> extends JFrame implements ActionListener, Li
         panel_search.setLayout(new FormLayout(new ColumnSpec[] { FormFactory.RELATED_GAP_COLSPEC,
                 FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
                 ColumnSpec.decode("default:grow"), FormFactory.RELATED_GAP_COLSPEC,
+                FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
                 FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC, }, new RowSpec[] {
                 FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
                 FormFactory.RELATED_GAP_ROWSPEC, }));
@@ -75,6 +78,10 @@ public abstract class SearchView<T> extends JFrame implements ActionListener, Li
         btnSearch.addActionListener(this);
         panel_search.add(btnSearch, "6, 2");
 
+        btnListAll = new JButton("List All");
+        panel_search.add(btnListAll, "8, 2");
+        btnListAll.addActionListener(this);
+
         JPanel panel_results = new JPanel();
         getContentPane().add(panel_results, BorderLayout.CENTER);
         panel_results.setLayout(new BorderLayout(0, 0));
@@ -92,16 +99,38 @@ public abstract class SearchView<T> extends JFrame implements ActionListener, Li
 
         if (s == btnSearch) {
             search();
+        } else if (s == btnListAll) {
+            int result = JOptionPane.showConfirmDialog(this,
+                    "This might take a long time, are you sure?", "Are you sure?",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result == JOptionPane.YES_OPTION) {
+                searchAll();
+            }
         }
     }
 
+    private void searchAll() {
+        setControlsEnabled(false);
+
+        List<T> searchResults = presenter.search();
+        resultTable.update(searchResults);
+
+        setControlsEnabled(true);
+    }
+
     private void search() {
-        btnSearch.setEnabled(false);
+        setControlsEnabled(false);
 
         List<T> searchResults = presenter.search(comboBox.getSelectedItem(), text_search.getText());
         resultTable.update(searchResults);
 
-        btnSearch.setEnabled(true);
+        setControlsEnabled(true);
+    }
+
+    private void setControlsEnabled(boolean enabled) {
+        text_search.setEnabled(enabled);
+        btnSearch.setEnabled(enabled);
+        btnListAll.setEnabled(enabled);
     }
 
     @Override

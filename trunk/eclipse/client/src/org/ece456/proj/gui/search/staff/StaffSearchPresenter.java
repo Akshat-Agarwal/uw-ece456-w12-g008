@@ -31,6 +31,16 @@ public class StaffSearchPresenter implements SearchPresenter<Staff> {
     }
 
     @Override
+    public List<Staff> search() {
+        try {
+            return connection.getServer().searchStaff(connection.getSession(), null, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
     public List<Staff> search(Object field, String text) {
         try {
             return connection.getServer().searchStaff(connection.getSession(),
