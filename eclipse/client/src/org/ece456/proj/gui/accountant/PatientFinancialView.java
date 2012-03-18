@@ -20,7 +20,7 @@ public class PatientFinancialView extends AbstractFinancialView {
 
     public void fillData(Patient patient) {
         textFieldId.setText(patient.getPatientId().toString());
-        textFieldName.setText(patient.getContact().getName());
+        textFieldName.setText(patient.getName());
     }
 
     public void fillAppointments(List<Appointment> apps) {

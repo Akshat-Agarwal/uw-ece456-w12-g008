@@ -1,7 +1,6 @@
 package org.ece456.proj.gui.search;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,8 +8,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,13 +17,14 @@ import javax.swing.JTextField;
 
 import org.ece456.proj.gui.shared.table.ColumnFactory.ColumnModel;
 import org.ece456.proj.gui.shared.table.SimpleTable;
+import org.ece456.proj.gui.shared.table.SimpleTable.Listener;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public abstract class SearchView<T> extends JFrame implements ActionListener {
+public abstract class SearchView<T> extends JFrame implements ActionListener, Listener<T> {
     private static final long serialVersionUID = 1L;
 
     private final JTextField text_search;
@@ -34,8 +32,6 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
 
     private final JButton btnSearch;
     private final JComboBox comboBox;
-    private final JButton btnCancel;
-    private final JButton btnSubmit;
 
     private final SearchPresenter<T> presenter;
 
@@ -47,7 +43,7 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
         setTitle(title);
         getContentPane().setLayout(new BorderLayout(0, 0));
 
-        resultTable = SimpleTable.create(columns);
+        resultTable = SimpleTable.create(columns, this);
         resultTable.setPreferredSize(new Dimension(500, 400));
 
         JPanel panel_search = new JPanel();
@@ -84,24 +80,6 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
         panel_results.setLayout(new BorderLayout(0, 0));
         panel_results.add(resultTable);
 
-        JPanel panel_buttons = new JPanel();
-        getContentPane().add(panel_buttons, BorderLayout.SOUTH);
-        panel_buttons.setLayout(new BoxLayout(panel_buttons, BoxLayout.X_AXIS));
-
-        Component horizontalGlue = Box.createHorizontalGlue();
-        panel_buttons.add(horizontalGlue);
-
-        btnSubmit = new JButton("Open");
-        btnSubmit.addActionListener(this);
-        panel_buttons.add(btnSubmit);
-
-        Component horizontalStrut = Box.createHorizontalStrut(4);
-        panel_buttons.add(horizontalStrut);
-
-        btnCancel = new JButton("Cancel");
-        btnCancel.addActionListener(this);
-        panel_buttons.add(btnCancel);
-
         resultTable.setPreferredSize(new Dimension(400, 200));
         pack();
         setLocation(100, 100);
@@ -114,13 +92,6 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
 
         if (s == btnSearch) {
             search();
-        } else if (s == btnCancel) {
-            presenter.onCancel();
-        } else if (s == btnSubmit) {
-            T selected = resultTable.getSelected();
-            if (selected != null) {
-                presenter.onSelection(selected);
-            }
         }
     }
 
@@ -131,5 +102,17 @@ public abstract class SearchView<T> extends JFrame implements ActionListener {
         resultTable.update(searchResults);
 
         btnSearch.setEnabled(true);
+    }
+
+    @Override
+    public void onSelection(T selected) {
+        if (selected != null) {
+            presenter.onSelection(selected);
+        }
+    }
+
+    @Override
+    public void onCancel() {
+        presenter.onCancel();
     }
 }

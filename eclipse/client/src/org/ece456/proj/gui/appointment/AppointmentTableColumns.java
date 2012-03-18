@@ -4,33 +4,17 @@ import org.ece456.proj.gui.shared.table.ColumnFactory;
 import org.ece456.proj.gui.shared.table.ColumnFactory.CellRenderer;
 import org.ece456.proj.gui.shared.table.ColumnFactory.ColumnModel;
 import org.ece456.proj.gui.shared.table.SimpleTable;
-import org.ece456.proj.gui.shared.table.SimpleTableModel;
 import org.ece456.proj.orm.objects.Appointment;
 
-import com.google.common.collect.ImmutableList;
+public class AppointmentTableColumns {
 
-/**
- * For Patient use only: lots of info is hidden from patients.
- * 
- * start time doctor_id length procedures prescriptions diagnoses
- */
-public class AppointmentTable extends SimpleTable<Appointment> {
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    protected SimpleTableModel<Appointment> initModel() {
-        return SimpleTableModel.create(ImmutableList.of(START_TIME, DURATION, DOCTOR, DIAGNOSES,
-                PRESCRIPTIONS, PROCEDURES));
-    }
-
-    // Columns below
     public static ColumnModel<Appointment> START_TIME = ColumnFactory.INSTANCE.create("Start Time",
             new CellRenderer<Appointment>() {
                 @Override
                 public String render(Appointment obj) {
-                    return DATE_FORMAT.format(obj.getStart_time());
+                    return SimpleTable.DATE_FORMAT.format(obj.getStart_time());
                 }
-            }, 300);
+            }, 200);
 
     public static ColumnModel<Appointment> DURATION = ColumnFactory.INSTANCE.create(
             "Duration (min)", new CellRenderer<Appointment>() {
@@ -39,6 +23,14 @@ public class AppointmentTable extends SimpleTable<Appointment> {
                     return String.valueOf(obj.getLength());
                 }
             }, 60);
+
+    public static ColumnModel<Appointment> PATIENT = ColumnFactory.INSTANCE.create("Patient",
+            new CellRenderer<Appointment>() {
+                @Override
+                public String render(Appointment obj) {
+                    return obj.getPatient().getName();
+                }
+            }, 150);
 
     public static ColumnModel<Appointment> DOCTOR = ColumnFactory.INSTANCE.create("Doctor",
             new CellRenderer<Appointment>() {
