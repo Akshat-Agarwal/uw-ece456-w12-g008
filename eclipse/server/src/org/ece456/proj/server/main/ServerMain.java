@@ -8,9 +8,6 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import org.ece456.proj.server.ServerRmi;
 import org.ece456.proj.shared.ServerConstants;
@@ -23,9 +20,6 @@ public class ServerMain {
         // Initialize the system
         System.out.println("ECE 456 DB Server - - - - - - - - -");
 
-        // connect to db
-        Connection conn = null;
-
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
         } catch (Exception ex) {
@@ -33,18 +27,8 @@ public class ServerMain {
             System.out.println(ex);
         }
 
-        try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/hospital?" + "user=root");
-
-        } catch (SQLException ex) {
-            // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-
         System.out.println("Initialize RMI service...");
-        server = new ServerRmiImpl(conn);
+        server = new ServerRmiImpl();
 
         String address = InetAddress.getLocalHost().toString();
 

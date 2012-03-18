@@ -55,4 +55,7 @@ public interface ServerRmi extends Remote {
 
     List<Appointment> getAppointmentsForDoctor(Session session, Id<Doctor> doctorId, Date start,
             Date end) throws RemoteException;
+
+    List<Appointment> getAppointmentsForPatient(Session session, Id<Patient> patientId, Date start,
+            Date end) throws RemoteException;
 }

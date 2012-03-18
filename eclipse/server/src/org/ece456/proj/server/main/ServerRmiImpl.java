@@ -3,6 +3,7 @@ package org.ece456.proj.server.main;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,11 +40,25 @@ import com.google.common.collect.Lists;
 public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
     private static final long serialVersionUID = 1L;
-    private final Connection dbCon;
+    private Connection dbCon;
 
-    protected ServerRmiImpl(Connection dbCon) throws RemoteException {
+    protected ServerRmiImpl() throws RemoteException {
         super();
-        this.dbCon = dbCon;
+    }
+
+    private Connection getConnection() {
+        try {
+            if (dbCon == null || dbCon.isClosed()) {
+                dbCon = DriverManager.getConnection("jdbc:mysql://localhost/hospital?"
+                        + "user=root");
+            }
+        } catch (SQLException ex) {
+            // handle any errors
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        return dbCon;
     }
 
     @Override
@@ -79,7 +94,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                     throw new EnumConstantNotPresentException(UserRole.class, String.valueOf(role));
             }
 
-            PreparedStatement sql = dbCon.prepareStatement(query);
+            PreparedStatement sql = getConnection().prepareStatement(query);
             sql.setInt(1, id.asInt());
 
             System.out.println(sql);
@@ -134,7 +149,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                     + " INNER JOIN doctor ON patient_medical.default_doctor_id = doctor.doctor_id"
                     + " WHERE patient_id = ?;";
 
-            PreparedStatement sql = dbCon.prepareStatement(query);
+            PreparedStatement sql = getConnection().prepareStatement(query);
             sql.setInt(1, id.asInt());
 
             System.out.println(sql);
@@ -182,48 +197,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     @Override
     public List<Appointment> getAppointmentsForPatient(Session session, Id<Patient> id)
             throws RemoteException {
-        if (!isSessionValid(session)) {
-            return Collections.emptyList();
-        }
-
-        try {
-            String query = "SELECT * FROM appointment NATURAL JOIN doctor WHERE patient_id = ? "
-                    + " ORDER BY start_time DESC;";
-
-            PreparedStatement sql = dbCon.prepareStatement(query);
-            sql.setInt(1, id.asInt());
-
-            System.out.println(sql);
-            ResultSet result = sql.executeQuery();
-
-            List<Appointment> apps = Lists.newArrayList();
-            while (result.next()) {
-                Appointment a = new Appointment();
-
-                a.setStart_time(result.getDate("start_time"));
-                a.setLast_modified(result.getDate("last_modified"));
-
-                Doctor d = new Doctor();
-                d.setName(result.getString("doctor.name"));
-                a.setDoctor(d);
-
-                a.setLength(result.getInt("length"));
-                a.setProcedures(result.getString("procedures"));
-                a.setPrescriptions(result.getString("prescriptions"));
-                a.setDiagnoses(result.getString("diagnoses"));
-
-                // patients cannot view appointment.comment !
-
-                apps.add(a);
-            }
-
-            return apps;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return Collections.emptyList();
+        return getAppointmentsForPatient(session, id, null, null);
     }
 
     private boolean isSessionValid(Session session) {
@@ -258,7 +232,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         });
 
         try {
-            Statement sql = dbCon.createStatement();
+            Statement sql = getConnection().createStatement();
             ResultSet result = null;
 
             String sqlStatement = "SELECT * FROM doctor WHERE doctor_id in (";
@@ -305,8 +279,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         try {
-            PreparedStatement sql = dbCon.prepareStatement("UPDATE patient_contact"
-                    + " SET address = ?, phone_num = ?" + " WHERE patient_id = ?");
+            PreparedStatement sql = getConnection().prepareStatement(
+                    "UPDATE patient_contact" + " SET address = ?, phone_num = ?"
+                            + " WHERE patient_id = ?");
             sql.setString(1, c.getAddress());
             sql.setString(2, c.getPhoneNum());
             sql.setInt(3, id.asInt());
@@ -332,7 +307,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             String query = "SELECT name FROM patient_consultants NATURAL JOIN doctor"
                     + " WHERE patient_id = ?";
 
-            PreparedStatement sql = dbCon.prepareStatement(query);
+            PreparedStatement sql = getConnection().prepareStatement(query);
             sql.setInt(1, id.asInt());
 
             System.out.println(sql);
@@ -398,7 +373,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             }
             query += " = ? AND password = ?;";
 
-            PreparedStatement sql = dbCon.prepareStatement(query);
+            PreparedStatement sql = getConnection().prepareStatement(query);
             sql.setString(1, newPassword);
             sql.setInt(2, id.asInt());
             sql.setString(3, oldPassword);
@@ -425,7 +400,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         try {
             String query = "SELECT * FROM admin WHERE admin_id = ?;";
 
-            PreparedStatement sql = dbCon.prepareStatement(query);
+            PreparedStatement sql = getConnection().prepareStatement(query);
             sql.setInt(1, id.asInt());
 
             System.out.println(sql);
@@ -450,7 +425,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     @Override
     public List<Patient> searchPatients(Session session, PatientSearchOption option, String text)
             throws RemoteException {
-        if (!isSessionValid(session) || text.isEmpty()) {
+        if (!isSessionValid(session)) {
             return Collections.emptyList();
         }
 
@@ -476,25 +451,29 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             String query = "SELECT * FROM patient_medical NATURAL JOIN patient_contact ";
             PreparedStatement sql;
 
-            switch (option) {
-                case HEALTH_CARD:
-                    query += "WHERE health_card_num LIKE ?";
-                    sql = dbCon.prepareStatement(query);
-                    sql.setString(1, "%" + text + "%");
-                    break;
-                case NAME:
-                    query += "WHERE name LIKE ?";
-                    sql = dbCon.prepareStatement(query);
-                    sql.setString(1, "%" + text + "%");
-                    break;
-                case SIN:
-                    query += "WHERE sin = ?";
-                    sql = dbCon.prepareStatement(query);
-                    sql.setInt(1, Integer.valueOf(text));
-                    break;
-                default:
-                    throw new EnumConstantNotPresentException(PatientSearchOption.class,
-                            String.valueOf(option));
+            if (option == null) {
+                sql = getConnection().prepareStatement(query);
+            } else {
+                switch (option) {
+                    case HEALTH_CARD:
+                        query += "WHERE health_card_num LIKE ?";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setString(1, "%" + text + "%");
+                        break;
+                    case NAME:
+                        query += "WHERE name LIKE ?";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setString(1, "%" + text + "%");
+                        break;
+                    case SIN:
+                        query += "WHERE sin = ?";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setInt(1, Integer.valueOf(text));
+                        break;
+                    default:
+                        throw new EnumConstantNotPresentException(PatientSearchOption.class,
+                                String.valueOf(option));
+                }
             }
 
             ResultSet result = sql.executeQuery();
@@ -521,7 +500,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     @Override
     public List<Doctor> searchDoctors(Session session, DoctorSearchOption option, String text)
             throws RemoteException {
-        if (!isSessionValid(session) || text.isEmpty()) {
+        if (!isSessionValid(session)) {
             return Collections.emptyList();
         }
 
@@ -538,11 +517,19 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             return getDoctorsById(session, ImmutableList.of(Id.<Doctor> of(text)));
         }
 
-        // Name
+        // Name or all
         try {
-            String query = "SELECT doctor_id, name FROM doctor WHERE name LIKE ?";
-            PreparedStatement sql = dbCon.prepareStatement(query);
-            sql.setString(1, "%" + text + "%");
+            String query = "SELECT doctor_id, name FROM doctor";
+
+            if (option == DoctorSearchOption.NAME) {
+                query += " WHERE name LIKE ?";
+            }
+
+            PreparedStatement sql = getConnection().prepareStatement(query);
+
+            if (option == DoctorSearchOption.NAME) {
+                sql.setString(1, "%" + text + "%");
+            }
 
             System.out.println(sql);
             ResultSet result = sql.executeQuery();
@@ -567,7 +554,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     @Override
     public List<Staff> searchStaff(Session session, StaffSearchOption field, String text)
             throws RemoteException {
-        if (!isSessionValid(session) || text.isEmpty()) {
+        if (!isSessionValid(session)) {
             return Collections.emptyList();
         }
 
@@ -579,23 +566,28 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         try {
-            String query = "SELECT staff_id, name FROM staff WHERE ";
+            String query = "SELECT staff_id, name FROM staff";
             PreparedStatement sql;
-            switch (field) {
-                case ID:
-                    query += "staff_id = ?;";
-                    sql = dbCon.prepareStatement(query);
-                    sql.setInt(1, Id.of(text).asInt());
-                    break;
-                case NAME:
-                    query += "name LIKE ?;";
-                    sql = dbCon.prepareStatement(query);
-                    sql.setString(1, "%" + text + "%");
+            if (field == null) {
+                // Search-all case
+                sql = getConnection().prepareStatement(query);
+            } else {
+                switch (field) {
+                    case ID:
+                        query += " WHERE staff_id = ?;";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setInt(1, Id.of(text).asInt());
+                        break;
+                    case NAME:
+                        query += " WHERE name LIKE ?;";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setString(1, "%" + text + "%");
 
-                    break;
-                default:
-                    throw new EnumConstantNotPresentException(StaffSearchOption.class,
-                            String.valueOf(field));
+                        break;
+                    default:
+                        throw new EnumConstantNotPresentException(StaffSearchOption.class,
+                                String.valueOf(field));
+                }
             }
 
             System.out.println(sql);
@@ -637,7 +629,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         try {
             String query = "SELECT * FROM financial WHERE finance_id = ?;";
 
-            PreparedStatement sql = dbCon.prepareStatement(query);
+            PreparedStatement sql = getConnection().prepareStatement(query);
             sql.setInt(1, id.asInt());
 
             System.out.println(sql);
@@ -674,15 +666,15 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         try {
             PreparedStatement sql = null;
-            String query = "SELECT * FROM appointment WHERE doctor_id = ? ";
-            String sort = " ORDER BY start_time";
+            String query = "SELECT * FROM appointment NATURAL JOIN patient_contact WHERE doctor_id = ? ";
+            String sort = " ORDER BY start_time DESC";
 
             if (start != null && end != null) {
                 // [start, end) range; note that start is inclusive, end is exclusive
                 query += "AND start_time BETWEEN ? AND ?";
                 query += sort;
 
-                sql = dbCon.prepareStatement(query);
+                sql = getConnection().prepareStatement(query);
                 sql.setInt(1, doctorId.asInt());
                 sql.setDate(2, new java.sql.Date(start.getTime()));
                 sql.setDate(3, new java.sql.Date(end.getTime()));
@@ -692,7 +684,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 query += "AND start_time >= ?";
                 query += sort;
 
-                sql = dbCon.prepareStatement(query);
+                sql = getConnection().prepareStatement(query);
                 sql.setInt(1, doctorId.asInt());
                 sql.setDate(2, new java.sql.Date(start.getTime()));
             } else if (end != null) {
@@ -701,13 +693,13 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 query += "AND start_time < ?";
                 query += sort;
 
-                sql = dbCon.prepareStatement(query);
+                sql = getConnection().prepareStatement(query);
                 sql.setInt(1, doctorId.asInt());
                 sql.setDate(2, new java.sql.Date(end.getTime()));
             } else {
                 // Neither specified.
                 query += sort;
-                sql = dbCon.prepareStatement(query);
+                sql = getConnection().prepareStatement(query);
                 sql.setInt(1, doctorId.asInt());
             }
 
@@ -722,6 +714,98 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
                 // TODO only display the one that is last modified!!
                 a.setLast_modified(result.getDate("last_modified"));
+
+                Patient p = new Patient();
+                p.getContact().setName(result.getString("name"));
+                a.setPatient(p);
+
+                a.setLength(result.getInt("length"));
+                a.setProcedures(result.getString("procedures"));
+                a.setPrescriptions(result.getString("prescriptions"));
+                a.setDiagnoses(result.getString("diagnoses"));
+
+                a.setComment(result.getString("comment"));
+
+                apps.add(a);
+            }
+
+            return apps;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Appointment> getAppointmentsForPatient(Session session, Id<Patient> patientId,
+            Date start, Date end) {
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+
+        // only certain roles can look up patient's appointments
+        if (!ImmutableSet
+                .of(UserRole.DOCTOR, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.PATIENT)
+                .contains(session.getRole())) {
+            return null;
+        }
+
+        try {
+            PreparedStatement sql = null;
+            String query = "SELECT * FROM appointment NATURAL JOIN doctor WHERE patient_id = ? ";
+            String sort = " ORDER BY start_time DESC";
+
+            if (start != null && end != null) {
+                // [start, end) range; note that start is inclusive, end is exclusive
+                query += "AND start_time BETWEEN ? AND ?";
+                query += sort;
+
+                sql = getConnection().prepareStatement(query);
+                sql.setInt(1, patientId.asInt());
+                sql.setDate(2, new java.sql.Date(start.getTime()));
+                sql.setDate(3, new java.sql.Date(end.getTime()));
+            } else if (start != null) {
+                // Start is specified, end isn't
+                // Start is inclusive
+                query += "AND start_time >= ?";
+                query += sort;
+
+                sql = getConnection().prepareStatement(query);
+                sql.setInt(1, patientId.asInt());
+                sql.setDate(2, new java.sql.Date(start.getTime()));
+            } else if (end != null) {
+                // Start is not specified, end is specified.
+                // end is exclusive.
+                query += "AND start_time < ?";
+                query += sort;
+
+                sql = getConnection().prepareStatement(query);
+                sql.setInt(1, patientId.asInt());
+                sql.setDate(2, new java.sql.Date(end.getTime()));
+            } else {
+                // Neither specified.
+                query += sort;
+                sql = getConnection().prepareStatement(query);
+                sql.setInt(1, patientId.asInt());
+            }
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+
+            List<Appointment> apps = Lists.newArrayList();
+            while (result.next()) {
+                Appointment a = new Appointment();
+
+                a.setStart_time(result.getDate("start_time"));
+
+                // TODO only display the one that is last modified!!
+                a.setLast_modified(result.getDate("last_modified"));
+
+                Doctor d = new Doctor();
+                d.setName(result.getString("name"));
+                a.setDoctor(d);
 
                 a.setLength(result.getInt("length"));
                 a.setProcedures(result.getString("procedures"));

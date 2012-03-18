@@ -7,10 +7,12 @@ public class Appointment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    // Do not initialize these; they CAN be null when appropriate.
     private Patient patient;
+    private Doctor doctor;
+
     private Date start_time;
     private Date last_modified;
-    private Doctor doctor;
     private int length;
     private String procedures;
     private String prescriptions;
