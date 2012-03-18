@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 
-import org.ece456.proj.gui.appointment.AppointmentTable;
+import org.ece456.proj.gui.appointment.PatientsAppointmentTable;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Patient;
 
@@ -27,7 +27,7 @@ public class PatientView extends JFrame implements ActionListener {
 
     private final PatientContactPanel panel_contact;
     private final PatientMedicalPanel panel_medical;
-    private final AppointmentTable panel_appointments;
+    private final PatientsAppointmentTable panel_appointments;
 
     private final JMenuItem mntmEditContactInfo;
     private final JMenuItem mntmSaveContactInfo;
@@ -75,7 +75,7 @@ public class PatientView extends JFrame implements ActionListener {
         tabbedPane.addTab("Appointments & Visits", null, tab_appointments, null);
         tab_appointments.setLayout(new BorderLayout(0, 0));
 
-        panel_appointments = new AppointmentTable();
+        panel_appointments = new PatientsAppointmentTable();
         panel_appointments.setBackground(SystemColor.window);
         tab_appointments.add(panel_appointments, BorderLayout.CENTER);
 
@@ -118,8 +118,8 @@ public class PatientView extends JFrame implements ActionListener {
 
     public void fillPatientData(Patient patient, List<Appointment> appointments) {
         // Title
-        setTitle(String.format("Patient View: %s (%d)", patient.getContact().getName(), patient
-                .getPatientId().asInt()));
+        setTitle(String.format("Patient View: %s (%d)", patient.getName(), patient.getPatientId()
+                .asInt()));
 
         // Contact
         panel_contact.fillPatientData(patient.getPatientId(), patient.getContact());

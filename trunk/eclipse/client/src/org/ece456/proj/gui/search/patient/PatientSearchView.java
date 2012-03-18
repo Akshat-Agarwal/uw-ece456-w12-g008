@@ -32,7 +32,7 @@ public class PatientSearchView extends SearchView<Patient> {
             new CellRenderer<Patient>() {
                 @Override
                 public String render(Patient p) {
-                    return p.getContact().getName();
+                    return p.getName();
                 }
             }, 150);
 
