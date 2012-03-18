@@ -3,24 +3,24 @@ package org.ece456.proj.gui.accountant;
 import java.util.Date;
 import java.util.List;
 
-import org.ece456.proj.gui.appointment.DoctorsAppointmentTable;
+import org.ece456.proj.gui.appointment.PatientsAppointmentTable;
 import org.ece456.proj.gui.shared.table.SimpleTable;
 import org.ece456.proj.orm.objects.Appointment;
-import org.ece456.proj.orm.objects.Doctor;
+import org.ece456.proj.orm.objects.Patient;
 
-public class DoctorFinancialView extends AbstractFinancialView {
+public class PatientFinancialView extends AbstractFinancialView {
     private static final long serialVersionUID = 1L;
 
-    private final DoctorFinancialPresenter presenter;
+    private final PatientFinancialPresenter presenter;
 
-    public DoctorFinancialView(DoctorFinancialPresenter presenter) {
+    public PatientFinancialView(PatientFinancialPresenter presenter) {
         this.presenter = presenter;
-        setTitle("View Doctor's Appointments");
+        setTitle("View Patient's Appointments");
     }
 
-    public void fillData(Doctor doctor) {
-        textFieldId.setText(doctor.getDoctor_id().toString());
-        textFieldName.setText(doctor.getName());
+    public void fillData(Patient patient) {
+        textFieldId.setText(patient.getPatientId().toString());
+        textFieldName.setText(patient.getContact().getName());
     }
 
     public void fillAppointments(List<Appointment> apps) {
@@ -34,6 +34,6 @@ public class DoctorFinancialView extends AbstractFinancialView {
 
     @Override
     SimpleTable<Appointment> createAppointmentsTable() {
-        return new DoctorsAppointmentTable();
+        return new PatientsAppointmentTable();
     }
 }
