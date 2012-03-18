@@ -24,6 +24,16 @@ public class PatientSearchPresenter implements SearchPresenter<Patient> {
     }
 
     @Override
+    public List<Patient> search() {
+        try {
+            return connection.getServer().searchPatients(connection.getSession(), null, null);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
     public List<Patient> search(Object field, String text) {
         try {
             return connection.getServer().searchPatients(connection.getSession(),
