@@ -1,6 +1,7 @@
 package org.ece456.proj.gui.shared.table;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -46,6 +47,10 @@ public abstract class SimpleTable<T> extends JPanel implements ActionListener, M
 
     private JButton btnSubmit;
 
+    private final JPanel panel_top;
+
+    private JPanel panel_buttons;
+
     public static <E> SimpleTable<E> create(final List<ColumnModel<E>> columns, Listener<E> listener) {
         return new SimpleTable<E>(listener, true, true) {
             private static final long serialVersionUID = 1L;
@@ -63,7 +68,7 @@ public abstract class SimpleTable<T> extends JPanel implements ActionListener, M
         setBackground(SystemColor.window);
         setLayout(new BorderLayout());
 
-        JPanel panel_top = new JPanel();
+        panel_top = new JPanel();
         add(panel_top, BorderLayout.NORTH);
         panel_top.setLayout(new BorderLayout(0, 0));
 
@@ -78,6 +83,7 @@ public abstract class SimpleTable<T> extends JPanel implements ActionListener, M
         table.setBorder(null);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.addMouseListener(this);
+        table.setAutoCreateRowSorter(true);
 
         for (int i = 0; i < model.getColumnCount(); i++) {
             int w = model.getColumn(i).getPreferredWidth();
@@ -88,7 +94,7 @@ public abstract class SimpleTable<T> extends JPanel implements ActionListener, M
         add(scrollPane, BorderLayout.CENTER);
 
         if (showOpen || showCancel) {
-            JPanel panel_buttons = new JPanel();
+            panel_buttons = new JPanel();
             add(panel_buttons, BorderLayout.SOUTH);
             panel_buttons.setLayout(new BoxLayout(panel_buttons, BoxLayout.X_AXIS));
 
@@ -158,6 +164,22 @@ public abstract class SimpleTable<T> extends JPanel implements ActionListener, M
                     listener.onSelection(selected);
                 }
             }
+        }
+    }
+
+    @Override
+    public void setBackground(Color color) {
+        super.setBackground(color);
+
+        // setBackground can be also called in super() constructor, so need to check.
+        if (table != null) {
+            table.setBackground(color);
+        }
+        if (panel_top != null) {
+            panel_top.setBackground(color);
+        }
+        if (panel_buttons != null) {
+            panel_buttons.setBackground(color);
         }
     }
 
