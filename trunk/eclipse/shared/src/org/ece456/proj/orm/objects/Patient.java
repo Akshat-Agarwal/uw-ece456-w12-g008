@@ -38,4 +38,8 @@ public class Patient implements Serializable {
     public PatientMedical getMedical() {
         return medical;
     }
+
+    public String getName() {
+        return contact.getName();
+    }
 }
