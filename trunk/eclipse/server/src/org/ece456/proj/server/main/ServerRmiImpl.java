@@ -667,7 +667,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         try {
             PreparedStatement sql = null;
             String query = "SELECT * FROM appointment NATURAL JOIN patient_contact WHERE "
-                    + "last_modified in (SELECT max(last_modified) FROM appointment GROUP BY "
+                    + "(patient_id, time_created, last_modified) in (SELECT patient_id, time_created,"
+                    + " max(last_modified) FROM appointment GROUP BY "
                     + "patient_id, time_created) AND doctor_id = ? ";
             String sort = " ORDER BY start_time DESC";
 
@@ -757,7 +758,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         try {
             PreparedStatement sql = null;
             String query = "SELECT * FROM appointment NATURAL JOIN doctor WHERE "
-                    + "last_modified in (SELECT max(last_modified) FROM appointment GROUP BY "
+                    + "(patient_id, time_created, last_modified) in (SELECT patient_id, time_created, "
+                    + "max(last_modified) FROM appointment GROUP BY "
                     + "patient_id, time_created) AND patient_id = ? ";
             String sort = " ORDER BY start_time DESC";
 
