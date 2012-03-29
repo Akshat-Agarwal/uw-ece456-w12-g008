@@ -2,7 +2,10 @@ package org.ece456.proj.gui.appointment;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,16 +15,23 @@ import javax.swing.JTextField;
 
 import org.ece456.proj.gui.shared.table.SimpleTable;
 import org.ece456.proj.orm.objects.Appointment;
+import org.ece456.proj.orm.objects.Id;
+import org.ece456.proj.orm.objects.Patient;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public class AppointmentView extends JFrame {
+public class AppointmentView extends JFrame implements ActionListener {
+
+    public interface AppointmentPresenter {
+        void viewPatient(Id<Patient> id);
+    }
+
     private static final long serialVersionUID = 1L;
 
-    private JTextField textPatient;
+    private JButton textPatient;
     private JTextField textDoctor;
     private final JTextField textStartTime;
     private final JTextField textDuration;
@@ -32,8 +42,14 @@ public class AppointmentView extends JFrame {
 
     private JTextArea textComment;
 
-    public AppointmentView(Appointment a, boolean canViewComments) {
+    private final AppointmentPresenter presenter;
+
+    private final Appointment appointment;
+
+    public AppointmentView(Appointment a, boolean canViewComments, AppointmentPresenter presenter) {
         setTitle("Appointment View");
+        this.presenter = presenter;
+        this.appointment = a;
 
         JPanel panel = new JPanel();
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -54,10 +70,10 @@ public class AppointmentView extends JFrame {
             JLabel lblPatient = new JLabel("Patient");
             panel.add(lblPatient, "2, 2, right, default");
 
-            textPatient = new JTextField();
-            textPatient.setEditable(false);
+            textPatient = new JButton();
+            textPatient.setText("View this patient");
+            textPatient.addActionListener(this);
             panel.add(textPatient, "4, 2, fill, default");
-            textPatient.setColumns(10);
         }
 
         if (a.getDoctor() != null) {
@@ -153,6 +169,15 @@ public class AppointmentView extends JFrame {
         textDiagnoses.setText(a.getDiagnoses());
         if (textComment != null) {
             textComment.setText(a.getComment());
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == textPatient) {
+            if (presenter != null) {
+                presenter.viewPatient(appointment.getPatient().getPatientId());
+            }
         }
     }
 }

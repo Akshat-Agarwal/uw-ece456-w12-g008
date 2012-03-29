@@ -3,6 +3,7 @@ package org.ece456.proj.gui.accountant;
 import java.util.Date;
 import java.util.List;
 
+import org.ece456.proj.gui.appointment.AppointmentView.AppointmentPresenter;
 import org.ece456.proj.gui.appointment.DoctorsAppointmentTable;
 import org.ece456.proj.gui.shared.table.SimpleTable;
 import org.ece456.proj.orm.objects.Appointment;
@@ -14,6 +15,7 @@ public class DoctorFinancialView extends AbstractFinancialView {
     private final DoctorFinancialPresenter presenter;
 
     public DoctorFinancialView(DoctorFinancialPresenter presenter) {
+        super(presenter.getAppointmentPresenter());
         this.presenter = presenter;
         setTitle("View Doctor's Appointments");
     }
@@ -33,7 +35,7 @@ public class DoctorFinancialView extends AbstractFinancialView {
     }
 
     @Override
-    SimpleTable<Appointment> createAppointmentsTable() {
-        return new DoctorsAppointmentTable();
+    SimpleTable<Appointment> createAppointmentsTable(AppointmentPresenter p) {
+        return new DoctorsAppointmentTable(p);
     }
 }
