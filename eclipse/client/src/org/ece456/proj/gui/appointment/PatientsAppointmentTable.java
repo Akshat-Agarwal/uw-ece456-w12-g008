@@ -16,7 +16,7 @@ public class PatientsAppointmentTable extends SimpleTable<Appointment> {
     private static final long serialVersionUID = 1L;
 
     public PatientsAppointmentTable() {
-        super(new AppointmentOpener(UserRole.PATIENT), true, false);
+        super(new AppointmentOpener(UserRole.PATIENT, null), true, false);
     }
 
     @Override

@@ -715,10 +715,10 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
                 a.setStart_time(result.getDate("start_time"));
 
-                // TODO only display the one that is last modified!!
                 a.setLast_modified(result.getDate("last_modified"));
 
                 Patient p = new Patient();
+                p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
                 p.getContact().setName(result.getString("name"));
                 a.setPatient(p);
 
@@ -806,8 +806,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
                 a.setStart_time(result.getDate("start_time"));
 
-                // TODO only display the one that is last modified!!
                 a.setLast_modified(result.getDate("last_modified"));
+
+                // We intentionally don't fill out patient. Leave it as null
 
                 Doctor d = new Doctor();
                 d.setName(result.getString("name"));

@@ -1,5 +1,6 @@
 package org.ece456.proj.gui.appointment;
 
+import org.ece456.proj.gui.appointment.AppointmentView.AppointmentPresenter;
 import org.ece456.proj.gui.shared.table.SimpleTable;
 import org.ece456.proj.gui.shared.table.SimpleTableModel;
 import org.ece456.proj.orm.objects.Appointment;
@@ -10,8 +11,8 @@ import com.google.common.collect.ImmutableList;
 public class DoctorsAppointmentTable extends SimpleTable<Appointment> {
     private static final long serialVersionUID = 1L;
 
-    public DoctorsAppointmentTable() {
-        super(new AppointmentOpener(UserRole.DOCTOR), true, false);
+    public DoctorsAppointmentTable(AppointmentPresenter p) {
+        super(new AppointmentOpener(UserRole.DOCTOR, p), true, false);
     }
 
     @Override

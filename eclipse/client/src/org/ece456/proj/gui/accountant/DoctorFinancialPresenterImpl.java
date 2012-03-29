@@ -5,9 +5,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.ece456.proj.gui.appointment.AppointmentView;
+import org.ece456.proj.gui.appointment.AppointmentView.AppointmentPresenter;
+import org.ece456.proj.gui.patient.PatientPresenter;
+import org.ece456.proj.gui.patient.PatientPresenterImpl;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
+import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.shared.Connection;
 
 public class DoctorFinancialPresenterImpl implements DoctorFinancialPresenter {
@@ -45,6 +50,17 @@ public class DoctorFinancialPresenterImpl implements DoctorFinancialPresenter {
         view.fillData(doctor);
 
         view.setVisible(true);
+    }
+
+    @Override
+    public AppointmentPresenter getAppointmentPresenter() {
+        return new AppointmentView.AppointmentPresenter() {
+            @Override
+            public void viewPatient(Id<Patient> id) {
+                PatientPresenter p = new PatientPresenterImpl(connection);
+                p.show(id);
+            }
+        };
     }
 
 }

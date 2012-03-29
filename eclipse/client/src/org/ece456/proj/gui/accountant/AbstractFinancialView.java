@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.ece456.proj.gui.appointment.AppointmentView.AppointmentPresenter;
 import org.ece456.proj.gui.shared.table.SimpleTable;
 import org.ece456.proj.gui.shared.widgets.DateRangePicker;
 import org.ece456.proj.gui.shared.widgets.DateRangePicker.Listener;
@@ -26,7 +27,7 @@ public abstract class AbstractFinancialView extends JFrame implements Listener {
     protected final JTextField textFieldName;
     protected final SimpleTable<Appointment> table;
 
-    protected AbstractFinancialView() {
+    protected AbstractFinancialView(AppointmentPresenter appointmentPresenter) {
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         Box verticalBox = Box.createVerticalBox();
@@ -60,7 +61,7 @@ public abstract class AbstractFinancialView extends JFrame implements Listener {
         JPanel panelSearch = new DateRangePicker(this);
         verticalBox.add(panelSearch);
 
-        table = createAppointmentsTable();
+        table = createAppointmentsTable(appointmentPresenter);
         getContentPane().add(table, BorderLayout.CENTER);
         table.setPreferredSize(new Dimension(500, 300));
 
@@ -68,5 +69,5 @@ public abstract class AbstractFinancialView extends JFrame implements Listener {
         setLocation(100, 100);
     }
 
-    abstract SimpleTable<Appointment> createAppointmentsTable();
+    abstract SimpleTable<Appointment> createAppointmentsTable(AppointmentPresenter p);
 }
