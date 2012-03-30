@@ -431,7 +431,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         // Only certain roles can search for patients
         EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF,
-                UserRole.ACCOUNTANT);
+                UserRole.ACCOUNTANT, UserRole.DOCTOR);
         boolean hasPermission = canSearchPatients.contains(session.getRole());
         if (!hasPermission) {
             return Collections.emptyList();
