@@ -26,6 +26,9 @@ public interface ServerRmi extends Remote {
     Patient updatePatientContact(Session session, Id<Patient> id, PatientContact c)
             throws RemoteException;
 
+    Doctor updateDoctor(Session session, Id<Doctor> doctor_id, Doctor doctor)
+            throws RemoteException;
+
     Patient getPatientById(Session session, Id<Patient> id) throws RemoteException;
 
     Doctor getDoctorById(Session session, Id<Doctor> id) throws RemoteException;
@@ -58,4 +61,5 @@ public interface ServerRmi extends Remote {
 
     List<Appointment> getAppointmentsForPatient(Session session, Id<Patient> patientId, Date start,
             Date end) throws RemoteException;
+
 }

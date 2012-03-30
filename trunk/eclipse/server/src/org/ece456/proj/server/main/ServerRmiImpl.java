@@ -831,4 +831,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         return Collections.emptyList();
     }
+
+    @Override
+    public Doctor updateDoctor(Session session, Id<Doctor> doctor_id, Doctor doctor)
+            throws RemoteException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
