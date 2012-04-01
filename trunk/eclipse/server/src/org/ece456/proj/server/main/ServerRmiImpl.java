@@ -490,6 +490,10 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             }
         }
 
+        // if (option == PatientSearchOption.LAST_DATE) {
+        // return Collections.emptyList();
+        // }
+
         try {
             String query = "SELECT * FROM patient_medical NATURAL JOIN patient_contact ";
             PreparedStatement sql;
@@ -513,6 +517,16 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                         sql = getConnection().prepareStatement(query);
                         sql.setInt(1, Integer.valueOf(text));
                         break;
+                    case LAST_DATE:
+                        query = "SELECT * FROM appointment NATURAL JOIN patient_medical NATURAL JOIN patient_contact WHERE last_modified LIKE ? ";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setString(1, "%" + text + "%");
+                        break;
+                    // case LAST_DATE:
+                    // query += "WHERE health_card_num LIKE ?";
+                    // sql = getConnection().prepareStatement(query);
+                    // sql.setString(1, "%" + text + "%");
+                    // break;
                     default:
                         throw new EnumConstantNotPresentException(PatientSearchOption.class,
                                 String.valueOf(option));
@@ -1059,5 +1073,39 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             throws RemoteException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Boolean createAppointment(Session session, Appointment a) {
+        if (!isSessionValid(session)) {
+            return false;
+        }
+
+        if (session.getRole() != UserRole.DOCTOR) {
+            return false;
+        }
+
+        try {
+            PreparedStatement sql = getConnection().prepareStatement(
+                    "INSERT INTO appointment (patient_id, start_time, last_modified, time_created, "
+                            + "doctor_id, length, procedures, prescriptions, diagnoses, comment) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            sql.setInt(1, a.getPatient().getPatientId().asInt());
+            sql.setTimestamp(2, new java.sql.Timestamp(a.getStart_time().getTime()));
+            sql.setTimestamp(3, new java.sql.Timestamp(a.getLast_modified().getTime()));
+            sql.setTimestamp(4, new java.sql.Timestamp(a.getLast_modified().getTime()));
+            sql.setInt(5, a.getDoctor().getDoctor_id().asInt());
+            sql.setInt(6, a.getLength());
+            sql.setString(7, a.getProcedures());
+            sql.setString(8, a.getPrescriptions());
+            sql.setString(9, a.getDiagnoses());
+            sql.setString(10, a.getComment());
+            System.out.println(sql);
+            sql.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

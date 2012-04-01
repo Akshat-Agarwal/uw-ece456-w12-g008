@@ -4,8 +4,6 @@ import java.rmi.RemoteException;
 
 import org.ece456.proj.gui.account.PasswordChangePresenter;
 import org.ece456.proj.gui.account.PasswordChangePresenterImpl;
-import org.ece456.proj.gui.accountant.PatientFinancialPresenter;
-import org.ece456.proj.gui.accountant.PatientFinancialPresenterImpl;
 import org.ece456.proj.gui.search.SearchPresenter;
 import org.ece456.proj.gui.search.patient.PatientSearchPresenter;
 import org.ece456.proj.gui.shared.table.SelectionListener;
@@ -52,9 +50,10 @@ public class DoctorPresenterImpl implements DoctorPresenter {
                     @Override
                     public AfterAction onSelection(Patient selected) {
                         // Do something with the Doctor
-                        PatientFinancialPresenter p = new PatientFinancialPresenterImpl(connection,
+                        PatientDoctorPresenter p = new PatientDoctorPresenterImpl(connection,
                                 selected.getPatientId());
                         p.show(selected);
+                        // presenter.searchAppointments(start, end);
                         return AfterAction.DO_NOTHING;
                     }
 
