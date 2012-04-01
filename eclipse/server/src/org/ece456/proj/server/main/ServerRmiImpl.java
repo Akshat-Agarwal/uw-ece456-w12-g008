@@ -882,6 +882,10 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 a.setPrescriptions(result.getString("prescriptions"));
                 a.setDiagnoses(result.getString("diagnoses"));
 
+                if (session.getRole() != UserRole.PATIENT) {
+                    a.setComment(result.getString("comment"));
+                }
+
                 apps.add(a);
             }
 
