@@ -1,7 +1,6 @@
 package org.ece456.proj.gui.staff;
 
 import java.awt.BorderLayout;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -39,13 +38,12 @@ public class StaffView extends JFrame implements ActionListener {
 
         // Set the frame's properties
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setTitle("Patient View");
+        setTitle("Staff view");
         setBounds(100, 100, 600, 400);
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         panel_staffInfo = new StaffPanel();
-        getContentPane().add(panel_staffInfo, BorderLayout.NORTH);
-        panel_staffInfo.setBackground(SystemColor.window);
+        getContentPane().add(panel_staffInfo, BorderLayout.CENTER);
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
@@ -78,11 +76,6 @@ public class StaffView extends JFrame implements ActionListener {
         mntmNewAppointment.addActionListener(this);
         mnNew.add(mntmNewAppointment);
 
-        // EDIT MENU
-        JMenu mnEdit = new JMenu("Edit");
-        mnEdit.setMnemonic('e');
-        menuBar.add(mnEdit);
-
         mntmEditAppointment = new JMenuItem("Edit Appointment");
         mntmEditAppointment.addActionListener(this);
         mnNew.add(mntmEditAppointment);
@@ -103,6 +96,8 @@ public class StaffView extends JFrame implements ActionListener {
         mntmSearchPatient.addActionListener(this);
         mnSearch.add(mntmSearchPatient);
 
+        pack();
+        setSize(400, 300);
     }
 
     public void fillStaffData(Staff staff) {
