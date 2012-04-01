@@ -164,7 +164,7 @@ public class DoctorPatientAppointmentView extends JFrame implements ActionListen
 
         fillData(a);
 
-        setPreferredSize(new Dimension(400, 300));
+        setPreferredSize(new Dimension(400, 400));
         pack();
         setLocation(100, 100);
 

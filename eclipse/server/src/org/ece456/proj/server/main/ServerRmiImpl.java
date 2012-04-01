@@ -518,7 +518,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                         sql.setInt(1, Integer.valueOf(text));
                         break;
                     case LAST_DATE:
-                        query = "SELECT * FROM appointment NATURAL JOIN patient_medical NATURAL JOIN patient_contact WHERE last_modified LIKE ? ";
+                        query = "SELECT * FROM appointment NATURAL JOIN patient_medical NATURAL JOIN patient_contact WHERE start_time LIKE ? ";
                         sql = getConnection().prepareStatement(query);
                         sql.setString(1, "%" + text + "%");
                         break;
