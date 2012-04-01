@@ -1062,6 +1062,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             sql.setString(10, a.getComment());
             System.out.println(sql);
             sql.execute();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
