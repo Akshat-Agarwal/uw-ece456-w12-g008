@@ -127,6 +127,5 @@ public class StaffView extends JFrame implements ActionListener {
         } else if (s == mntmSearchPatient) {
             presenter.showPatientSearch(1);
         }
-
     }
 }
