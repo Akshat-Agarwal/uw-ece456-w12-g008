@@ -68,6 +68,13 @@ public class DateTimePicker extends JPanel {
         return c.getTime();
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        day.setEnabled(enabled);
+        hour.setEnabled(enabled);
+        minute.setEnabled(enabled);
+    }
+
     private int toInt(Object o) {
         return Integer.parseInt(String.valueOf(o));
     }
