@@ -92,5 +92,13 @@ public class DoctorView extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object s = e.getSource();
+
+        if (s == mntmRefresh) {
+            presenter.refresh();
+        } else if (s == mntmChangePassword) {
+            presenter.showPasswordChange();
+        } else if (s == mntmSearchPatient) {
+            presenter.showPatientSearch();
+        }
     }
 }
