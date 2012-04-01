@@ -13,6 +13,7 @@ public class Appointment implements Serializable {
 
     private Date start_time;
     private Date last_modified;
+    private Date time_created;
     private int length;
     private String procedures;
     private String prescriptions;
@@ -37,6 +38,14 @@ public class Appointment implements Serializable {
 
     public Date getLast_modified() {
         return last_modified;
+    }
+
+    public void setTime_created(Date time_created) {
+        this.time_created = time_created;
+    }
+
+    public Date getTime_created() {
+        return time_created;
     }
 
     public void setLast_modified(Date last_modified) {

@@ -2,6 +2,7 @@ package org.ece456.proj.gui.staff;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
@@ -19,7 +20,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.ece456.proj.gui.shared.table.SimpleTable;
+import org.ece456.proj.gui.shared.widgets.DateTimePicker;
 import org.ece456.proj.orm.objects.Appointment;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -39,9 +40,9 @@ public class AppointmentView extends JFrame implements ActionListener {
 
     private final JTextField textPatient;
     private final JTextField textDoctor;
-    private final JTextField textStartTime;
+    private final DateTimePicker textStartTime;
     private final JTextField textDuration;
-    private final JTextField textLastModified;
+    private final DateTimePicker textLastModified;
     private final JTextField textProcedures;
     private final JTextField textPrescriptions;
     private final JTextField textDiagnoses;
@@ -109,12 +110,8 @@ public class AppointmentView extends JFrame implements ActionListener {
         JLabel lblStartTime = new JLabel("Start Time");
         panel.add(lblStartTime, "2, 6, right, default");
 
-        textStartTime = new JTextField();
-        textStartTime.setEditable(true);
-        textStartTime.setText("");
-        textStartTime.setToolTipText("Follow format: MMM dd yyyy HH:mm");
+        textStartTime = new DateTimePicker();
         panel.add(textStartTime, "4, 6, fill, default");
-        textStartTime.setColumns(10);
 
         JLabel lblDuration = new JLabel("Duration (minutes)");
         panel.add(lblDuration, "2, 8, right, default");
@@ -128,12 +125,9 @@ public class AppointmentView extends JFrame implements ActionListener {
         JLabel lblLastModified = new JLabel("Last Modified");
         panel.add(lblLastModified, "2, 10, right, default");
 
-        textLastModified = new JTextField();
-        textLastModified.setEditable(false);
+        textLastModified = new DateTimePicker();
         textLastModified.setToolTipText("This will be updated automatically when saving");
-        textLastModified.setText("");
         panel.add(textLastModified, "4, 10, fill, default");
-        textLastModified.setColumns(10);
 
         JLabel lblProcedures = new JLabel("Procedures");
         panel.add(lblProcedures, "2, 12, right, default");
@@ -169,6 +163,7 @@ public class AppointmentView extends JFrame implements ActionListener {
         panel.add(scrollPane, "4, 18, fill, fill");
 
         textComment = new JTextArea();
+        textComment.setBackground(SystemColor.menu);
         scrollPane.setViewportView(textComment);
         textComment.setEditable(false);
         textComment.setText("");
@@ -186,11 +181,11 @@ public class AppointmentView extends JFrame implements ActionListener {
         if (a.getDoctor() != null)
             textDoctor.setText(a.getDoctor().getName());
         if (a.getStart_time() != null)
-            textStartTime.setText(SimpleTable.DATE_FORMAT.format(a.getStart_time()));
+            textStartTime.setValue(a.getStart_time());
         if (a.getLength() != 0)
             textDuration.setText(String.valueOf(a.getLength()));
         if (a.getLast_modified() != null)
-            textLastModified.setText(SimpleTable.DATE_FORMAT.format(a.getLast_modified()));
+            textLastModified.setValue(a.getLast_modified());
         if (a.getProcedures() != null)
             textProcedures.setText(a.getProcedures());
         if (a.getPrescriptions() != null)
@@ -208,7 +203,7 @@ public class AppointmentView extends JFrame implements ActionListener {
 
         Date now = c.getTime();
         app.setPatient(appointment.getPatient());
-        app.setStart_time(formatter(textStartTime.getText()));
+        app.setStart_time(textStartTime.getValue());
         app.setDiagnoses(textDiagnoses.getText());
         app.setDoctor(appointment.getDoctor());
         app.setLength(Integer.parseInt(textDuration.getText()));
