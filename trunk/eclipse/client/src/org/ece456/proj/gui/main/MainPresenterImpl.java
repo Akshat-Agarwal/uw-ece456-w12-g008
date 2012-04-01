@@ -8,11 +8,14 @@ import org.ece456.proj.gui.doctor.DoctorPresenter;
 import org.ece456.proj.gui.doctor.DoctorPresenterImpl;
 import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
+import org.ece456.proj.gui.staff.StaffPresenter;
+import org.ece456.proj.gui.staff.StaffPresenterImpl;
 import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
+import org.ece456.proj.orm.objects.Staff;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Connection;
 
@@ -41,8 +44,9 @@ public class MainPresenterImpl implements MainPresenter {
                 break;
             case DOCTOR:
                 showDoctorView(connection, id);
-                break;
-            default:
+                break;            case STAFF:
+                showStaffView(connection, id);
+                break;            default:
                 return "That view is not supported yet";
         }
 
@@ -68,4 +72,8 @@ public class MainPresenterImpl implements MainPresenter {
         DoctorPresenter presenter = new DoctorPresenterImpl(connection);
         presenter.show(Id.<Doctor> of(id));
     }
-}
+
+    private void showStaffView(Connection connection, int id) {
+        StaffPresenter presenter = new StaffPresenterImpl(connection);
+        presenter.show(Id.<Staff> of(id));
+    }}

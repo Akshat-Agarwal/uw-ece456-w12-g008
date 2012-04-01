@@ -62,4 +62,16 @@ public interface ServerRmi extends Remote {
     List<Appointment> getAppointmentsForPatient(Session session, Id<Patient> patientId, Date start,
             Date end) throws RemoteException;
 
+    Staff getStaffById(Session session, Id<Staff> id) throws RemoteException;
+
+    List<Doctor> searchDoctorByStaff(Session session, Id<Staff> id, DoctorSearchOption option,
+            String text) throws RemoteException;
+
+    List<Patient> searchPatientByStaff(Session session, Id<Staff> id, PatientSearchOption option,
+            String text) throws RemoteException;
+
+    Patient createNewPatient(Session session, Patient p) throws RemoteException;
+
+    Boolean createAppointment(Session session, Appointment a) throws RemoteException;
+
 }
