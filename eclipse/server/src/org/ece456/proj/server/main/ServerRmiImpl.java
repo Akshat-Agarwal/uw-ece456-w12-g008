@@ -216,6 +216,49 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     }
 
     @Override
+    public Staff getStaffById(Session session, Id<Staff> id) {
+        if (!isSessionValid(session)) {
+            return null;
+        }
+
+        // A patient can only view his own records
+        if (session.getRole() == UserRole.STAFF) {
+            if (!id.equals(session.getId())) {
+                // Trying to access someone else's patient records - deny access
+                return null;
+            }
+        }
+
+        // Invalid ID check - don't bother running the query
+        if (Id.invalidId().equals(id)) {
+            return null;
+        }
+
+        try {
+            String query = "SELECT * FROM staff WHERE staff_id = ?;";
+
+            PreparedStatement sql = getConnection().prepareStatement(query);
+            sql.setInt(1, id.asInt());
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+
+            if (!result.next()) {
+                return null;
+            }
+
+            Staff staff = new Staff();
+            staff.setStaffId(Id.<Staff> of(result.getInt("staff_id")));
+            staff.setName(result.getString("name"));
+            return staff;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public List<Doctor> getDoctorsById(Session session, Iterable<Id<Doctor>> ids)
             throws RemoteException {
         if (!isSessionValid(session)) {
@@ -659,8 +702,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         // only certain roles can look up doctor's appointments
-        if (!ImmutableSet.of(UserRole.DOCTOR, UserRole.ADMIN, UserRole.ACCOUNTANT).contains(
-                session.getRole())) {
+        if (!ImmutableSet.of(UserRole.DOCTOR, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.STAFF)
+                .contains(session.getRole())) {
             return null;
         }
 
@@ -718,6 +761,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 a.setLast_modified(result.getDate("last_modified"));
 
                 Patient p = new Patient();
+                Doctor d = new Doctor();
+                d.setDoctor_id(doctorId);
+                a.setDoctor(d);
                 p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
                 p.getContact().setName(result.getString("name"));
                 a.setPatient(p);
@@ -749,9 +795,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         // only certain roles can look up patient's appointments
-        if (!ImmutableSet
-                .of(UserRole.DOCTOR, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.PATIENT)
-                .contains(session.getRole())) {
+        if (!ImmutableSet.of(UserRole.DOCTOR, UserRole.ADMIN, UserRole.ACCOUNTANT,
+                UserRole.PATIENT, UserRole.STAFF).contains(session.getRole())) {
             return null;
         }
 
@@ -804,6 +849,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             while (result.next()) {
                 Appointment a = new Appointment();
 
+                Patient p = new Patient();
+                p.setPatientId(patientId);
+                a.setPatient(p);
                 a.setStart_time(result.getDate("start_time"));
 
                 a.setLast_modified(result.getDate("last_modified"));
@@ -812,6 +860,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
                 Doctor d = new Doctor();
                 d.setName(result.getString("name"));
+                d.setDoctor_id(Id.<Doctor> of(result.getInt("doctor_id")));
                 a.setDoctor(d);
 
                 a.setLength(result.getInt("length"));
@@ -832,6 +881,179 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         return Collections.emptyList();
     }
 
+    @Override
+    public List<Doctor> searchDoctorByStaff(Session session, Id<Staff> id,
+            DoctorSearchOption option, String text) throws RemoteException {
+
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+        try {
+            String query = "SELECT doctor_id, name FROM doctor ";
+            query += "WHERE doctor_id IN (SELECT doctor_id FROM doctor_staff WHERE staff_id = ";
+            query += String.valueOf(id);
+            query += ") ";
+            PreparedStatement sql;
+            if (text == null) {
+                sql = getConnection().prepareStatement(query);
+            } else {
+                if (option == DoctorSearchOption.ID) {
+                    query += "AND doctor_id LIKE ?";
+                } else if (option == DoctorSearchOption.NAME) {
+                    query += "AND name LIKE ?";
+                } else {
+                }
+                sql = getConnection().prepareStatement(query);
+                sql.setString(1, "%" + text + "%");
+            }
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+            List<Doctor> Doctors = Lists.newArrayList();
+            while (result.next()) {
+                Doctor p = new Doctor();
+                p.setDoctor_id(Id.<Doctor> of(result.getInt("doctor_id")));
+                p.setName(result.getString("name"));
+                Doctors.add(p);
+            }
+            return Doctors;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Patient> searchPatientByStaff(Session session, Id<Staff> id,
+            PatientSearchOption option, String text) throws RemoteException {
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+
+        try {
+            String query = "SELECT * FROM patient_contact INNER JOIN patient_medical ";
+            query += "ON patient_contact.patient_id=patient_medical.patient_id ";
+            query += "WHERE (default_doctor_id ";
+            query += "IN (SELECT doctor_id FROM doctor_staff WHERE staff_id = ";
+            query += String.valueOf(id);
+            query += "))";
+            PreparedStatement sql;
+            if (text == null) {
+                sql = getConnection().prepareStatement(query);
+            } else {
+                if (option == PatientSearchOption.ID) {
+                    query += "AND (patient_contact.patient_id LIKE ?)";
+                } else if (option == PatientSearchOption.NAME) {
+                    query += "AND (patient_contact.name LIKE ?)";
+                } else if (option == PatientSearchOption.HEALTH_CARD) {
+                    query += "AND (patient_medical.health_card_num like ?)";
+                    // query +=
+                    // "AND (patient_id IN (SELECT patient_id FROM patient_medical WHERE health_card_num like ?))";
+                } else if (option == PatientSearchOption.SIN) {
+                    query += "AND (patient_medical.sin like ?)";
+                    // query +=
+                    // "AND patient_id IN ((SELECT patient_id FROM patient_medical WHERE sin like ?))";
+                }
+                sql = getConnection().prepareStatement(query);
+                sql.setString(1, "%" + text + "%");
+            }
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+            List<Patient> Patients = Lists.newArrayList();
+            while (result.next()) {
+                Patient p = new Patient();
+                p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
+                p.getContact().setName(result.getString("name"));
+
+                // Add the default doctor_id
+                Doctor d = new Doctor();
+                d.setDoctor_id(Id.<Doctor> of(result.getInt("default_doctor_id")));
+                p.getMedical().setDefaultDoctor(d);
+
+                Patients.add(p);
+            }
+            return Patients;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Patient createNewPatient(Session session, Patient p) {
+        if (!isSessionValid(session)) {
+            return null;
+        }
+
+        if (session.getRole() != UserRole.STAFF) {
+            return null;
+        }
+
+        try {
+            PreparedStatement sql = getConnection().prepareStatement(
+                    "INSERT INTO patient_medical (patient_id, sin, health_card_num, num_visits, sex, "
+                            + "default_doctor_id, current_health) " + "VALUES ("
+                            + "?, ?, ?, ?, ?, ?, ?)");
+            sql.setInt(1, p.getPatientId().asInt());
+            sql.setInt(2, p.getMedical().getSin());
+            sql.setString(3, p.getMedical().getHealthCardNumber());
+            sql.setInt(4, p.getMedical().getNumVisits());
+            sql.setString(5, p.getMedical().getSex().toString().toLowerCase());
+            sql.setInt(6, p.getMedical().getDefaultDoctor().getDoctor_id().asInt());
+            sql.setString(7, p.getMedical().getCurrentHealth());
+            System.out.println(sql);
+            sql.execute();
+
+            sql = getConnection().prepareStatement(
+                    "INSERT INTO patient_contact (patient_id, name, address, phone_num, password)"
+                            + " VALUES (?, ?, ?, ?, ?)");
+            sql.setInt(1, p.getPatientId().asInt());
+            sql.setString(2, p.getContact().getName());
+            sql.setString(3, p.getContact().getAddress());
+            sql.setString(4, p.getContact().getPhoneNum());
+            sql.setString(5, p.getContact().getPassword());
+            System.out.println(sql);
+            sql.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public Boolean createAppointment(Session session, Appointment a) {
+        if (!isSessionValid(session)) {
+            return false;
+        }
+
+        if (session.getRole() != UserRole.STAFF) {
+            return false;
+        }
+
+        try {
+            PreparedStatement sql = getConnection().prepareStatement(
+                    "INSERT INTO appointment (patient_id, start_time, last_modified, time_created, "
+                            + "doctor_id, length, procedures, prescriptions, diagnoses, comment) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            sql.setInt(1, a.getPatient().getPatientId().asInt());
+            sql.setTimestamp(2, new java.sql.Timestamp(a.getStart_time().getTime()));
+            sql.setTimestamp(3, new java.sql.Timestamp(a.getLast_modified().getTime()));
+            sql.setTimestamp(4, new java.sql.Timestamp(a.getLast_modified().getTime()));
+            sql.setInt(5, a.getDoctor().getDoctor_id().asInt());
+            sql.setInt(6, a.getLength());
+            sql.setString(7, a.getProcedures());
+            sql.setString(8, a.getPrescriptions());
+            sql.setString(9, a.getDiagnoses());
+            sql.setString(10, a.getComment());
+            System.out.println(sql);
+            sql.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
     @Override
     public Doctor updateDoctor(Session session, Id<Doctor> doctor_id, Doctor doctor)
             throws RemoteException {
