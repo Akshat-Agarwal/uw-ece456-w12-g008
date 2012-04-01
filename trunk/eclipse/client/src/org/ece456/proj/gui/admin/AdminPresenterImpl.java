@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 
 import org.ece456.proj.gui.account.PasswordChangePresenter;
 import org.ece456.proj.gui.account.PasswordChangePresenterImpl;
+import org.ece456.proj.gui.doctor.DoctorPresenter;
+import org.ece456.proj.gui.doctor.DoctorPresenterImpl;
 import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
 import org.ece456.proj.gui.search.SearchPresenter;
@@ -11,6 +13,8 @@ import org.ece456.proj.gui.search.doctor.DoctorSearchPresenter;
 import org.ece456.proj.gui.search.patient.PatientSearchPresenter;
 import org.ece456.proj.gui.search.staff.StaffSearchPresenter;
 import org.ece456.proj.gui.shared.table.SelectionListener;
+import org.ece456.proj.gui.staff.StaffPresenter;
+import org.ece456.proj.gui.staff.StaffPresenterImpl;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
@@ -81,8 +85,8 @@ public class AdminPresenterImpl implements AdminPresenter {
                 new SelectionListener<Doctor>() {
                     @Override
                     public AfterAction onSelection(Doctor selected) {
-                        // TODO Show Doctor view
-                        System.out.println(selected.getName());
+                        DoctorPresenter presenter = new DoctorPresenterImpl(connection);
+                        presenter.show(selected.getDoctor_id());
                         return AfterAction.DO_NOTHING;
                     }
 
@@ -100,8 +104,8 @@ public class AdminPresenterImpl implements AdminPresenter {
                 new SelectionListener<Staff>() {
                     @Override
                     public AfterAction onSelection(Staff selected) {
-                        // TODO Show Staff view
-                        System.out.println(selected.getName());
+                        StaffPresenter presenter = new StaffPresenterImpl(connection);
+                        presenter.show(selected.getStaffId());
                         return AfterAction.DO_NOTHING;
                     }
 

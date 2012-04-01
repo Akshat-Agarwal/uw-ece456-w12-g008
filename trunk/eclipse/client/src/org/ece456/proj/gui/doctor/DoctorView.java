@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JDialog;
@@ -23,9 +22,6 @@ public class DoctorView extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;
 
     private final DoctorContactPanel panel_contact;
-
-    private final JMenuItem mntmEditContactInfo;
-    private final JMenuItem mntmSaveContactInfo;
     private final JMenuItem mntmSearchPatient;
 
     private final DoctorPresenter presenter;
@@ -75,23 +71,6 @@ public class DoctorView extends JFrame implements ActionListener {
         mntmRefresh.addActionListener(this);
         mnView.add(mntmRefresh);
 
-        JMenu mnEdit = new JMenu("Edit");
-        mnEdit.setMnemonic('e');
-        menuBar.add(mnEdit);
-
-        mntmEditContactInfo = new JMenuItem("Edit");
-        mntmEditContactInfo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E,
-                InputEvent.CTRL_MASK));
-        mntmEditContactInfo.addActionListener(this);
-        mnEdit.add(mntmEditContactInfo);
-
-        mntmSaveContactInfo = new JMenuItem("Save");
-        mntmSaveContactInfo.setEnabled(false);
-        mntmSaveContactInfo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-                InputEvent.CTRL_MASK));
-        mntmSaveContactInfo.addActionListener(this);
-        mnEdit.add(mntmSaveContactInfo);
-
         JMenu mnSearch = new JMenu("Search");
         menuBar.add(mnSearch);
 
@@ -102,7 +81,7 @@ public class DoctorView extends JFrame implements ActionListener {
 
     public void fillDoctorData(Doctor doctor) {
         // Title
-        setTitle(String.format("Patient View: %s (%d)", doctor.getName(), doctor.getDoctor_id()
+        setTitle(String.format("Doctor View: %s (%d)", doctor.getName(), doctor.getDoctor_id()
                 .asInt()));
 
         // Contact
@@ -113,22 +92,5 @@ public class DoctorView extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object s = e.getSource();
-
-        if (s == mntmEditContactInfo) {
-            mntmEditContactInfo.setEnabled(false);
-            mntmSaveContactInfo.setEnabled(true);
-            panel_contact.setEditableByDoctor(true);
-        } else if (s == mntmSaveContactInfo) {
-            mntmEditContactInfo.setEnabled(true);
-            mntmSaveContactInfo.setEnabled(false);
-            panel_contact.setEditableByDoctor(false);
-            presenter.savePersonalData(panel_contact.getData());
-        } else if (s == mntmRefresh) {
-            presenter.refresh();
-        } else if (s == mntmChangePassword) {
-            presenter.showPasswordChange();
-        } else if (s == mntmSearchPatient) {
-            presenter.showPatientSearch();
-        }
     }
 }
