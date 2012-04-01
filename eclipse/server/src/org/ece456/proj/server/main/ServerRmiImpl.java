@@ -770,9 +770,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             while (result.next()) {
                 Appointment a = new Appointment();
 
-                a.setStart_time(result.getDate("start_time"));
+                a.setStart_time(result.getTimestamp("start_time"));
 
-                a.setLast_modified(result.getDate("last_modified"));
+                a.setLast_modified(result.getTimestamp("last_modified"));
 
                 Patient p = new Patient();
                 Doctor d = new Doctor();
@@ -866,9 +866,9 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 Patient p = new Patient();
                 p.setPatientId(patientId);
                 a.setPatient(p);
-                a.setStart_time(result.getDate("start_time"));
+                a.setStart_time(result.getTimestamp("start_time"));
 
-                a.setLast_modified(result.getDate("last_modified"));
+                a.setLast_modified(result.getTimestamp("last_modified"));
 
                 // We intentionally don't fill out patient. Leave it as null
 
