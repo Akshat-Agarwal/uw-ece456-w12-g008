@@ -11,6 +11,7 @@ import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.DoctorSearchOption;
 import org.ece456.proj.orm.objects.Id;
+import org.ece456.proj.orm.objects.Lawyer;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
 import org.ece456.proj.orm.objects.PatientSearchOption;
@@ -55,6 +56,8 @@ public interface ServerRmi extends Remote {
             throws RemoteException;
 
     Accountant getAccountantById(Session session, Id<Accountant> id) throws RemoteException;
+
+    Lawyer getLawyerById(Session session, Id<Lawyer> id) throws RemoteException;
 
     List<Appointment> getAppointmentsForDoctor(Session session, Id<Doctor> doctorId, Date start,
             Date end) throws RemoteException;
