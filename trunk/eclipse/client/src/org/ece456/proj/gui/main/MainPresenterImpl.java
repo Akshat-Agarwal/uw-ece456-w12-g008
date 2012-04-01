@@ -2,6 +2,8 @@ package org.ece456.proj.gui.main;
 
 import org.ece456.proj.gui.accountant.AccountantPresenter;
 import org.ece456.proj.gui.accountant.AccountantPresenterImpl;
+import org.ece456.proj.gui.accountant.LawyerPresenter;
+import org.ece456.proj.gui.accountant.LawyerPresenterImpl;
 import org.ece456.proj.gui.admin.AdminPresenter;
 import org.ece456.proj.gui.admin.AdminPresenterImpl;
 import org.ece456.proj.gui.doctor.DoctorPresenter;
@@ -14,6 +16,7 @@ import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
+import org.ece456.proj.orm.objects.Lawyer;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.Staff;
 import org.ece456.proj.orm.objects.UserRole;
@@ -42,11 +45,16 @@ public class MainPresenterImpl implements MainPresenter {
             case ACCOUNTANT:
                 showAccountant(connection, id);
                 break;
+            case LEGAL:
+                showLawyer(connection, id);
+                break;
             case DOCTOR:
                 showDoctorView(connection, id);
-                break;            case STAFF:
+                break;
+            case STAFF:
                 showStaffView(connection, id);
-                break;            default:
+                break;
+            default:
                 return "That view is not supported yet";
         }
 
@@ -56,6 +64,11 @@ public class MainPresenterImpl implements MainPresenter {
     private void showAccountant(Connection connection, int id) {
         AccountantPresenter presenter = new AccountantPresenterImpl(connection);
         presenter.show(Id.<Accountant> of(id));
+    }
+
+    private void showLawyer(Connection connection, int id) {
+        LawyerPresenter presenter = new LawyerPresenterImpl(connection);
+        presenter.show(Id.<Lawyer> of(id));
     }
 
     private void showPatientView(Connection connection, int id) {
@@ -76,4 +89,5 @@ public class MainPresenterImpl implements MainPresenter {
     private void showStaffView(Connection connection, int id) {
         StaffPresenter presenter = new StaffPresenterImpl(connection);
         presenter.show(Id.<Staff> of(id));
-    }}
+    }
+}

@@ -19,6 +19,7 @@ import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.DoctorSearchOption;
 import org.ece456.proj.orm.objects.Id;
+import org.ece456.proj.orm.objects.Lawyer;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.PatientContact;
 import org.ece456.proj.orm.objects.PatientSearchOption;
@@ -474,7 +475,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         // Only certain roles can search for patients
         EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF,
-                UserRole.ACCOUNTANT, UserRole.DOCTOR);
+                UserRole.ACCOUNTANT, UserRole.DOCTOR, UserRole.LEGAL);
         boolean hasPermission = canSearchPatients.contains(session.getRole());
         if (!hasPermission) {
             return Collections.emptyList();
@@ -563,7 +564,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         // Only certain roles can search for doctors
         EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF,
-                UserRole.ACCOUNTANT);
+                UserRole.ACCOUNTANT, UserRole.LEGAL);
         boolean hasPermission = canSearchPatients.contains(session.getRole());
         if (!hasPermission) {
             return Collections.emptyList();
@@ -709,6 +710,47 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     }
 
     @Override
+    public Lawyer getLawyerById(Session session, Id<Lawyer> id) throws RemoteException {
+        if (!isSessionValid(session)) {
+            return null;
+        }
+
+        // only DB admins or accountant can look up accountants
+        if (!ImmutableSet.of(UserRole.ADMIN, UserRole.LEGAL).contains(session.getRole())) {
+            return null;
+        }
+
+        // if accountant, can only lookup his own account
+        if (session.getRole() == UserRole.LEGAL && !id.equals(session.getId())) {
+            return null;
+        }
+
+        try {
+            String query = "SELECT * FROM legal WHERE lawyer_id = ?;";
+
+            PreparedStatement sql = getConnection().prepareStatement(query);
+            sql.setInt(1, id.asInt());
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+
+            result.next();
+
+            Lawyer a = new Lawyer();
+            a.setLawyerId(id);
+            a.setName(result.getString("name"));
+            a.setPassword(result.getString("password"));
+            return a;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // failed
+        return null;
+    }
+
+    @Override
     public List<Appointment> getAppointmentsForDoctor(Session session, Id<Doctor> doctorId,
             Date start, Date end) {
         if (!isSessionValid(session)) {
@@ -716,8 +758,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         // only certain roles can look up doctor's appointments
-        if (!ImmutableSet.of(UserRole.DOCTOR, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.STAFF)
-                .contains(session.getRole())) {
+        if (!ImmutableSet.of(UserRole.DOCTOR, UserRole.ADMIN, UserRole.ACCOUNTANT, UserRole.LEGAL,
+                UserRole.STAFF).contains(session.getRole())) {
             return null;
         }
 
@@ -810,7 +852,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         // only certain roles can look up patient's appointments
         if (!ImmutableSet.of(UserRole.DOCTOR, UserRole.ADMIN, UserRole.ACCOUNTANT,
-                UserRole.PATIENT, UserRole.STAFF).contains(session.getRole())) {
+                UserRole.PATIENT, UserRole.STAFF, UserRole.LEGAL).contains(session.getRole())) {
             return null;
         }
 
