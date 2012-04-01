@@ -51,7 +51,7 @@ public class DoctorPresenterImpl implements DoctorPresenter {
                     public AfterAction onSelection(Patient selected) {
                         // Do something with the Doctor
                         PatientDoctorPresenter p = new PatientDoctorPresenterImpl(connection,
-                                selected.getPatientId());
+                                selected);
                         p.show(selected);
                         // presenter.searchAppointments(start, end);
                         return AfterAction.DO_NOTHING;

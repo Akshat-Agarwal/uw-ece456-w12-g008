@@ -17,10 +17,12 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
     private PatientDoctorView view;
 
     private final Id<Patient> patientId;
+    private final Patient patient;
 
-    public PatientDoctorPresenterImpl(Connection connection, Id<Patient> patientId) {
+    public PatientDoctorPresenterImpl(Connection connection, Patient patient) {
         this.connection = connection;
-        this.patientId = patientId;
+        this.patientId = patient.getPatientId();
+        this.patient = patient;
     }
 
     @Override
@@ -42,6 +44,11 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
         if (view == null) {
             view = new PatientDoctorView(this);
         }
+
+        for (Appointment a : apps) {
+            a.getPatient().getContact().setName(patient.getName());
+        }
+
         view.fillAppointments(apps);
 
         view.fillData(patient);

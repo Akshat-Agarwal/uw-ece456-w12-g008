@@ -1041,7 +1041,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             return false;
         }
 
-        if (session.getRole() != UserRole.STAFF) {
+        if (session.getRole() != UserRole.STAFF && session.getRole() != UserRole.DOCTOR) {
             return false;
         }
 
@@ -1068,44 +1068,11 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         return false;
     }
+
     @Override
     public Doctor updateDoctor(Session session, Id<Doctor> doctor_id, Doctor doctor)
             throws RemoteException {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public Boolean createAppointment(Session session, Appointment a) {
-        if (!isSessionValid(session)) {
-            return false;
-        }
-
-        if (session.getRole() != UserRole.DOCTOR) {
-            return false;
-        }
-
-        try {
-            PreparedStatement sql = getConnection().prepareStatement(
-                    "INSERT INTO appointment (patient_id, start_time, last_modified, time_created, "
-                            + "doctor_id, length, procedures, prescriptions, diagnoses, comment) "
-                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            sql.setInt(1, a.getPatient().getPatientId().asInt());
-            sql.setTimestamp(2, new java.sql.Timestamp(a.getStart_time().getTime()));
-            sql.setTimestamp(3, new java.sql.Timestamp(a.getLast_modified().getTime()));
-            sql.setTimestamp(4, new java.sql.Timestamp(a.getLast_modified().getTime()));
-            sql.setInt(5, a.getDoctor().getDoctor_id().asInt());
-            sql.setInt(6, a.getLength());
-            sql.setString(7, a.getProcedures());
-            sql.setString(8, a.getPrescriptions());
-            sql.setString(9, a.getDiagnoses());
-            sql.setString(10, a.getComment());
-            System.out.println(sql);
-            sql.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return false;
     }
 }
