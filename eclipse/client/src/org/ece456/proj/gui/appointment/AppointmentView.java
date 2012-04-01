@@ -17,6 +17,7 @@ import org.ece456.proj.gui.shared.table.SimpleTable;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
+import org.ece456.proj.orm.objects.UserRole;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -46,7 +47,7 @@ public class AppointmentView extends JFrame implements ActionListener {
 
     private final Appointment appointment;
 
-    public AppointmentView(Appointment a, boolean canViewComments, AppointmentPresenter presenter) {
+    public AppointmentView(Appointment a, UserRole role, AppointmentPresenter presenter) {
         setTitle("Appointment View");
         this.presenter = presenter;
         this.appointment = a;
@@ -66,7 +67,7 @@ public class AppointmentView extends JFrame implements ActionListener {
                         FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
                         FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"), }));
 
-        if (a.getPatient() != null) {
+        if (a.getPatient() != null && role != UserRole.PATIENT) {
             JLabel lblPatient = new JLabel("Patient");
             panel.add(lblPatient, "2, 2, right, default");
 
@@ -134,6 +135,7 @@ public class AppointmentView extends JFrame implements ActionListener {
         panel.add(textDiagnoses, "4, 16, fill, default");
         textDiagnoses.setColumns(10);
 
+        boolean canViewComments = role != UserRole.PATIENT;
         if (canViewComments) {
             JLabel lblDoctorsComment = new JLabel("Doctor's Comment");
             panel.add(lblDoctorsComment, "2, 18, right, default");

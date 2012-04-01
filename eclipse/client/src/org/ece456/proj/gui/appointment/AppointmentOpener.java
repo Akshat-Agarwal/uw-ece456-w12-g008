@@ -7,18 +7,18 @@ import org.ece456.proj.orm.objects.UserRole;
 
 public class AppointmentOpener implements Listener<Appointment> {
 
-    private final boolean canViewComments;
+    private final UserRole role;
     private final AppointmentPresenter presenter;
 
     public AppointmentOpener(UserRole role, AppointmentPresenter p) {
-        this.canViewComments = (role != UserRole.PATIENT);
+        this.role = role;
         this.presenter = p;
     }
 
     @Override
     public void onSelection(Appointment selected) {
         assert presenter != null;
-        AppointmentView view = new AppointmentView(selected, canViewComments, presenter);
+        AppointmentView view = new AppointmentView(selected, role, presenter);
         view.setVisible(true);
     }
 
