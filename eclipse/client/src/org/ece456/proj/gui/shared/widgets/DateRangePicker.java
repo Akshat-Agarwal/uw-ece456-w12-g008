@@ -64,6 +64,7 @@ public class DateRangePicker extends JPanel implements ActionListener {
         btnSearch = new JButton("Search");
         btnSearch.addActionListener(this);
         panelDateRange.add(btnSearch, "10, 2");
+
     }
 
     @Override

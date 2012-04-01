@@ -5,7 +5,8 @@ public enum PatientSearchOption {
     ID("Patient ID"),
     SIN("SIN"),
     HEALTH_CARD("Health Card"),
-    NAME("Name");
+    NAME("Name"),
+    LAST_DATE("Last Visit Date");
 
     private final String pretty;
 
