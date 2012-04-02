@@ -8,6 +8,7 @@ import java.util.List;
 import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Appointment;
+import org.ece456.proj.orm.objects.AppointmentSearchOption;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.DoctorSearchOption;
 import org.ece456.proj.orm.objects.Id;
@@ -94,4 +95,7 @@ public interface ServerRmi extends Remote {
 
     boolean removeConsultantForPatient(Session session, Id<Patient> patientId, Doctor consultant)
             throws RemoteException;
+
+    List<Appointment> searchDoctorAppointments(Session session, Id<Doctor> doctor,
+            AppointmentSearchOption option, String text) throws RemoteException;
 }

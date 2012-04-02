@@ -16,6 +16,7 @@ import java.util.List;
 import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Appointment;
+import org.ece456.proj.orm.objects.AppointmentSearchOption;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.DoctorSearchOption;
 import org.ece456.proj.orm.objects.Id;
@@ -1389,5 +1390,102 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         return true;
+    }
+
+    @Override
+    public List<Appointment> searchDoctorAppointments(Session session, Id<Doctor> doctor,
+            AppointmentSearchOption option, String text) throws RemoteException {
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+
+        // Only certain roles can search for doctors
+        EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF,
+                UserRole.ACCOUNTANT, UserRole.LEGAL, UserRole.DOCTOR);
+        boolean hasPermission = canSearchPatients.contains(session.getRole());
+        if (!hasPermission) {
+            return Collections.emptyList();
+        }
+
+        try {
+            String query = "SELECT * FROM appointment NATURAL JOIN patient_contact WHERE "
+                    + "(patient_id, time_created, last_modified) in (SELECT patient_id, time_created,"
+                    + " max(last_modified) FROM appointment GROUP BY "
+                    + "patient_id, time_created) AND doctor_id = ? ";
+
+            PreparedStatement sql = null;
+            if (option == null || text == null || text.isEmpty()) {
+                sql = getConnection().prepareStatement(query);
+            } else {
+                switch (option) {
+                    case COMMENT:
+                        query += "AND comment LIKE ?";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setString(2, "%" + text + "%");
+                        break;
+                    case DIAGNOSIS:
+                        query += "AND diagnoses LIKE ?";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setString(2, "%" + text + "%");
+                        break;
+                    case PATIENT_NAME:
+                        query += "AND patient_contact.name LIKE ?";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setString(2, "%" + text + "%");
+                        break;
+                    case PRESCRIPTION:
+                        query += "AND prescriptions LIKE ?";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setString(2, "%" + text + "%");
+                        break;
+                    case PROCEDURE:
+                        query += "AND procedures LIKE ?";
+                        sql = getConnection().prepareStatement(query);
+                        sql.setString(2, "%" + text + "%");
+                        break;
+                    default:
+                        throw new EnumConstantNotPresentException(AppointmentSearchOption.class,
+                                String.valueOf(option));
+                }
+            }
+            sql.setInt(1, doctor.asInt());
+
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+
+            List<Appointment> apps = Lists.newArrayList();
+            while (result.next()) {
+                Appointment a = new Appointment();
+
+                a.setStart_time(result.getTimestamp("start_time"));
+
+                a.setLast_modified(result.getTimestamp("last_modified"));
+
+                Patient p = new Patient();
+                Doctor d = new Doctor();
+                d.setDoctor_id(doctor);
+                a.setDoctor(d);
+                p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
+                p.getContact().setName(result.getString("name"));
+                a.setPatient(p);
+
+                a.setTime_created(result.getTimestamp("time_created"));
+                a.setLength(result.getInt("length"));
+                a.setProcedures(result.getString("procedures"));
+                a.setPrescriptions(result.getString("prescriptions"));
+                a.setDiagnoses(result.getString("diagnoses"));
+
+                a.setComment(result.getString("comment"));
+
+                apps.add(a);
+            }
+
+            return apps;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
     }
 }

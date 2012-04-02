@@ -19,4 +19,6 @@ public interface DoctorPresenter {
 
     void showMyPatientSearch();
 
+    void showAppointmentsSearch();
+
 }
