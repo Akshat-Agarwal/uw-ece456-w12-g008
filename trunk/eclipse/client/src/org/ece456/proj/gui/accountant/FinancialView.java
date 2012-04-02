@@ -94,9 +94,10 @@ public class FinancialView extends JFrame implements Listener {
         setLocation(100, 100);
     }
 
-    public void fillData(Doctor doctor) {
+    public void fillData(Doctor doctor, List<Patient> patients) {
         textFieldId.setText(doctor.getDoctor_id().toString());
         textFieldName.setText(doctor.getName());
+        this.patients.update(patients);
     }
 
     public void fillAppointments(List<Appointment> apps) {

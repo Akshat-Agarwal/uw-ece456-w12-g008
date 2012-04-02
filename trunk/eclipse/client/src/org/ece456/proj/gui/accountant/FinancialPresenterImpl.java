@@ -8,6 +8,7 @@ import java.util.List;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
+import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Connection;
 
@@ -41,12 +42,12 @@ public class FinancialPresenterImpl implements FinancialPresenter {
     }
 
     @Override
-    public void show(Doctor doctor) {
+    public void show(Doctor doctor, List<Patient> patients) {
         if (view == null) {
             view = new FinancialView(role, this);
         }
 
-        view.fillData(doctor);
+        view.fillData(doctor, patients);
 
         view.setVisible(true);
     }
