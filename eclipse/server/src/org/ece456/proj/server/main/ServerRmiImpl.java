@@ -955,18 +955,19 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             query += "WHERE doctor_id IN (SELECT doctor_id FROM doctor_staff WHERE staff_id = ";
             query += String.valueOf(id);
             query += ") ";
-            PreparedStatement sql;
+            PreparedStatement sql = null;
             if (text == null) {
                 sql = getConnection().prepareStatement(query);
             } else {
                 if (option == DoctorSearchOption.ID) {
-                    query += "AND doctor_id LIKE ?";
+                    query += "AND doctor_id = ?";
+                    sql = getConnection().prepareStatement(query);
+                    sql.setInt(1, Integer.parseInt(text));
                 } else if (option == DoctorSearchOption.NAME) {
                     query += "AND name LIKE ?";
-                } else {
+                    sql = getConnection().prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
                 }
-                sql = getConnection().prepareStatement(query);
-                sql.setString(1, "%" + text + "%");
             }
             System.out.println(sql);
             ResultSet result = sql.executeQuery();
@@ -1194,7 +1195,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 sql = getConnection().prepareStatement(query);
             } else {
                 if (option == PatientSearchOption.ID) {
-                    query += "AND (patient_contact.patient_id LIKE = ?)";
+                    query += "AND (patient_contact.patient_id = ?)";
                     sql = getConnection().prepareStatement(query);
                     sql.setInt(1, Integer.parseInt(text));
                 } else if (option == PatientSearchOption.NAME) {
