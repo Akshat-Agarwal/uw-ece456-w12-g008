@@ -1343,6 +1343,21 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             return false;
         }
 
+        try {
+            // get num_visit for patient
+            String q = "DELETE FROM patient_consultants WHERE patient_id = ? AND "
+                    + "doctor_id = ?";
+
+            PreparedStatement sql = getConnection().prepareStatement(q);
+            sql.setInt(1, patientId.asInt());
+            sql.setInt(2, consultant.getDoctor_id().asInt());
+            System.out.println(sql);
+            sql.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 
@@ -1358,6 +1373,20 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         boolean hasPermission = canSearchPatients.contains(session.getRole());
         if (!hasPermission) {
             return false;
+        }
+
+        try {
+            // get num_visit for patient
+            String q = "INSERT INTO patient_consultants (patient_id, doctor_id)" + " VALUES (?,?)";
+
+            PreparedStatement sql = getConnection().prepareStatement(q);
+            sql.setInt(1, patientId.asInt());
+            sql.setInt(2, consultant.getDoctor_id().asInt());
+            System.out.println(sql);
+            sql.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         return true;
