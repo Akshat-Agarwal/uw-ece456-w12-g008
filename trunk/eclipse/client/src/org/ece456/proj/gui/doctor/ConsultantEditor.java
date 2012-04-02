@@ -65,6 +65,16 @@ public class ConsultantEditor extends JPanel implements ActionListener {
         Object s = e.getSource();
         if (s == btnAdd) {
             presenter.addConsultant();
+        } else if (s == btnRemoveSelected) {
+            Doctor selected = table.getSelected();
+            if (selected != null) {
+                presenter.removeConsultant(selected);
+            }
         }
+    }
+
+    public void removeConsultant(Doctor consultant) {
+        set.remove(consultant);
+        updateTable();
     }
 }
