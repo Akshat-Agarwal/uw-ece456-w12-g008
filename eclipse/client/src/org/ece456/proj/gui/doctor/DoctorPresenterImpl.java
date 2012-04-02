@@ -5,9 +5,11 @@ import java.rmi.RemoteException;
 import org.ece456.proj.gui.account.PasswordChangePresenter;
 import org.ece456.proj.gui.account.PasswordChangePresenterImpl;
 import org.ece456.proj.gui.search.SearchPresenter;
+import org.ece456.proj.gui.search.appointments.DoctorAppointmentSearchPresenter;
 import org.ece456.proj.gui.search.patient.PatientSearchForDoctorPresenter;
 import org.ece456.proj.gui.search.patient.PatientSearchPresenter;
 import org.ece456.proj.gui.shared.table.SelectionListener;
+import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
@@ -107,4 +109,23 @@ public class DoctorPresenterImpl implements DoctorPresenter {
         p.show(UserRole.DOCTOR, doctor.getDoctor_id(), doctor.getPassword());
     }
 
+    @Override
+    public void showAppointmentsSearch() {
+        SearchPresenter<Appointment> p = new DoctorAppointmentSearchPresenter(connection,
+                new SelectionListener<Appointment>() {
+                    @Override
+                    public AfterAction onSelection(Appointment selected) {
+                        DoctorPatientAppointmentView v = new DoctorPatientAppointmentView(selected,
+                                new PatientDoctorPresenterImpl(connection));
+                        v.setVisible(true);
+                        return AfterAction.DO_NOTHING;
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // do nothing
+                    }
+                }, doctor.getDoctor_id());
+        p.show();
+    }
 }

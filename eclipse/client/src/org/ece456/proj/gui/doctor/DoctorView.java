@@ -32,6 +32,8 @@ public class DoctorView extends JFrame implements ActionListener {
 
     private final JMenuItem mntmSearchMyPatient;
 
+    private final JMenuItem mntmSearchMyAppointments;
+
     public DoctorView(final DoctorPresenter presenter) {
         this.presenter = presenter;
 
@@ -83,6 +85,10 @@ public class DoctorView extends JFrame implements ActionListener {
         mntmSearchMyPatient = new JMenuItem("Search My Patients");
         mntmSearchMyPatient.addActionListener(this);
         mnSearch.add(mntmSearchMyPatient);
+
+        mntmSearchMyAppointments = new JMenuItem("Search My Appointments");
+        mntmSearchMyAppointments.addActionListener(this);
+        mnSearch.add(mntmSearchMyAppointments);
     }
 
     public void fillDoctorData(Doctor doctor) {
@@ -107,6 +113,8 @@ public class DoctorView extends JFrame implements ActionListener {
             presenter.showAllPatientSearch();
         } else if (s == mntmSearchMyPatient) {
             presenter.showMyPatientSearch();
+        } else if (s == mntmSearchMyAppointments) {
+            presenter.showAppointmentsSearch();
         }
     }
 }
