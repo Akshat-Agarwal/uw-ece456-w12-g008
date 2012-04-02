@@ -77,7 +77,7 @@ public class AppointmentView extends JFrame implements ActionListener {
             panel.add(textPatient, "4, 2, fill, default");
         }
 
-        if (a.getDoctor() != null) {
+        if (a.getDoctor() != null && role == UserRole.PATIENT) {
             JLabel lblDoctor = new JLabel("Doctor");
             panel.add(lblDoctor, "2, 4, right, default");
 
