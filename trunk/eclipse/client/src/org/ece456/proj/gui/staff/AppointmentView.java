@@ -61,7 +61,7 @@ public class AppointmentView extends JFrame implements ActionListener {
         JSplitPane splitPane = new JSplitPane();
         panel_1.add(splitPane);
 
-        btnUpdate = new JButton("Update");
+        btnUpdate = new JButton("Enter");
         btnUpdate.addActionListener(this);
         splitPane.setLeftComponent(btnUpdate);
 

@@ -88,6 +88,7 @@ public class AppointmentListPresenterImpl implements AppointmentListPresenter {
     public void updateAppointment(Appointment app) {
         try {
             connection.getServer().createAppointment(connection.getSession(), app);
+            connection.getServer().updateNumVisits(app.getPatient().getPatientId().asInt());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
