@@ -20,13 +20,8 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
 
     private PatientDoctorView view;
 
-    private final Id<Patient> patientId;
-    private final Patient patient;
-
-    public PatientDoctorPresenterImpl(Connection connection, Patient patient) {
+    public PatientDoctorPresenterImpl(Connection connection) {
         this.connection = connection;
-        this.patientId = patient.getPatientId();
-        this.patient = patient;
     }
 
     @Override
@@ -40,7 +35,7 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
         List<Appointment> apps = Collections.emptyList();
         try {
             apps = connection.getServer().getAppointmentsForPatient(connection.getSession(),
-                    patientId, null, null);
+                    patient.getPatientId(), null, null);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -63,7 +58,7 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
     @Override
     public void saveAppointment(Appointment app) {
         try {
-            Boolean added = connection.getServer().createAppointment(connection.getSession(), app);
+            connection.getServer().createAppointment(connection.getSession(), app);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

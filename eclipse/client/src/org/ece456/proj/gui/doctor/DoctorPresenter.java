@@ -15,6 +15,8 @@ public interface DoctorPresenter {
 
     void showPasswordChange();
 
-    void showPatientSearch();
+    void showAllPatientSearch();
+
+    void showMyPatientSearch();
 
 }

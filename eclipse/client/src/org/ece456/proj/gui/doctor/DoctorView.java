@@ -22,13 +22,15 @@ public class DoctorView extends JFrame implements ActionListener {
     private static final long serialVersionUID = 1L;
 
     private final DoctorContactPanel panel_contact;
-    private final JMenuItem mntmSearchPatient;
+    private final JMenuItem mntmSearchAllPatient;
 
     private final DoctorPresenter presenter;
 
     private final JMenuItem mntmRefresh;
 
     private final JMenuItem mntmChangePassword;
+
+    private final JMenuItem mntmSearchMyPatient;
 
     public DoctorView(final DoctorPresenter presenter) {
         this.presenter = presenter;
@@ -74,9 +76,13 @@ public class DoctorView extends JFrame implements ActionListener {
         JMenu mnSearch = new JMenu("Search");
         menuBar.add(mnSearch);
 
-        mntmSearchPatient = new JMenuItem("Search Patient");
-        mntmSearchPatient.addActionListener(this);
-        mnSearch.add(mntmSearchPatient);
+        mntmSearchAllPatient = new JMenuItem("Search All Patients");
+        mntmSearchAllPatient.addActionListener(this);
+        mnSearch.add(mntmSearchAllPatient);
+
+        mntmSearchMyPatient = new JMenuItem("Search My Patients");
+        mntmSearchMyPatient.addActionListener(this);
+        mnSearch.add(mntmSearchMyPatient);
     }
 
     public void fillDoctorData(Doctor doctor) {
@@ -97,8 +103,10 @@ public class DoctorView extends JFrame implements ActionListener {
             presenter.refresh();
         } else if (s == mntmChangePassword) {
             presenter.showPasswordChange();
-        } else if (s == mntmSearchPatient) {
-            presenter.showPatientSearch();
+        } else if (s == mntmSearchAllPatient) {
+            presenter.showAllPatientSearch();
+        } else if (s == mntmSearchMyPatient) {
+            presenter.showMyPatientSearch();
         }
     }
 }
