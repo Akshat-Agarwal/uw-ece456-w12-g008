@@ -175,6 +175,7 @@ public class DoctorPatientAppointmentView extends JFrame implements ActionListen
         app.setPrescriptions(textPrescriptions.getText());
         app.setProcedures(textProcedures.getText());
         app.setStart_time(appointment.getStart_time());
+        app.setTime_created(appointment.getTime_created());
 
         this.presenter.saveAppointment(app);
     }
