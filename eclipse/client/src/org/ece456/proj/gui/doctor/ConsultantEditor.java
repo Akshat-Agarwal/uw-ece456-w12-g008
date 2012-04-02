@@ -40,6 +40,7 @@ public class ConsultantEditor extends JPanel implements ActionListener {
         panel.add(btnAdd);
 
         btnRemoveSelected = new JButton("Remove Selected");
+        btnRemoveSelected.addActionListener(this);
         panel.add(btnRemoveSelected);
     }
 
