@@ -1109,8 +1109,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             sql.setInt(1, a.getPatient().getPatientId().asInt());
             sql.setTimestamp(2, new java.sql.Timestamp(a.getStart_time().getTime()));
-            sql.setTimestamp(3, new java.sql.Timestamp(a.getTime_created().getTime()));
-            sql.setTimestamp(4, new java.sql.Timestamp(a.getLast_modified().getTime()));
+            sql.setTimestamp(3, new java.sql.Timestamp(a.getLast_modified().getTime()));
+            sql.setTimestamp(4, new java.sql.Timestamp(a.getTime_created().getTime()));
             sql.setInt(5, a.getDoctor().getDoctor_id().asInt());
             sql.setInt(6, a.getLength());
             sql.setString(7, a.getProcedures());
