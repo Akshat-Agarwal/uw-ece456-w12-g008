@@ -18,7 +18,9 @@ public interface StaffPresenter {
 
     void showNewPatientView();
 
-    void showPatientSearch(int type);
+    void showPatientSearch();
 
-    void showDoctorSearch(int type);
+    void showDoctorSearch();
+
+    void showPatientEditSearch();
 }

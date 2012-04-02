@@ -824,6 +824,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 p.getContact().setName(result.getString("name"));
                 a.setPatient(p);
 
+                a.setTime_created(result.getTimestamp("time_created"));
                 a.setLength(result.getInt("length"));
                 a.setProcedures(result.getString("procedures"));
                 a.setPrescriptions(result.getString("prescriptions"));
@@ -919,6 +920,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 d.setDoctor_id(Id.<Doctor> of(result.getInt("doctor_id")));
                 a.setDoctor(d);
 
+                a.setTime_created(result.getTimestamp("time_created"));
                 a.setLength(result.getInt("length"));
                 a.setProcedures(result.getString("procedures"));
                 a.setPrescriptions(result.getString("prescriptions"));
@@ -1022,8 +1024,18 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 Patient p = new Patient();
                 p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
                 p.getContact().setName(result.getString("name"));
+                p.getContact().setAddress(result.getString("address"));
+                p.getContact().setPhoneNum(result.getString("phone_num"));
+                p.getMedical().setNumVisits(result.getInt("num_visits"));
+                p.getMedical().setHealthCardNumber(result.getString("health_card_num"));
+                p.getMedical().setSin(result.getInt("sin"));
+                p.getMedical().setCurrentHealth(result.getString("current_health"));
 
-                // Add the default doctor_id
+                if (result.getString("sex").toLowerCase() == "male")
+                    p.getMedical().setSex(Sex.MALE);
+                else
+                    p.getMedical().setSex(Sex.FEMALE);
+
                 Doctor d = new Doctor();
                 d.setDoctor_id(Id.<Doctor> of(result.getInt("default_doctor_id")));
                 p.getMedical().setDefaultDoctor(d);
@@ -1097,7 +1109,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             sql.setInt(1, a.getPatient().getPatientId().asInt());
             sql.setTimestamp(2, new java.sql.Timestamp(a.getStart_time().getTime()));
-            sql.setTimestamp(3, new java.sql.Timestamp(a.getLast_modified().getTime()));
+            sql.setTimestamp(3, new java.sql.Timestamp(a.getTime_created().getTime()));
             sql.setTimestamp(4, new java.sql.Timestamp(a.getLast_modified().getTime()));
             sql.setInt(5, a.getDoctor().getDoctor_id().asInt());
             sql.setInt(6, a.getLength());
@@ -1119,6 +1131,49 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     public Doctor updateDoctor(Session session, Id<Doctor> doctor_id, Doctor doctor)
             throws RemoteException {
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Patient updatePatient(Session session, Patient p) throws RemoteException {
+        if (!isSessionValid(session)) {
+            return null;
+        }
+
+        if (session.getRole() != UserRole.STAFF) {
+            return null;
+        }
+
+        try {
+            String query = "UPDATE patient_medical SET ";
+            query += "sin=?, health_card_num=?, num_visits=?, sex=?, default_doctor_id=?, current_health=? ";
+            query += "WHERE patient_id=?";
+            PreparedStatement sql = getConnection().prepareStatement(query);
+            sql.setInt(1, p.getMedical().getSin());
+            sql.setString(2, p.getMedical().getHealthCardNumber());
+            sql.setInt(3, p.getMedical().getNumVisits());
+            sql.setString(4, p.getMedical().getSex().toString().toLowerCase());
+            sql.setInt(5, p.getMedical().getDefaultDoctor().getDoctor_id().asInt());
+            sql.setString(6, p.getMedical().getCurrentHealth());
+            sql.setInt(7, p.getPatientId().asInt());
+            System.out.println(sql);
+            sql.execute();
+
+            query = "UPDATE patient_contact SET ";
+            query += "name=?, address=?, phone_num=? ";
+            query += "WHERE patient_id=?";
+            sql = getConnection().prepareStatement(query);
+            sql.setString(1, p.getContact().getName());
+            sql.setString(2, p.getContact().getAddress());
+            sql.setString(3, p.getContact().getPhoneNum());
+            sql.setInt(4, p.getPatientId().asInt());
+            System.out.println(sql);
+            sql.execute();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

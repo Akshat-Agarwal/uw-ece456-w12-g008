@@ -81,7 +81,7 @@ public class StaffPresenterImpl implements StaffPresenter {
     @Override
     public void showNewPatientView() {
         NewPatientPresenter presenter = new NewPatientPresenterImpl(this.connection, this.staff);
-        presenter.show(this.staff.getStaffId());
+        presenter.show(null);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class StaffPresenterImpl implements StaffPresenter {
     }
 
     @Override
-    public void showDoctorSearch(int type) {
+    public void showDoctorSearch() {
         SearchDoctorByStaffPresenter p = new SearchDoctorByStaffPresenter(connection,
                 new SelectionListener<Doctor>() {
                     @Override
@@ -126,13 +126,32 @@ public class StaffPresenterImpl implements StaffPresenter {
     }
 
     @Override
-    public void showPatientSearch(int type) {
+    public void showPatientSearch() {
         SearchPatientByStaffPresenter p = new SearchPatientByStaffPresenter(connection,
                 new SelectionListener<Patient>() {
                     @Override
                     public AfterAction onSelection(Patient selected) {
                         AppointmentListPresenter p = new AppointmentListPresenterImpl(connection,
                                 selected, null);
+                        p.show(selected);
+                        return AfterAction.DO_NOTHING;
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // do nothing
+                    }
+                }, this.staff);
+        p.show();
+    }
+
+    @Override
+    public void showPatientEditSearch() {
+        SearchPatientByStaffPresenter p = new SearchPatientByStaffPresenter(connection,
+                new SelectionListener<Patient>() {
+                    @Override
+                    public AfterAction onSelection(Patient selected) {
+                        NewPatientPresenter p = new NewPatientPresenterImpl(connection, staff);
                         p.show(selected);
                         return AfterAction.DO_NOTHING;
                     }

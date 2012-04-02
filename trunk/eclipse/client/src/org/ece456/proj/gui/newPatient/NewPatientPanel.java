@@ -206,4 +206,30 @@ public class NewPatientPanel extends JPanel {
             combo_doctor.addItem(d.getName());
         combo_sex.setSelectedIndex(0);
     }
+
+    public void fillPatientData(Patient p, List<Doctor> doctors) {
+        text_id.setText(p.getPatientId().toString());
+        text_id.setEnabled(false);
+        text_name.setText(p.getName());
+        text_address.setText(p.getContact().getAddress());
+        text_phone.setText(p.getContact().getPhoneNum());
+        text_sin.setText(String.valueOf(p.getMedical().getSin()));
+        text_healthcard.setText(p.getMedical().getHealthCardNumber());
+        text_numvisits.setText(String.valueOf(p.getMedical().getNumVisits()));
+        text_numvisits.setEnabled(false);
+        text_currenthealth.setText(p.getMedical().getCurrentHealth());
+
+        for (int i = 0; i < doctors.size(); i++) {
+            if (doctors.get(i).getDoctor_id().asInt() == p.getMedical().getDefaultDoctor()
+                    .getDoctor_id().asInt()) {
+                combo_doctor.setSelectedIndex(i);
+                break;
+            }
+        }
+        if (p.getMedical().getSex() == Sex.MALE)
+            combo_sex.setSelectedIndex(0);
+        else
+            combo_sex.setSelectedIndex(1);
+        combo_sex.setEnabled(false);
+    }
 }

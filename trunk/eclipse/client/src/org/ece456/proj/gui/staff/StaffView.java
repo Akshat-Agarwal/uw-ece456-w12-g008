@@ -32,6 +32,7 @@ public class StaffView extends JFrame implements ActionListener {
     private final JMenuItem mntmRefresh;
 
     private final JMenuItem mntmChangePassword;
+    private final JMenu mnEdit;
 
     public StaffView(final StaffPresenter presenter) {
         this.presenter = presenter;
@@ -76,13 +77,16 @@ public class StaffView extends JFrame implements ActionListener {
         mntmNewAppointment.addActionListener(this);
         mnNew.add(mntmNewAppointment);
 
+        mnEdit = new JMenu("Edit");
+        menuBar.add(mnEdit);
+
         mntmEditAppointment = new JMenuItem("Edit Appointment");
-        mntmEditAppointment.addActionListener(this);
-        mnNew.add(mntmEditAppointment);
+        mnEdit.add(mntmEditAppointment);
 
         mntmEditPatient = new JMenuItem("Edit Patient");
+        mnEdit.add(mntmEditPatient);
         mntmEditPatient.addActionListener(this);
-        mnNew.add(mntmEditPatient);
+        mntmEditAppointment.addActionListener(this);
 
         // SEARCH MENU
         JMenu mnSearch = new JMenu("Search");
@@ -111,9 +115,9 @@ public class StaffView extends JFrame implements ActionListener {
         Object s = e.getSource();
 
         if (s == mntmEditPatient) {
-            presenter.showPatientSearch(1);
+            presenter.showPatientEditSearch();
         } else if (s == mntmEditAppointment) {
-            presenter.showPatientSearch(1);
+            presenter.showPatientSearch();
         } else if (s == mntmRefresh) {
             presenter.refresh();
         } else if (s == mntmChangePassword) {
@@ -121,11 +125,11 @@ public class StaffView extends JFrame implements ActionListener {
         } else if (s == mntmNewPatient) {
             presenter.showNewPatientView();
         } else if (s == mntmNewAppointment) {
-            presenter.showPatientSearch(1);
+            presenter.showPatientSearch();
         } else if (s == mntmSearchDoctor) {
-            presenter.showDoctorSearch(1);
+            presenter.showDoctorSearch();
         } else if (s == mntmSearchPatient) {
-            presenter.showPatientSearch(1);
+            presenter.showPatientSearch();
         }
     }
 }
