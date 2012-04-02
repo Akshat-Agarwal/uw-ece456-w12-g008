@@ -50,8 +50,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     private Connection getConnection() {
         try {
             if (dbCon == null || dbCon.isClosed()) {
-                dbCon = DriverManager.getConnection("jdbc:mysql://localhost/hospital?"
-                        + "user=root");
+                dbCon = DriverManager
+                        .getConnection("jdbc:mysql://localhost/hospital?user=root&zeroDateTimeBehavior=round");
             }
         } catch (SQLException ex) {
             // handle any errors
@@ -348,7 +348,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         try {
-            String query = "SELECT name FROM patient_consultants NATURAL JOIN doctor"
+            String query = "SELECT name, doctor_id FROM patient_consultants NATURAL JOIN doctor"
                     + " WHERE patient_id = ?";
 
             PreparedStatement sql = getConnection().prepareStatement(query);
@@ -360,6 +360,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             List<Doctor> consultants = Lists.newArrayList();
             while (result.next()) {
                 Doctor d = new Doctor();
+                d.setDoctor_id(Id.<Doctor> of(result.getInt("doctor_id")));
                 d.setName(result.getString("doctor.name"));
                 consultants.add(d);
             }
