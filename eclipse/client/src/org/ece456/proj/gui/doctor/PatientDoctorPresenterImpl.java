@@ -127,4 +127,19 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
                 });
         p.show();
     }
+
+    @Override
+    public void removeConsultant(Doctor selected) {
+        boolean updated = false;
+        try {
+            updated = connection.getServer().removeConsultantForPatient(connection.getSession(),
+                    patient.getPatientId(), selected);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        if (updated) {
+            view.removeConsultant(selected);
+        }
+    }
 }
