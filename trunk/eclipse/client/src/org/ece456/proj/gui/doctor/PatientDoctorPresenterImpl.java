@@ -10,6 +10,7 @@ import org.ece456.proj.gui.appointment.AppointmentView.AppointmentPresenter;
 import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
 import org.ece456.proj.orm.objects.Appointment;
+import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.shared.Connection;
@@ -51,6 +52,15 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
         view.fillAppointments(apps);
 
         view.fillData(patient);
+
+        List<Doctor> consultants = Collections.emptyList();
+        try {
+            consultants = connection.getServer().getConsultantsForPatient(connection.getSession(),
+                    patient.getPatientId());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        view.fillConsultants(consultants);
 
         view.setVisible(true);
     }

@@ -2,15 +2,18 @@ package org.ece456.proj.gui.doctor;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
 import org.ece456.proj.gui.shared.table.SimpleTable;
 import org.ece456.proj.orm.objects.Appointment;
+import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Patient;
 
 import com.jgoodies.forms.factories.FormFactory;
@@ -25,9 +28,11 @@ public class PatientDoctorView extends JFrame {
     protected final JTextField textFieldName;
     protected final SimpleTable<Appointment> table;
 
+    private final ConsultantTable consultantTable;
+
     protected PatientDoctorView(PatientDoctorPresenter patientAppointmentPresenter) {
         getContentPane().setLayout(new BorderLayout(0, 0));
-        setTitle("Appointment List");
+        setTitle("My Patient's Details");
 
         Box verticalBox = Box.createVerticalBox();
         getContentPane().add(verticalBox, BorderLayout.NORTH);
@@ -57,10 +62,24 @@ public class PatientDoctorView extends JFrame {
         panelInfo.add(textFieldName, "4, 4, fill, default");
         textFieldName.setColumns(10);
 
-        table = createAppointmentsTable(patientAppointmentPresenter);
-        getContentPane().add(table, BorderLayout.CENTER);
-        table.setPreferredSize(new Dimension(500, 300));
+        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
+        table = createAppointmentsTable(patientAppointmentPresenter);
+
+        JPanel panel = new JPanel();
+        tabbedPane.addTab("Appointments", null, panel, null);
+        panel.setLayout(new BorderLayout(0, 0));
+        panel.add(table);
+
+        JPanel panel_1 = new JPanel();
+        tabbedPane.addTab("Consultants", null, panel_1, null);
+        panel_1.setLayout(new BorderLayout(0, 0));
+
+        consultantTable = new ConsultantTable();
+        panel_1.add(consultantTable, BorderLayout.CENTER);
+
+        setPreferredSize(new Dimension(600, 400));
         pack();
         setLocation(100, 100);
     }
@@ -68,6 +87,10 @@ public class PatientDoctorView extends JFrame {
     public void fillData(Patient patient) {
         textFieldId.setText(patient.getPatientId().toString());
         textFieldName.setText(patient.getName());
+    }
+
+    public void fillConsultants(List<Doctor> consultants) {
+        consultantTable.update(consultants);
     }
 
     SimpleTable<Appointment> createAppointmentsTable(
