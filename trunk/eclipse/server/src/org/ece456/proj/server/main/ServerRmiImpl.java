@@ -1259,6 +1259,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 p.getContact().setName(result.getString("name"));
                 p.getMedical().setSin(result.getInt("sin"));
                 p.getMedical().setHealthCardNumber(result.getString("health_card_num"));
+                p.getMedical().setNumVisits(result.getInt("num_visits"));
 
                 // Add the default doctor_id
                 Doctor d = new Doctor();
