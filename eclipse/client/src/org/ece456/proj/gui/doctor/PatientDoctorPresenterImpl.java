@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.ece456.proj.gui.appointment.AppointmentView;
 import org.ece456.proj.gui.appointment.AppointmentView.AppointmentPresenter;
@@ -114,15 +113,5 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
                     }
                 });
         p.show();
-    }
-
-    @Override
-    public void saveConsultants(Set<Doctor> consultants) {
-        try {
-            connection.getServer().setConsultantsForPatient(connection.getSession(),
-                    patient.getPatientId(), consultants);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 }

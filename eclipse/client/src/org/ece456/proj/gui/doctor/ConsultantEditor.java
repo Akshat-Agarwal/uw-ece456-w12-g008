@@ -22,7 +22,6 @@ public class ConsultantEditor extends JPanel implements ActionListener {
     private final PatientDoctorPresenter presenter;
 
     private final Set<Doctor> set = new HashSet<Doctor>();
-    private final JButton btnSave;
     private final JButton btnRemoveSelected;
 
     public ConsultantEditor(PatientDoctorPresenter presenter) {
@@ -42,10 +41,6 @@ public class ConsultantEditor extends JPanel implements ActionListener {
 
         btnRemoveSelected = new JButton("Remove Selected");
         panel.add(btnRemoveSelected);
-
-        btnSave = new JButton("Save");
-        btnSave.addActionListener(this);
-        panel.add(btnSave);
     }
 
     public void addConsultant(Doctor c) {
@@ -70,8 +65,6 @@ public class ConsultantEditor extends JPanel implements ActionListener {
         Object s = e.getSource();
         if (s == btnAdd) {
             presenter.addConsultant();
-        } else if (s == btnSave) {
-            presenter.saveConsultants(set);
         }
     }
 }
