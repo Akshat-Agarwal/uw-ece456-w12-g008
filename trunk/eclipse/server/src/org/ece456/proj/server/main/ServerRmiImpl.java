@@ -519,16 +519,6 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                         sql = getConnection().prepareStatement(query);
                         sql.setInt(1, Integer.valueOf(text));
                         break;
-                    case LAST_DATE:
-                        query = "SELECT * FROM appointment NATURAL JOIN patient_medical NATURAL JOIN patient_contact WHERE start_time LIKE ? ";
-                        sql = getConnection().prepareStatement(query);
-                        sql.setString(1, "%" + text + "%");
-                        break;
-                    // case LAST_DATE:
-                    // query += "WHERE health_card_num LIKE ?";
-                    // sql = getConnection().prepareStatement(query);
-                    // sql.setString(1, "%" + text + "%");
-                    // break;
                     default:
                         throw new EnumConstantNotPresentException(PatientSearchOption.class,
                                 String.valueOf(option));
