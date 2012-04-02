@@ -997,25 +997,27 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             query += "IN (SELECT doctor_id FROM doctor_staff WHERE staff_id = ";
             query += String.valueOf(id);
             query += "))";
-            PreparedStatement sql;
+            PreparedStatement sql = null;
             if (text == null) {
                 sql = getConnection().prepareStatement(query);
             } else {
                 if (option == PatientSearchOption.ID) {
-                    query += "AND (patient_contact.patient_id LIKE ?)";
+                    query += "AND (patient_contact.patient_id = ?)";
+                    sql = getConnection().prepareStatement(query);
+                    sql.setInt(1, Integer.parseInt(text));
                 } else if (option == PatientSearchOption.NAME) {
                     query += "AND (patient_contact.name LIKE ?)";
+                    sql = getConnection().prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
                 } else if (option == PatientSearchOption.HEALTH_CARD) {
                     query += "AND (patient_medical.health_card_num like ?)";
-                    // query +=
-                    // "AND (patient_id IN (SELECT patient_id FROM patient_medical WHERE health_card_num like ?))";
+                    sql = getConnection().prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
                 } else if (option == PatientSearchOption.SIN) {
                     query += "AND (patient_medical.sin like ?)";
-                    // query +=
-                    // "AND patient_id IN ((SELECT patient_id FROM patient_medical WHERE sin like ?))";
+                    sql = getConnection().prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
                 }
-                sql = getConnection().prepareStatement(query);
-                sql.setString(1, "%" + text + "%");
             }
             System.out.println(sql);
             ResultSet result = sql.executeQuery();
@@ -1187,21 +1189,27 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         try {
             String query = "SELECT * FROM patient_contact NATURAL JOIN patient_medical ";
             query += "WHERE default_doctor_id = " + String.valueOf(id) + " ";
-            PreparedStatement sql;
+            PreparedStatement sql = null;
             if (text == null) {
                 sql = getConnection().prepareStatement(query);
             } else {
                 if (option == PatientSearchOption.ID) {
-                    query += "AND (patient_contact.patient_id LIKE ?)";
+                    query += "AND (patient_contact.patient_id LIKE = ?)";
+                    sql = getConnection().prepareStatement(query);
+                    sql.setInt(1, Integer.parseInt(text));
                 } else if (option == PatientSearchOption.NAME) {
                     query += "AND (patient_contact.name LIKE ?)";
+                    sql = getConnection().prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
                 } else if (option == PatientSearchOption.HEALTH_CARD) {
                     query += "AND (patient_medical.health_card_num like ?)";
+                    sql = getConnection().prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
                 } else if (option == PatientSearchOption.SIN) {
                     query += "AND (patient_medical.sin like ?)";
+                    sql = getConnection().prepareStatement(query);
+                    sql.setString(1, "%" + text + "%");
                 }
-                sql = getConnection().prepareStatement(query);
-                sql.setString(1, "%" + text + "%");
             }
             System.out.println(sql);
             ResultSet result = sql.executeQuery();
