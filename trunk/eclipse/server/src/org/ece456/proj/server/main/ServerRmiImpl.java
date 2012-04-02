@@ -802,6 +802,10 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
             List<Appointment> apps = Lists.newArrayList();
             while (result.next()) {
+                if (result.getTimestamp("time_created") == null) {
+                    continue;
+                }
+
                 Appointment a = new Appointment();
 
                 a.setStart_time(result.getTimestamp("start_time"));
@@ -896,6 +900,10 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
             List<Appointment> apps = Lists.newArrayList();
             while (result.next()) {
+                if (result.getTimestamp("time_created") == null) {
+                    continue;
+                }
+
                 Appointment a = new Appointment();
 
                 Patient p = new Patient();
@@ -1087,6 +1095,32 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     }
 
     @Override
+    public void deleteAppointment(Session session, Appointment a) {
+        if (!isSessionValid(session)) {
+            return;
+        }
+
+        if (session.getRole() != UserRole.STAFF && session.getRole() != UserRole.DOCTOR) {
+            return;
+        }
+
+        // DELETE
+        try {
+            PreparedStatement sql = getConnection()
+                    .prepareStatement(
+                            "UPDATE appointment SET time_created=NULL WHERE patient_id = ? AND time_created = ?");
+            sql.setInt(1, a.getPatient().getPatientId().asInt());
+
+            // Start times
+            sql.setTimestamp(2, new java.sql.Timestamp(a.getTime_created().getTime()));
+            System.out.println(sql);
+            sql.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public Boolean createAppointment(Session session, Appointment a) {
         if (!isSessionValid(session)) {
             return false;
@@ -1096,15 +1130,28 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             return false;
         }
 
+        Date now = new Date();
+
+        // Make an update
+
         try {
             PreparedStatement sql = getConnection().prepareStatement(
                     "INSERT INTO appointment (patient_id, start_time, last_modified, time_created, "
                             + "doctor_id, length, procedures, prescriptions, diagnoses, comment) "
                             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             sql.setInt(1, a.getPatient().getPatientId().asInt());
+
+            // Start time
             sql.setTimestamp(2, new java.sql.Timestamp(a.getStart_time().getTime()));
-            sql.setTimestamp(3, new java.sql.Timestamp(a.getLast_modified().getTime()));
-            sql.setTimestamp(4, new java.sql.Timestamp(a.getTime_created().getTime()));
+            sql.setTimestamp(3, new java.sql.Timestamp(now.getTime()));
+
+            Date time_created = a.getTime_created();
+            if (time_created == null) {
+                sql.setTimestamp(4, null);
+            } else {
+                sql.setTimestamp(4, new java.sql.Timestamp(a.getTime_created().getTime()));
+            }
+
             sql.setInt(5, a.getDoctor().getDoctor_id().asInt());
             sql.setInt(6, a.getLength());
             sql.setString(7, a.getProcedures());
@@ -1455,6 +1502,10 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
             List<Appointment> apps = Lists.newArrayList();
             while (result.next()) {
+                if (result.getTimestamp("time_created") == null) {
+                    continue;
+                }
+
                 Appointment a = new Appointment();
 
                 a.setStart_time(result.getTimestamp("start_time"));

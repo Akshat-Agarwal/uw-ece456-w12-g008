@@ -101,4 +101,14 @@ public class AppointmentListPresenterImpl implements AppointmentListPresenter {
         else if (doctor != null)
             show(doctor);
     }
+
+    @Override
+    public void deleteAppointment(Appointment app) {
+        try {
+            connection.getServer().deleteAppointment(connection.getSession(), app);
+            connection.getServer().updateNumVisits(app.getPatient().getPatientId().asInt());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 }

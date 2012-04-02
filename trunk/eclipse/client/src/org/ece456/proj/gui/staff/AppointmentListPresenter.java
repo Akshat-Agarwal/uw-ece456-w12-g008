@@ -15,4 +15,6 @@ public interface AppointmentListPresenter {
     void newAppointment();
 
     void refresh();
+
+    void deleteAppointment(Appointment app);
 }

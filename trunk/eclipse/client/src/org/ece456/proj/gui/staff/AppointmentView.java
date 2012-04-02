@@ -16,7 +16,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -48,6 +47,10 @@ public class AppointmentView extends JFrame implements ActionListener {
     private final Appointment appointment;
     private final DateFormat df = new SimpleDateFormat("MMM dd yyyy HH:mm");
 
+    private final JButton btnDelete;
+
+    private Date last_mod;
+
     public AppointmentView(Appointment a, AppointmentListPresenter p) {
         setTitle("Appointment View");
         this.presenter = p;
@@ -58,16 +61,17 @@ public class AppointmentView extends JFrame implements ActionListener {
         JPanel panel_1 = new JPanel();
         getContentPane().add(panel_1, BorderLayout.SOUTH);
 
-        JSplitPane splitPane = new JSplitPane();
-        panel_1.add(splitPane);
+        btnDelete = new JButton("Delete");
+        btnDelete.addActionListener(this);
+        panel_1.add(btnDelete);
 
         btnUpdate = new JButton("Enter");
-        btnUpdate.addActionListener(this);
-        splitPane.setLeftComponent(btnUpdate);
+        panel_1.add(btnUpdate);
 
         btnCancel = new JButton("Cancel");
+        panel_1.add(btnCancel);
         btnCancel.addActionListener(this);
-        splitPane.setRightComponent(btnCancel);
+        btnUpdate.addActionListener(this);
 
         JPanel panel = new JPanel();
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -180,6 +184,7 @@ public class AppointmentView extends JFrame implements ActionListener {
             textDuration.setText(String.valueOf(a.getLength()));
         if (a.getLast_modified() != null)
             textLastModified.setValue(a.getLast_modified());
+        last_mod = a.getLast_modified();
         if (a.getProcedures() != null)
             textProcedures.setText(a.getProcedures());
         if (a.getPrescriptions() != null)
@@ -191,16 +196,18 @@ public class AppointmentView extends JFrame implements ActionListener {
         }
     }
 
-    public void createAppointment() {
+    private void createAppointment(boolean delete) {
         Appointment app = new Appointment();
         Calendar c = Calendar.getInstance();
 
         Date now = c.getTime();
         app.setPatient(appointment.getPatient());
         app.setStart_time(textStartTime.getValue());
+
         if (appointment.getTime_created() == null) {
             appointment.setTime_created(now);
         }
+
         app.setTime_created(appointment.getTime_created());
         app.setDiagnoses(textDiagnoses.getText());
         app.setDoctor(appointment.getDoctor());
@@ -208,9 +215,13 @@ public class AppointmentView extends JFrame implements ActionListener {
         app.setProcedures(textProcedures.getText());
         app.setPrescriptions(textPrescriptions.getText());
         app.setComment(textComment.getText());
-        app.setLast_modified(now);
 
-        this.presenter.updateAppointment(app);
+        app.setLast_modified(last_mod);
+        if (delete) {
+            presenter.deleteAppointment(app);
+        } else {
+            presenter.updateAppointment(app);
+        }
     }
 
     @Override
@@ -218,7 +229,10 @@ public class AppointmentView extends JFrame implements ActionListener {
         if (e.getSource() == btnCancel) {
             this.dispose();
         } else if (e.getSource() == btnUpdate) {
-            createAppointment();
+            createAppointment(false);
+            this.dispose();
+        } else if (e.getSource() == btnDelete) {
+            createAppointment(true);
             this.dispose();
         }
     }

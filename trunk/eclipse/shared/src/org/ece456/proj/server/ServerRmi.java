@@ -98,4 +98,6 @@ public interface ServerRmi extends Remote {
 
     List<Appointment> searchDoctorAppointments(Session session, Id<Doctor> doctor,
             AppointmentSearchOption option, String text) throws RemoteException;
+
+    void deleteAppointment(Session session, Appointment a) throws RemoteException;
 }
