@@ -1,11 +1,9 @@
 package org.ece456.proj.gui.doctor;
 
 import java.util.Date;
-import java.util.Set;
 
 import org.ece456.proj.gui.appointment.AppointmentView;
 import org.ece456.proj.orm.objects.Appointment;
-import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 
@@ -22,6 +20,4 @@ public interface PatientDoctorPresenter {
     void viewPatient(Id<Patient> patientId);
 
     void addConsultant();
-
-    void saveConsultants(Set<Doctor> consultants);
 }

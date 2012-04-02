@@ -4,7 +4,6 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
@@ -90,6 +89,9 @@ public interface ServerRmi extends Remote {
 
     void updateNumVisits(int patientId) throws RemoteException;
 
-    void setConsultantsForPatient(Session session, Id<Patient> patientId, Set<Doctor> consultants)
+    void addConsultantsForPatient(Session session, Id<Patient> patientId, Doctor consultant)
+            throws RemoteException;
+
+    void removeConsultantsForPatient(Session session, Id<Patient> patientId, Doctor consultant)
             throws RemoteException;
 }
