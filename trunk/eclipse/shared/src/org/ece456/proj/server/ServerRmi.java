@@ -77,4 +77,10 @@ public interface ServerRmi extends Remote {
 
     Boolean createAppointment(Session session, Appointment a) throws RemoteException;
 
+    List<Patient> searchPatientByDoctor(Session session, Id<Doctor> id, PatientSearchOption option,
+            String text) throws RemoteException;
+
+    int searchDoctorIdByPatientId(Session session, Id<Patient> patientId,
+            PatientSearchOption option, String text) throws RemoteException;
+
 }

@@ -1121,4 +1121,86 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public List<Patient> searchPatientByDoctor(Session session, Id<Doctor> id,
+            PatientSearchOption option, String text) throws RemoteException {
+        if (!isSessionValid(session)) {
+            return Collections.emptyList();
+        }
+
+        try {
+            String query = "SELECT * FROM patient_contact INNER JOIN patient_medical ";
+            query += "ON patient_contact.patient_id=patient_medical.patient_id ";
+            query += "WHERE (default_doctor_id = ";
+            query += String.valueOf(id);
+            query += "))";
+            PreparedStatement sql;
+            if (text == null) {
+                sql = getConnection().prepareStatement(query);
+            } else {
+                if (option == PatientSearchOption.ID) {
+                    query += "AND (patient_contact.patient_id LIKE ?)";
+                } else if (option == PatientSearchOption.NAME) {
+                    query += "AND (patient_contact.name LIKE ?)";
+                } else if (option == PatientSearchOption.HEALTH_CARD) {
+                    query += "AND (patient_medical.health_card_num like ?)";
+                    // query +=
+                    // "AND (patient_id IN (SELECT patient_id FROM patient_medical WHERE health_card_num like ?))";
+                } else if (option == PatientSearchOption.SIN) {
+                    query += "AND (patient_medical.sin like ?)";
+                    // query +=
+                    // "AND patient_id IN ((SELECT patient_id FROM patient_medical WHERE sin like ?))";
+                }
+                sql = getConnection().prepareStatement(query);
+                sql.setString(1, "%" + text + "%");
+            }
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+            List<Patient> Patients = Lists.newArrayList();
+            while (result.next()) {
+                Patient p = new Patient();
+                p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
+                p.getContact().setName(result.getString("name"));
+
+                // Add the default doctor_id
+                Doctor d = new Doctor();
+                d.setDoctor_id(Id.<Doctor> of(result.getInt("default_doctor_id")));
+                p.getMedical().setDefaultDoctor(d);
+
+                Patients.add(p);
+            }
+            return Patients;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public int searchDoctorIdByPatientId(Session session, Id<Patient> patientId,
+            PatientSearchOption option, String text) {
+
+        if (!isSessionValid(session)) {
+            return 0;
+        }
+
+        try {
+            String query = "SELECT default_doctor_id FROM patient_medical ";
+            query += "WHERE patient_id = ";
+            query += String.valueOf(patientId.asInt());
+            PreparedStatement sql;
+            sql = getConnection().prepareStatement(query);
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+            int DoctorId = 0;
+            if (result.next()) {
+                DoctorId = result.getInt("default_doctor_id");
+            }
+            return DoctorId;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

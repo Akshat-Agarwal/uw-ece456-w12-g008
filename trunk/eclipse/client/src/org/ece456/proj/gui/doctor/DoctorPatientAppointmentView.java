@@ -18,6 +18,8 @@ import javax.swing.JTextField;
 
 import org.ece456.proj.gui.shared.table.SimpleTable;
 import org.ece456.proj.orm.objects.Appointment;
+import org.ece456.proj.orm.objects.Id;
+import org.ece456.proj.orm.objects.Patient;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -32,10 +34,15 @@ public class DoctorPatientAppointmentView extends JFrame implements ActionListen
     // Appointment saveAppointmentData();
     // }
 
+    public interface AppointmentPresenter {
+        void viewPatient(Id<Patient> id);
+    }
+
     private static final long serialVersionUID = 1L;
     private JTextField textDoctor;
     private final JButton btnUpdate;
     private final JButton btnCancel;
+    private final JButton btnPatient;
 
     private final JTextField textStartTime;
     private final JTextField textDuration;
@@ -48,7 +55,6 @@ public class DoctorPatientAppointmentView extends JFrame implements ActionListen
     private final PatientDoctorPresenter presenter;
 
     private final Appointment appointment;
-    private final JTextField textPatient;
 
     public DoctorPatientAppointmentView(Appointment a, PatientDoctorPresenter presenter) {
         setTitle("Appointment View");
@@ -96,10 +102,14 @@ public class DoctorPatientAppointmentView extends JFrame implements ActionListen
 
         JLabel lblPatient = new JLabel("Patient");
         panel.add(lblPatient, "2, 2, right, default");
-        textPatient = new JTextField();
-        textPatient.setEditable(false);
-        textPatient.setColumns(10);
-        panel.add(textPatient, "4, 2, fill, default");
+
+        btnPatient = new JButton("New button");
+        btnPatient.addActionListener(this);
+        panel.add(btnPatient, "4, 2");
+        // textPatient = new JTextField();
+        // textPatient.setEditable(false);
+        // textPatient.setColumns(10);
+        // panel.add(textPatient, "4, 2, fill, default");
 
         JLabel lblStartTime = new JLabel("Start Time");
         panel.add(lblStartTime, "2, 6, right, default");
@@ -173,8 +183,8 @@ public class DoctorPatientAppointmentView extends JFrame implements ActionListen
     }
 
     private void fillData(Appointment a) {
-        if (textPatient != null) {
-            textPatient.setText(a.getPatient().getName());
+        if (btnPatient != null) {
+            btnPatient.setText(a.getPatient().getName());
         }
         if (textDoctor != null) {
             textDoctor.setText(a.getDoctor().getName());
@@ -214,6 +224,10 @@ public class DoctorPatientAppointmentView extends JFrame implements ActionListen
         } else if (e.getSource() == btnCancel) {
             this.dispose();
 
+        } else if (e.getSource() == btnPatient) {
+            if (presenter != null) {
+                presenter.viewPatient(appointment.getPatient().getPatientId());
+            }
         }
     }
 }
