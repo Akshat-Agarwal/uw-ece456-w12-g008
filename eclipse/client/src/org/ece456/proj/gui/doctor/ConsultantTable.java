@@ -37,4 +37,8 @@ public class ConsultantTable extends SimpleTable<Doctor> {
                     return d.getName();
                 }
             }, 300);
+
+    public void addConsultant(Doctor consultant) {
+        System.out.println(consultant);
+    }
 }

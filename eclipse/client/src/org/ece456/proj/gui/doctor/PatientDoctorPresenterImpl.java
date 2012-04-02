@@ -4,11 +4,14 @@ import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.ece456.proj.gui.appointment.AppointmentView;
 import org.ece456.proj.gui.appointment.AppointmentView.AppointmentPresenter;
 import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
+import org.ece456.proj.gui.search.doctor.DoctorSearchPresenter;
+import org.ece456.proj.gui.shared.table.SelectionListener;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
@@ -20,6 +23,8 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
     private final Connection connection;
 
     private PatientDoctorView view;
+
+    private Patient patient;
 
     public PatientDoctorPresenterImpl(Connection connection) {
         this.connection = connection;
@@ -33,6 +38,7 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
 
     @Override
     public void show(Patient patient) {
+        this.patient = patient;
         List<Appointment> apps = Collections.emptyList();
         try {
             apps = connection.getServer().getAppointmentsForPatient(connection.getSession(),
@@ -89,5 +95,34 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
     public void viewPatient(Id<Patient> patientId) {
         PatientPresenter p = new PatientPresenterImpl(connection);
         p.show(patientId);
+    }
+
+    @Override
+    public void addConsultant() {
+        DoctorSearchPresenter p = new DoctorSearchPresenter(connection,
+                new SelectionListener<Doctor>() {
+
+                    @Override
+                    public SelectionListener.AfterAction onSelection(Doctor selected) {
+                        view.addConsultant(selected);
+                        return SelectionListener.AfterAction.CLOSE_DIALOG;
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // Do nothing
+                    }
+                });
+        p.show();
+    }
+
+    @Override
+    public void saveConsultants(Set<Doctor> consultants) {
+        try {
+            connection.getServer().setConsultantsForPatient(connection.getSession(),
+                    patient.getPatientId(), consultants);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }

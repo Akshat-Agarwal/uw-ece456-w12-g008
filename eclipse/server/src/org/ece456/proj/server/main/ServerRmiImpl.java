@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
@@ -565,7 +566,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
 
         // Only certain roles can search for doctors
         EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.STAFF,
-                UserRole.ACCOUNTANT, UserRole.LEGAL);
+                UserRole.ACCOUNTANT, UserRole.LEGAL, UserRole.DOCTOR);
         boolean hasPermission = canSearchPatients.contains(session.getRole());
         if (!hasPermission) {
             return Collections.emptyList();
@@ -1327,5 +1328,21 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void setConsultantsForPatient(Session session, Id<Patient> patientId,
+            Set<Doctor> consultants) throws RemoteException {
+        if (!isSessionValid(session)) {
+            return;
+        }
+
+        // Only certain roles can search for patients
+        EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.DOCTOR);
+        boolean hasPermission = canSearchPatients.contains(session.getRole());
+        if (!hasPermission) {
+            return;
+        }
+
     }
 }
