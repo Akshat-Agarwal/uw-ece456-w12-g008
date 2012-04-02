@@ -1258,4 +1258,79 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
         return 0;
     }
+
+    @Override
+    public void updateNumVisits() {
+        try {
+            String query = "SELECT patient_id FROM patient_contact";
+            PreparedStatement sql;
+            sql = getConnection().prepareStatement(query);
+            System.out.println(sql);
+            ResultSet result = sql.executeQuery();
+            while (result.next()) {
+                // get list of patients
+                int patientId = result.getInt("patient_id");
+
+                // get num_visit for patient
+                String q2 = "SELECT COUNT(patient_id) AS num_visits FROM "
+                        + "(SELECT * FROM appointment NATURAL JOIN doctor WHERE "
+                        + "(patient_id, time_created, last_modified) in "
+                        + "(SELECT patient_id, time_created, max(last_modified) "
+                        + "FROM appointment GROUP BY patient_id, time_created) "
+                        + "AND patient_id = ?) AS T WHERE start_time <= CURRENT_TIMESTAMP";
+
+                PreparedStatement sql2 = getConnection().prepareStatement(q2);
+                sql2.setInt(1, patientId);
+                System.out.println(sql2);
+                ResultSet result2 = sql2.executeQuery();
+
+                while (result2.next()) {
+                    int numVisits = result2.getInt("num_visits");
+
+                    // update num_visits
+                    String q3 = "UPDATE patient_medical SET num_visits = ? WHERE "
+                            + "patient_id = ?";
+                    PreparedStatement sql3 = getConnection().prepareStatement(q3);
+                    sql3.setInt(1, numVisits);
+                    sql3.setInt(2, patientId);
+                    sql3.execute();
+                }
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateNumVisits(int patientId) {
+        try {
+            // get num_visit for patient
+            String q2 = "SELECT COUNT(patient_id) AS num_visits FROM "
+                    + "(SELECT * FROM appointment NATURAL JOIN doctor WHERE "
+                    + "(patient_id, time_created, last_modified) in "
+                    + "(SELECT patient_id, time_created, max(last_modified) "
+                    + "FROM appointment GROUP BY patient_id, time_created) "
+                    + "AND patient_id = ?) AS T WHERE start_time <= CURRENT_TIMESTAMP";
+
+            PreparedStatement sql2 = getConnection().prepareStatement(q2);
+            sql2.setInt(1, patientId);
+            System.out.println(sql2);
+            ResultSet result2 = sql2.executeQuery();
+
+            while (result2.next()) {
+                int numVisits = result2.getInt("num_visits");
+
+                // update num_visits
+                String q3 = "UPDATE patient_medical SET num_visits = ? WHERE " + "patient_id = ?";
+                PreparedStatement sql3 = getConnection().prepareStatement(q3);
+                sql3.setInt(1, numVisits);
+                sql3.setInt(2, patientId);
+                sql3.execute();
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
