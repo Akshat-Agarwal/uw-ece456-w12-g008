@@ -85,4 +85,8 @@ public interface ServerRmi extends Remote {
     int searchDoctorIdByPatientId(Session session, Id<Patient> patientId,
             PatientSearchOption option, String text) throws RemoteException;
 
+    void updateNumVisits() throws RemoteException;
+
+    void updateNumVisits(int patientId) throws RemoteException;
+
 }
