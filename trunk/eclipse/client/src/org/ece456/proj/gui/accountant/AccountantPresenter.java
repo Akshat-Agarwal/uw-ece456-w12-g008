@@ -14,8 +14,6 @@ public interface AccountantPresenter {
 
     void showPasswordChange();
 
-    void showPatientSearch();
-
     void showDoctorSearch();
 
     void show(Id<Accountant> id);

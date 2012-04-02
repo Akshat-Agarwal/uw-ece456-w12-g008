@@ -2,6 +2,8 @@ package org.ece456.proj.gui.accountant;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JFrame;
@@ -9,25 +11,29 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.ece456.proj.gui.appointment.AppointmentView.AppointmentPresenter;
 import org.ece456.proj.gui.shared.table.SimpleTable;
 import org.ece456.proj.gui.shared.widgets.DateRangePicker;
 import org.ece456.proj.gui.shared.widgets.DateRangePicker.Listener;
 import org.ece456.proj.orm.objects.Appointment;
+import org.ece456.proj.orm.objects.Doctor;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 
-public abstract class AbstractFinancialView extends JFrame implements Listener {
+public class FinancialView extends JFrame implements Listener {
     private static final long serialVersionUID = 1L;
 
     protected final JTextField textFieldId;
     protected final JTextField textFieldName;
     protected final SimpleTable<Appointment> table;
 
-    protected AbstractFinancialView(AppointmentPresenter appointmentPresenter) {
+    protected final FinancialPresenter presenter;
+
+    protected FinancialView(FinancialPresenter presenter) {
+        this.presenter = presenter;
+
         getContentPane().setLayout(new BorderLayout(0, 0));
 
         Box verticalBox = Box.createVerticalBox();
@@ -61,7 +67,7 @@ public abstract class AbstractFinancialView extends JFrame implements Listener {
         JPanel panelSearch = new DateRangePicker(this);
         verticalBox.add(panelSearch);
 
-        table = createAppointmentsTable(appointmentPresenter);
+        table = new FinancialAppointmentTable(presenter.getAppointmentPresenter());
         getContentPane().add(table, BorderLayout.CENTER);
         table.setPreferredSize(new Dimension(500, 300));
 
@@ -69,5 +75,17 @@ public abstract class AbstractFinancialView extends JFrame implements Listener {
         setLocation(100, 100);
     }
 
-    abstract SimpleTable<Appointment> createAppointmentsTable(AppointmentPresenter p);
+    public void fillData(Doctor doctor) {
+        textFieldId.setText(doctor.getDoctor_id().toString());
+        textFieldName.setText(doctor.getName());
+    }
+
+    public void fillAppointments(List<Appointment> apps) {
+        table.update(apps);
+    }
+
+    @Override
+    public void onSearch(Date start, Date end) {
+        presenter.searchAppointments(start, end);
+    }
 }

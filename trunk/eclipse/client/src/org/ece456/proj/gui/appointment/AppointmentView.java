@@ -67,7 +67,7 @@ public class AppointmentView extends JFrame implements ActionListener {
                         FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
                         FormFactory.RELATED_GAP_ROWSPEC, RowSpec.decode("default:grow"), }));
 
-        if (a.getPatient() != null && role != UserRole.PATIENT) {
+        if (a.getPatient() != null && role == UserRole.DOCTOR) {
             JLabel lblPatient = new JLabel("Patient");
             panel.add(lblPatient, "2, 2, right, default");
 

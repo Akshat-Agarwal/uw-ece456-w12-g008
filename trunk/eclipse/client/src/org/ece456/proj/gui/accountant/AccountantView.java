@@ -33,11 +33,9 @@ public class AccountantView extends JFrame implements ActionListener {
     private final JMenuItem mntmDoctor;
     private final Box verticalBox;
     private final JButton btnSearchForDoctor;
-    private final JButton btnSearchForPatient;
     private final Box verticalBox_1;
     private final Component verticalStrut;
     private final Component verticalStrut_1;
-    private final Component verticalStrut_2;
 
     public AccountantView(AccountantPresenter presenter) {
         this.presenter = presenter;
@@ -112,14 +110,6 @@ public class AccountantView extends JFrame implements ActionListener {
         verticalStrut = Box.createVerticalStrut(20);
         verticalBox_1.add(verticalStrut);
 
-        btnSearchForPatient = new JButton("Search for Patient Details");
-        btnSearchForPatient.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnSearchForPatient.addActionListener(this);
-        verticalBox_1.add(btnSearchForPatient);
-
-        verticalStrut_2 = Box.createVerticalStrut(20);
-        verticalBox.add(verticalStrut_2);
-
         pack();
         setLocation(100, 100);
     }
@@ -129,8 +119,6 @@ public class AccountantView extends JFrame implements ActionListener {
         Object s = e.getSource();
         if (s == mntmChangePassword) {
             presenter.showPasswordChange();
-        } else if (s == mntmPatient || s == btnSearchForPatient) {
-            presenter.showPatientSearch();
         } else if (s == mntmDoctor || s == btnSearchForDoctor) {
             presenter.showDoctorSearch();
         }

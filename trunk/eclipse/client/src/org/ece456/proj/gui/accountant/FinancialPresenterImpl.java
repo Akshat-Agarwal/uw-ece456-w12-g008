@@ -15,15 +15,15 @@ import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.shared.Connection;
 
-public class DoctorFinancialPresenterImpl implements DoctorFinancialPresenter {
+public class FinancialPresenterImpl implements FinancialPresenter {
 
     private final Connection connection;
 
-    private DoctorFinancialView view;
+    private FinancialView view;
 
     private final Id<Doctor> doctorId;
 
-    public DoctorFinancialPresenterImpl(Connection connection, Id<Doctor> doctorId) {
+    public FinancialPresenterImpl(Connection connection, Id<Doctor> doctorId) {
         this.connection = connection;
         this.doctorId = doctorId;
     }
@@ -44,7 +44,7 @@ public class DoctorFinancialPresenterImpl implements DoctorFinancialPresenter {
     @Override
     public void show(Doctor doctor) {
         if (view == null) {
-            view = new DoctorFinancialView(this);
+            view = new FinancialView(this);
         }
 
         view.fillData(doctor);

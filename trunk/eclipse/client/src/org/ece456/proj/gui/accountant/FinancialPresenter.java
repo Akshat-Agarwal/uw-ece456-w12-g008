@@ -5,7 +5,7 @@ import java.util.Date;
 import org.ece456.proj.gui.appointment.AppointmentView;
 import org.ece456.proj.orm.objects.Doctor;
 
-public interface DoctorFinancialPresenter {
+public interface FinancialPresenter {
 
     void searchAppointments(Date start, Date end);
 
