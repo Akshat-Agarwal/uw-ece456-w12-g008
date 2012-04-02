@@ -1330,32 +1330,36 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
     }
 
     @Override
-    public void removeConsultantsForPatient(Session session, Id<Patient> patientId,
+    public boolean removeConsultantForPatient(Session session, Id<Patient> patientId,
             Doctor consultant) throws RemoteException {
         if (!isSessionValid(session)) {
-            return;
+            return false;
         }
 
         // Only certain roles can search for patients
         EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.DOCTOR);
         boolean hasPermission = canSearchPatients.contains(session.getRole());
         if (!hasPermission) {
-            return;
+            return false;
         }
+
+        return true;
     }
 
     @Override
-    public void addConsultantsForPatient(Session session, Id<Patient> patientId, Doctor consultant)
+    public boolean addConsultantForPatient(Session session, Id<Patient> patientId, Doctor consultant)
             throws RemoteException {
         if (!isSessionValid(session)) {
-            return;
+            return false;
         }
 
         // Only certain roles can search for patients
         EnumSet<UserRole> canSearchPatients = EnumSet.of(UserRole.ADMIN, UserRole.DOCTOR);
         boolean hasPermission = canSearchPatients.contains(session.getRole());
         if (!hasPermission) {
-            return;
+            return false;
         }
+
+        return true;
     }
 }

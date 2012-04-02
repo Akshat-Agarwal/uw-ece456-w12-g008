@@ -104,10 +104,19 @@ public class PatientDoctorPresenterImpl implements PatientDoctorPresenter {
                     @Override
                     public SelectionListener.AfterAction onSelection(Doctor selected) {
 
-                        connection.getServer().addConsultantForPatient(connection.getSession(),
-                                patient.getPatientId(), selected);
+                        boolean updated = false;
 
-                        view.addConsultant(selected);
+                        try {
+                            updated = connection.getServer().addConsultantForPatient(
+                                    connection.getSession(), patient.getPatientId(), selected);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (updated) {
+                            view.addConsultant(selected);
+                        }
+
                         return SelectionListener.AfterAction.CLOSE_DIALOG;
                     }
 
