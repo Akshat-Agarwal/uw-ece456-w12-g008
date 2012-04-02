@@ -13,7 +13,7 @@ public class DoctorAppointmentSearchView extends SearchView<Appointment> {
 
     public DoctorAppointmentSearchView(SearchPresenter<Appointment> presenter) {
         super("Search for your appointment", AppointmentSearchOption.values(), ImmutableList.of(
-                AppointmentTableColumns.START_TIME, AppointmentTableColumns.PATIENT_ID,
+                AppointmentTableColumns.START_TIME, AppointmentTableColumns.PATIENT,
                 AppointmentTableColumns.DURATION, AppointmentTableColumns.DIAGNOSES,
                 AppointmentTableColumns.PRESCRIPTIONS, AppointmentTableColumns.PROCEDURES),
                 presenter);
