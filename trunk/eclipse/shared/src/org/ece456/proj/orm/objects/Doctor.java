@@ -2,6 +2,8 @@ package org.ece456.proj.orm.objects;
 
 import java.io.Serializable;
 
+import com.google.common.base.Objects;
+
 public class Doctor implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,4 +36,20 @@ public class Doctor implements Serializable {
         this.password = password;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(doctor_id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Doctor that = (Doctor) obj;
+        return Objects.equal(this.doctor_id, that.doctor_id);
+    }
 }

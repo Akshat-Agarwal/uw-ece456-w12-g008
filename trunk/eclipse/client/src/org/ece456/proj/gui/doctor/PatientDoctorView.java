@@ -28,7 +28,7 @@ public class PatientDoctorView extends JFrame {
     protected final JTextField textFieldName;
     protected final SimpleTable<Appointment> table;
 
-    private final ConsultantTable consultantTable;
+    private final ConsultantEditor consultantTable;
 
     protected PatientDoctorView(PatientDoctorPresenter patientAppointmentPresenter) {
         getContentPane().setLayout(new BorderLayout(0, 0));
@@ -76,7 +76,7 @@ public class PatientDoctorView extends JFrame {
         tabbedPane.addTab("Consultants", null, panel_1, null);
         panel_1.setLayout(new BorderLayout(0, 0));
 
-        consultantTable = new ConsultantTable();
+        consultantTable = new ConsultantEditor(patientAppointmentPresenter);
         panel_1.add(consultantTable, BorderLayout.CENTER);
 
         setPreferredSize(new Dimension(600, 400));
@@ -90,7 +90,7 @@ public class PatientDoctorView extends JFrame {
     }
 
     public void fillConsultants(List<Doctor> consultants) {
-        consultantTable.update(consultants);
+        consultantTable.setConsultants(consultants);
     }
 
     SimpleTable<Appointment> createAppointmentsTable(
@@ -100,5 +100,9 @@ public class PatientDoctorView extends JFrame {
 
     public void fillAppointments(java.util.List<Appointment> apps) {
         table.update(apps);
+    }
+
+    public void addConsultant(Doctor consultant) {
+        consultantTable.addConsultant(consultant);
     }
 }
