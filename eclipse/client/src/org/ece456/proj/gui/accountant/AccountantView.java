@@ -29,7 +29,6 @@ public class AccountantView extends JFrame implements ActionListener {
     private final AccountantPresenter presenter;
     private final JTextField text_name;
     private final JTextField text_id;
-    private final JMenuItem mntmPatient;
     private final JMenuItem mntmDoctor;
     private final Box verticalBox;
     private final JButton btnSearchForDoctor;
@@ -57,10 +56,6 @@ public class AccountantView extends JFrame implements ActionListener {
         JMenu mnSearch = new JMenu("Search");
         mnSearch.setMnemonic('s');
         menuBar.add(mnSearch);
-
-        mntmPatient = new JMenuItem("Patient...");
-        mntmPatient.addActionListener(this);
-        mnSearch.add(mntmPatient);
 
         mntmDoctor = new JMenuItem("Doctor...");
         mntmDoctor.addActionListener(this);

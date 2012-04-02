@@ -18,7 +18,7 @@ public class FinancialPatientTable extends SimpleTable<Patient> {
 
     @Override
     protected SimpleTableModel<Patient> initModel() {
-        return SimpleTableModel.create(ImmutableList.of(PATIENT_ID));
+        return SimpleTableModel.create(ImmutableList.of(PATIENT_ID, NUM_VISITS));
     }
 
     // Columns below.
@@ -28,6 +28,14 @@ public class FinancialPatientTable extends SimpleTable<Patient> {
                 @Override
                 public String render(Patient p) {
                     return String.valueOf(p.getPatientId());
+                }
+            }, 150);
+
+    public static ColumnModel<Patient> NUM_VISITS = ColumnFactory.INSTANCE.create("Num visits",
+            new CellRenderer<Patient>() {
+                @Override
+                public String render(Patient p) {
+                    return String.valueOf(p.getMedical().getNumVisits());
                 }
             }, 150);
 }
