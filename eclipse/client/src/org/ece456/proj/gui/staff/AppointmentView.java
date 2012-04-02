@@ -204,6 +204,7 @@ public class AppointmentView extends JFrame implements ActionListener {
         Date now = c.getTime();
         app.setPatient(appointment.getPatient());
         app.setStart_time(textStartTime.getValue());
+        app.setTime_created(appointment.getTime_created());
         app.setDiagnoses(textDiagnoses.getText());
         app.setDoctor(appointment.getDoctor());
         app.setLength(Integer.parseInt(textDuration.getText()));

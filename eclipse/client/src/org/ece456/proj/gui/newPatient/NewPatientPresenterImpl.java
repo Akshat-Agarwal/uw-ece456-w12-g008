@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import org.ece456.proj.orm.objects.Doctor;
-import org.ece456.proj.orm.objects.Id;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.Staff;
 import org.ece456.proj.shared.Connection;
@@ -41,25 +40,17 @@ public class NewPatientPresenterImpl implements NewPatientPresenter {
     }
 
     @Override
-    public void show(Id<Staff> id) {
+    public void show(Patient patient) {
         if (view == null) {
             view = new NewPatientView(this);
         }
-        view.fillDoctors(getDoctors());
+        view.fillData(getDoctors(), patient);
         view.setVisible(true);
     }
 
     @Override
-    public void reset() {
-        view.reset();
-    }
-
-    @Override
-    public void save() {
-        if (view == null) {
-            view = new NewPatientView(this);
-        }
-        Patient p = view.save();
+    public void createPatient() {
+        Patient p = view.getPatientInfo();
 
         Patient exist = null;
         try {
@@ -68,6 +59,16 @@ public class NewPatientPresenterImpl implements NewPatientPresenter {
             if (exist != null)
                 return;
             connection.getServer().createNewPatient(connection.getSession(), p);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updatePatient() {
+        Patient p = view.getPatientInfo();
+        try {
+            connection.getServer().updatePatient(connection.getSession(), p);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
