@@ -50,10 +50,20 @@ public class DoctorPresenterImpl implements DoctorPresenter {
                     @Override
                     public AfterAction onSelection(Patient selected) {
                         // Do something with the Doctor
-                        PatientDoctorPresenter p = new PatientDoctorPresenterImpl(connection,
-                                selected);
-                        p.show(selected);
-                        // presenter.searchAppointments(start, end);
+                        int DoctorId;
+                        try {
+                            DoctorId = connection.getServer().searchDoctorIdByPatientId(
+                                    connection.getSession(), selected.getPatientId(), null, null);
+                            if (DoctorId == doctor.getDoctor_id().asInt()) {
+                                PatientDoctorPresenter p = new PatientDoctorPresenterImpl(
+                                        connection, selected);
+                                p.show(selected);
+                            }
+                        } catch (RemoteException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+
                         return AfterAction.DO_NOTHING;
                     }
 
@@ -62,6 +72,7 @@ public class DoctorPresenterImpl implements DoctorPresenter {
                         // do nothing
                     }
                 });
+
         p.show();
     }
 
