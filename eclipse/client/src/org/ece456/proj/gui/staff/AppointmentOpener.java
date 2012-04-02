@@ -12,12 +12,12 @@ public class AppointmentOpener implements Listener<Appointment> {
 
     @Override
     public void onSelection(Appointment selected) {
-        AppointmentView view = new AppointmentView(selected, presenter);
+        AppointmentView view = new AppointmentView(selected, presenter, true);
         view.setVisible(true);
     }
 
     public void newAppointment(Appointment app) {
-        AppointmentView view = new AppointmentView(app, presenter);
+        AppointmentView view = new AppointmentView(app, presenter, false);
         view.setVisible(true);
     }
 

@@ -51,7 +51,7 @@ public class AppointmentView extends JFrame implements ActionListener {
 
     private Date last_mod;
 
-    public AppointmentView(Appointment a, AppointmentListPresenter p) {
+    public AppointmentView(Appointment a, AppointmentListPresenter p, boolean showDelete) {
         setTitle("Appointment View");
         this.presenter = p;
         this.appointment = a;
@@ -64,6 +64,8 @@ public class AppointmentView extends JFrame implements ActionListener {
         btnDelete = new JButton("Delete");
         btnDelete.addActionListener(this);
         panel_1.add(btnDelete);
+
+        btnDelete.setVisible(showDelete);
 
         btnUpdate = new JButton("Enter");
         panel_1.add(btnUpdate);
