@@ -107,6 +107,6 @@ public class PatientDoctorView extends JFrame {
     }
 
     public void removeConsultant(Doctor consultant) {
-        consultantTable.addConsultant(consultant);
+        consultantTable.removeConsultant(consultant);
     }
 }
