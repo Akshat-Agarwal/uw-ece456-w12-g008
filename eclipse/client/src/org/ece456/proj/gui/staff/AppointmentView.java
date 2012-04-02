@@ -30,12 +30,6 @@ import com.jgoodies.forms.layout.RowSpec;
 
 public class AppointmentView extends JFrame implements ActionListener {
 
-    // public interface AppointmentPresenter {
-    // void viewPatient(Id<Patient> id);
-    //
-    // void updateAppointment();;
-    // }
-
     private static final long serialVersionUID = 1L;
 
     private final JTextField textPatient;
@@ -126,7 +120,7 @@ public class AppointmentView extends JFrame implements ActionListener {
         panel.add(lblLastModified, "2, 10, right, default");
 
         textLastModified = new DateTimePicker();
-        textLastModified.setToolTipText("This will be updated automatically when saving");
+        textLastModified.setEnabled(false);
         panel.add(textLastModified, "4, 10, fill, default");
 
         JLabel lblProcedures = new JLabel("Procedures");
@@ -204,6 +198,9 @@ public class AppointmentView extends JFrame implements ActionListener {
         Date now = c.getTime();
         app.setPatient(appointment.getPatient());
         app.setStart_time(textStartTime.getValue());
+        if (appointment.getTime_created() == null) {
+            appointment.setTime_created(now);
+        }
         app.setTime_created(appointment.getTime_created());
         app.setDiagnoses(textDiagnoses.getText());
         app.setDoctor(appointment.getDoctor());
