@@ -13,8 +13,8 @@ import com.google.common.collect.ImmutableList;
 public class FinancialAppointmentTable extends SimpleTable<Appointment> {
     private static final long serialVersionUID = 1L;
 
-    public FinancialAppointmentTable(AppointmentPresenter p) {
-        super(new AppointmentOpener(UserRole.ACCOUNTANT, p), true, false);
+    public FinancialAppointmentTable(UserRole role, AppointmentPresenter p) {
+        super(new AppointmentOpener(role, p), true, false);
     }
 
     @Override

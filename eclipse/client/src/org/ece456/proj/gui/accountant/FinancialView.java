@@ -18,6 +18,7 @@ import org.ece456.proj.gui.shared.widgets.DateRangePicker.Listener;
 import org.ece456.proj.orm.objects.Appointment;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Patient;
+import org.ece456.proj.orm.objects.UserRole;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -34,7 +35,7 @@ public class FinancialView extends JFrame implements Listener {
 
     protected final FinancialPresenter presenter;
 
-    protected FinancialView(FinancialPresenter presenter) {
+    protected FinancialView(UserRole role, FinancialPresenter presenter) {
         this.presenter = presenter;
 
         getContentPane().setLayout(new BorderLayout(0, 0));
@@ -77,7 +78,7 @@ public class FinancialView extends JFrame implements Listener {
         JPanel panelSearch = new DateRangePicker(this);
         panel.add(panelSearch, BorderLayout.NORTH);
 
-        appointments = new FinancialAppointmentTable(null);
+        appointments = new FinancialAppointmentTable(role, null);
         panel.add(appointments);
         appointments.setPreferredSize(new Dimension(500, 300));
 

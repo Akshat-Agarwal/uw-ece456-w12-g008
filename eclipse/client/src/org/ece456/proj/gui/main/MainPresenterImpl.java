@@ -2,7 +2,6 @@ package org.ece456.proj.gui.main;
 
 import org.ece456.proj.gui.accountant.AccountantPresenter;
 import org.ece456.proj.gui.accountant.AccountantPresenterImpl;
-import org.ece456.proj.gui.accountant.LawyerPresenter;
 import org.ece456.proj.gui.accountant.LawyerPresenterImpl;
 import org.ece456.proj.gui.admin.AdminPresenter;
 import org.ece456.proj.gui.admin.AdminPresenterImpl;
@@ -12,11 +11,9 @@ import org.ece456.proj.gui.patient.PatientPresenter;
 import org.ece456.proj.gui.patient.PatientPresenterImpl;
 import org.ece456.proj.gui.staff.StaffPresenter;
 import org.ece456.proj.gui.staff.StaffPresenterImpl;
-import org.ece456.proj.orm.objects.Accountant;
 import org.ece456.proj.orm.objects.Admin;
 import org.ece456.proj.orm.objects.Doctor;
 import org.ece456.proj.orm.objects.Id;
-import org.ece456.proj.orm.objects.Lawyer;
 import org.ece456.proj.orm.objects.Patient;
 import org.ece456.proj.orm.objects.Staff;
 import org.ece456.proj.orm.objects.UserRole;
@@ -63,12 +60,12 @@ public class MainPresenterImpl implements MainPresenter {
 
     private void showAccountant(Connection connection, int id) {
         AccountantPresenter presenter = new AccountantPresenterImpl(connection);
-        presenter.show(Id.<Accountant> of(id));
+        presenter.show(id);
     }
 
     private void showLawyer(Connection connection, int id) {
-        LawyerPresenter presenter = new LawyerPresenterImpl(connection);
-        presenter.show(Id.<Lawyer> of(id));
+        AccountantPresenter presenter = new LawyerPresenterImpl(connection);
+        presenter.show(id);
     }
 
     private void showPatientView(Connection connection, int id) {

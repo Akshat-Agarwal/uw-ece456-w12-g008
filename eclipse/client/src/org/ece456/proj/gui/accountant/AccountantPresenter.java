@@ -1,7 +1,5 @@
 package org.ece456.proj.gui.accountant;
 
-import org.ece456.proj.orm.objects.Accountant;
-import org.ece456.proj.orm.objects.Id;
 
 /**
  * Financial Department
@@ -16,6 +14,6 @@ public interface AccountantPresenter {
 
     void showDoctorSearch();
 
-    void show(Id<Accountant> id);
+    void show(int id);
 
 }
