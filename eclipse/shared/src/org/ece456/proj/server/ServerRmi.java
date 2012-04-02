@@ -89,9 +89,9 @@ public interface ServerRmi extends Remote {
 
     void updateNumVisits(int patientId) throws RemoteException;
 
-    void addConsultantsForPatient(Session session, Id<Patient> patientId, Doctor consultant)
+    boolean addConsultantForPatient(Session session, Id<Patient> patientId, Doctor consultant)
             throws RemoteException;
 
-    void removeConsultantsForPatient(Session session, Id<Patient> patientId, Doctor consultant)
+    boolean removeConsultantForPatient(Session session, Id<Patient> patientId, Doctor consultant)
             throws RemoteException;
 }
