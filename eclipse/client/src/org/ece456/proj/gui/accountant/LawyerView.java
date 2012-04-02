@@ -29,13 +29,10 @@ public class LawyerView extends JFrame implements ActionListener {
     private final LawyerPresenter presenter;
     private final JTextField text_name;
     private final JTextField text_id;
-    private final JMenuItem mntmPatient;
     private final JMenuItem mntmDoctor;
     private final Box verticalBox;
     private final JButton btnSearchForDoctor;
-    private final JButton btnSearchForPatient;
     private final Box verticalBox_1;
-    private final Component verticalStrut;
     private final Component verticalStrut_1;
     private final Component verticalStrut_2;
 
@@ -59,10 +56,6 @@ public class LawyerView extends JFrame implements ActionListener {
         JMenu mnSearch = new JMenu("Search");
         mnSearch.setMnemonic('s');
         menuBar.add(mnSearch);
-
-        mntmPatient = new JMenuItem("Patient...");
-        mntmPatient.addActionListener(this);
-        mnSearch.add(mntmPatient);
 
         mntmDoctor = new JMenuItem("Doctor...");
         mntmDoctor.addActionListener(this);
@@ -109,14 +102,6 @@ public class LawyerView extends JFrame implements ActionListener {
         btnSearchForDoctor.addActionListener(this);
         verticalBox_1.add(btnSearchForDoctor);
 
-        verticalStrut = Box.createVerticalStrut(20);
-        verticalBox_1.add(verticalStrut);
-
-        btnSearchForPatient = new JButton("Search for Patient Details");
-        btnSearchForPatient.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnSearchForPatient.addActionListener(this);
-        verticalBox_1.add(btnSearchForPatient);
-
         verticalStrut_2 = Box.createVerticalStrut(20);
         verticalBox.add(verticalStrut_2);
 
@@ -129,8 +114,6 @@ public class LawyerView extends JFrame implements ActionListener {
         Object s = e.getSource();
         if (s == mntmChangePassword) {
             presenter.showPasswordChange();
-        } else if (s == mntmPatient || s == btnSearchForPatient) {
-            presenter.showPatientSearch();
         } else if (s == mntmDoctor || s == btnSearchForDoctor) {
             presenter.showDoctorSearch();
         }

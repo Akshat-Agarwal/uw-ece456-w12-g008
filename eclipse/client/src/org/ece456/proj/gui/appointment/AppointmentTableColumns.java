@@ -32,6 +32,14 @@ public class AppointmentTableColumns {
                 }
             }, 150);
 
+    public static ColumnModel<Appointment> PATIENT_ID = ColumnFactory.INSTANCE.create("Patient ID",
+            new CellRenderer<Appointment>() {
+                @Override
+                public String render(Appointment obj) {
+                    return obj.getPatient().getPatientId().toString();
+                }
+            }, 150);
+
     public static ColumnModel<Appointment> DOCTOR = ColumnFactory.INSTANCE.create("Doctor",
             new CellRenderer<Appointment>() {
                 @Override

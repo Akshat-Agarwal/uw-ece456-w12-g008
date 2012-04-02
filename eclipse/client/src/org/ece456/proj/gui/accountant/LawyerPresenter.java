@@ -14,8 +14,6 @@ public interface LawyerPresenter {
 
     void showPasswordChange();
 
-    void showPatientSearch();
-
     void showDoctorSearch();
 
     void show(Id<Lawyer> id);
