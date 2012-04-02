@@ -627,7 +627,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         try {
             String query = "SELECT staff_id, name FROM staff";
             PreparedStatement sql;
-            if (field == null) {
+            if (field == null || text.isEmpty()) {
                 // Search-all case
                 sql = getConnection().prepareStatement(query);
             } else {
@@ -956,7 +956,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             query += String.valueOf(id);
             query += ") ";
             PreparedStatement sql = null;
-            if (text == null) {
+            if (text == null || text.isEmpty()) {
                 sql = getConnection().prepareStatement(query);
             } else {
                 if (option == DoctorSearchOption.ID) {
@@ -999,7 +999,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             query += String.valueOf(id);
             query += "))";
             PreparedStatement sql = null;
-            if (text == null) {
+            if (text == null || text.isEmpty()) {
                 sql = getConnection().prepareStatement(query);
             } else {
                 if (option == PatientSearchOption.ID) {
@@ -1191,7 +1191,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
             String query = "SELECT * FROM patient_contact NATURAL JOIN patient_medical ";
             query += "WHERE default_doctor_id = " + String.valueOf(id) + " ";
             PreparedStatement sql = null;
-            if (text == null) {
+            if (text == null || text.isEmpty()) {
                 sql = getConnection().prepareStatement(query);
             } else {
                 if (option == PatientSearchOption.ID) {
