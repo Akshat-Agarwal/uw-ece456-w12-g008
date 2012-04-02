@@ -7,11 +7,6 @@ import org.ece456.proj.orm.objects.Appointment;
 
 import com.google.common.collect.ImmutableList;
 
-/**
- * For Patient use only: lots of info is hidden from patients.
- * 
- * start time doctor_id length procedures prescriptions diagnoses
- */
 public class DoctorPatientsAppointmentTable extends SimpleTable<Appointment> {
     private static final long serialVersionUID = 1L;
 

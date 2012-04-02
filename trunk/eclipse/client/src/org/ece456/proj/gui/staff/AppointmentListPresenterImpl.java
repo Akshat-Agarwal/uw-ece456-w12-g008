@@ -87,7 +87,7 @@ public class AppointmentListPresenterImpl implements AppointmentListPresenter {
     @Override
     public void updateAppointment(Appointment app) {
         try {
-            Boolean added = connection.getServer().createAppointment(connection.getSession(), app);
+            connection.getServer().createAppointment(connection.getSession(), app);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import org.ece456.proj.gui.account.PasswordChangePresenter;
 import org.ece456.proj.gui.account.PasswordChangePresenterImpl;
 import org.ece456.proj.gui.search.SearchPresenter;
+import org.ece456.proj.gui.search.patient.PatientSearchForDoctorPresenter;
 import org.ece456.proj.gui.search.patient.PatientSearchPresenter;
 import org.ece456.proj.gui.shared.table.SelectionListener;
 import org.ece456.proj.orm.objects.Doctor;
@@ -44,26 +45,11 @@ public class DoctorPresenterImpl implements DoctorPresenter {
     }
 
     @Override
-    public void showPatientSearch() {
+    public void showAllPatientSearch() {
         SearchPresenter<Patient> p = new PatientSearchPresenter(connection,
                 new SelectionListener<Patient>() {
                     @Override
                     public AfterAction onSelection(Patient selected) {
-                        // Do something with the Doctor
-                        int DoctorId;
-                        try {
-                            DoctorId = connection.getServer().searchDoctorIdByPatientId(
-                                    connection.getSession(), selected.getPatientId(), null, null);
-                            if (DoctorId == doctor.getDoctor_id().asInt()) {
-                                PatientDoctorPresenter p = new PatientDoctorPresenterImpl(
-                                        connection, selected);
-                                p.show(selected);
-                            }
-                        } catch (RemoteException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-
                         return AfterAction.DO_NOTHING;
                     }
 
@@ -73,6 +59,25 @@ public class DoctorPresenterImpl implements DoctorPresenter {
                     }
                 });
 
+        p.show();
+    }
+
+    @Override
+    public void showMyPatientSearch() {
+        SearchPresenter<Patient> p = new PatientSearchForDoctorPresenter(connection,
+                new SelectionListener<Patient>() {
+                    @Override
+                    public AfterAction onSelection(Patient selected) {
+                        PatientDoctorPresenter p = new PatientDoctorPresenterImpl(connection);
+                        p.show(selected);
+                        return AfterAction.DO_NOTHING;
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // do nothing
+                    }
+                }, doctor.getDoctor_id());
         p.show();
     }
 

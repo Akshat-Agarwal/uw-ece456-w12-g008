@@ -25,8 +25,6 @@ public class PatientDoctorView extends JFrame {
     protected final JTextField textFieldName;
     protected final SimpleTable<Appointment> table;
 
-    private PatientDoctorPresenter presenter;
-
     protected PatientDoctorView(PatientDoctorPresenter patientAppointmentPresenter) {
         getContentPane().setLayout(new BorderLayout(0, 0));
         setTitle("Appointment List");

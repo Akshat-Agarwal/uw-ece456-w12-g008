@@ -991,8 +991,7 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         try {
-            String query = "SELECT * FROM patient_contact INNER JOIN patient_medical ";
-            query += "ON patient_contact.patient_id=patient_medical.patient_id ";
+            String query = "SELECT * FROM patient_contact NATURAL JOIN patient_medical ";
             query += "WHERE (default_doctor_id ";
             query += "IN (SELECT doctor_id FROM doctor_staff WHERE staff_id = ";
             query += String.valueOf(id);
@@ -1185,11 +1184,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
         }
 
         try {
-            String query = "SELECT * FROM patient_contact INNER JOIN patient_medical ";
-            query += "ON patient_contact.patient_id=patient_medical.patient_id ";
-            query += "WHERE (default_doctor_id = ";
-            query += String.valueOf(id);
-            query += "))";
+            String query = "SELECT * FROM patient_contact NATURAL JOIN patient_medical ";
+            query += "WHERE default_doctor_id = " + String.valueOf(id) + " ";
             PreparedStatement sql;
             if (text == null) {
                 sql = getConnection().prepareStatement(query);
@@ -1200,12 +1196,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                     query += "AND (patient_contact.name LIKE ?)";
                 } else if (option == PatientSearchOption.HEALTH_CARD) {
                     query += "AND (patient_medical.health_card_num like ?)";
-                    // query +=
-                    // "AND (patient_id IN (SELECT patient_id FROM patient_medical WHERE health_card_num like ?))";
                 } else if (option == PatientSearchOption.SIN) {
                     query += "AND (patient_medical.sin like ?)";
-                    // query +=
-                    // "AND patient_id IN ((SELECT patient_id FROM patient_medical WHERE sin like ?))";
                 }
                 sql = getConnection().prepareStatement(query);
                 sql.setString(1, "%" + text + "%");
@@ -1217,6 +1209,8 @@ public class ServerRmiImpl extends UnicastRemoteObject implements ServerRmi {
                 Patient p = new Patient();
                 p.setPatientId(Id.<Patient> of(result.getInt("patient_id")));
                 p.getContact().setName(result.getString("name"));
+                p.getMedical().setSin(result.getInt("sin"));
+                p.getMedical().setHealthCardNumber(result.getString("health_card_num"));
 
                 // Add the default doctor_id
                 Doctor d = new Doctor();
