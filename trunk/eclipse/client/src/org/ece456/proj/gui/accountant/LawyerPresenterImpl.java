@@ -13,13 +13,13 @@ import org.ece456.proj.orm.objects.Lawyer;
 import org.ece456.proj.orm.objects.UserRole;
 import org.ece456.proj.shared.Connection;
 
-public class LawyerPresenterImpl implements LawyerPresenter {
+public class LawyerPresenterImpl implements AccountantPresenter {
 
     private final Connection connection;
 
     private Lawyer lawyer;
 
-    private LawyerView view;
+    private AccountantView view;
 
     public LawyerPresenterImpl(Connection connection) {
         this.connection = connection;
@@ -32,19 +32,20 @@ public class LawyerPresenterImpl implements LawyerPresenter {
     }
 
     @Override
-    public void show(Id<Lawyer> id) {
+    public void show(int id) {
         if (view == null) {
-            view = new LawyerView(this);
+            view = new AccountantView(this);
         }
 
         try {
-            lawyer = connection.getServer().getLawyerById(connection.getSession(), id);
+            lawyer = connection.getServer().getLawyerById(connection.getSession(),
+                    Id.<Lawyer> of(id));
 
         } catch (RemoteException e) {
             e.printStackTrace();
         }
 
-        view.fillLawyerData(lawyer);
+        view.fillData(lawyer.getName(), lawyer.getLawyerId().asInt());
 
         view.setVisible(true);
     }
@@ -57,7 +58,7 @@ public class LawyerPresenterImpl implements LawyerPresenter {
                     public AfterAction onSelection(Doctor selected) {
                         // Do something with the Doctor
                         FinancialPresenter p = new FinancialPresenterImpl(connection,
-                                selected.getDoctor_id());
+                                selected.getDoctor_id(), UserRole.LEGAL);
                         p.show(selected);
                         return AfterAction.DO_NOTHING;
                     }

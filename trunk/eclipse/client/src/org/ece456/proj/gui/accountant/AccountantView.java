@@ -1,11 +1,11 @@
 package org.ece456.proj.gui.accountant;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -15,8 +15,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import org.ece456.proj.orm.objects.Accountant;
 
 import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
@@ -40,7 +38,7 @@ public class AccountantView extends JFrame implements ActionListener {
         this.presenter = presenter;
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        setTitle("Accountant Console");
+        setTitle("Accountant / Legal Console");
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
@@ -60,10 +58,10 @@ public class AccountantView extends JFrame implements ActionListener {
         mntmDoctor = new JMenuItem("Doctor...");
         mntmDoctor.addActionListener(this);
         mnSearch.add(mntmDoctor);
-        getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
+        getContentPane().setLayout(new BorderLayout(0, 0));
 
         verticalBox = Box.createVerticalBox();
-        getContentPane().add(verticalBox);
+        getContentPane().add(verticalBox, BorderLayout.NORTH);
 
         JPanel panel = new JPanel();
         verticalBox.add(panel);
@@ -119,12 +117,11 @@ public class AccountantView extends JFrame implements ActionListener {
         }
     }
 
-    public void fillAccountantData(Accountant accountant) {
+    public void fillData(String name, int id) {
         // Title
-        setTitle(String.format("Accountant Console: %s (%d)", accountant.getName(), accountant
-                .getFinanceId().asInt()));
+        setTitle(String.format("Accountant / Legal Console: %s (%d)", name, id));
 
-        text_id.setText(accountant.getFinanceId().toString());
-        text_name.setText(accountant.getName());
+        text_id.setText(String.valueOf(id));
+        text_name.setText(name);
     }
 }

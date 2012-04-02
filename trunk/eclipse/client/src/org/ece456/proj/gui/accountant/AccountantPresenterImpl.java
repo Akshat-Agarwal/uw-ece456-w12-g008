@@ -32,19 +32,20 @@ public class AccountantPresenterImpl implements AccountantPresenter {
     }
 
     @Override
-    public void show(Id<Accountant> id) {
+    public void show(int id) {
         if (view == null) {
             view = new AccountantView(this);
         }
 
         try {
-            accountant = connection.getServer().getAccountantById(connection.getSession(), id);
+            accountant = connection.getServer().getAccountantById(connection.getSession(),
+                    Id.<Accountant> of(id));
 
         } catch (RemoteException e) {
             e.printStackTrace();
         }
 
-        view.fillAccountantData(accountant);
+        view.fillData(accountant.getName(), accountant.getFinanceId().asInt());
 
         view.setVisible(true);
     }
@@ -57,7 +58,7 @@ public class AccountantPresenterImpl implements AccountantPresenter {
                     public AfterAction onSelection(Doctor selected) {
                         // Do something with the Doctor
                         FinancialPresenter p = new FinancialPresenterImpl(connection,
-                                selected.getDoctor_id());
+                                selected.getDoctor_id(), UserRole.ACCOUNTANT);
                         p.show(selected);
                         return AfterAction.DO_NOTHING;
                     }
