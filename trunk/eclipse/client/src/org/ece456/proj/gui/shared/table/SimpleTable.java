@@ -160,7 +160,7 @@ public abstract class SimpleTable<T> extends JPanel implements ActionListener, M
         if (e.getSource() == table) {
             if (e.getClickCount() == 2) {
                 T selected = getSelected();
-                if (selected != null) {
+                if (selected != null && listener != null) {
                     listener.onSelection(selected);
                 }
             }
